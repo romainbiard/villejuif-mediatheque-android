@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.ui.ComingSoonDestination
+import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
 
 /** Root of the account destination. */
@@ -18,7 +19,7 @@ import kotlinx.serialization.Serializable
 data object AccountRoute : NavKey
 
 /** The destination's screens, for the app's navigation. */
-fun EntryProviderScope<NavKey>.accountEntries() {
+fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator) {
     entry<AccountRoute> { AccountScreen() }
 }
 

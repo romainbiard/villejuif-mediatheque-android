@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import fr.mediatheque.core.bokeh.PortalHttpClient
 import java.io.File
+import java.time.Clock
 import javax.inject.Singleton
 
 /**
@@ -30,4 +31,8 @@ object DataModule {
     @Provides
     @Singleton
     fun dataCache(@ApplicationContext context: Context) = DataCache(File(context.cacheDir, "portal"))
+
+    /** The current time, replaceable in tests. */
+    @Provides
+    fun clock(): Clock = Clock.systemUTC()
 }

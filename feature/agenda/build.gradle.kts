@@ -5,3 +5,8 @@
 plugins {
     alias(libs.plugins.mediatheque.android.feature)
 }
+
+dependencies {
+    implementation(projects.core.domain)
+    implementation(libs.androidx.core.ktx)
+}

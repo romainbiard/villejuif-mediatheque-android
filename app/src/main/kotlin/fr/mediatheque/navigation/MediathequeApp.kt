@@ -7,22 +7,27 @@ package fr.mediatheque.navigation
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import fr.mediatheque.core.ui.Navigator
 import fr.mediatheque.feature.account.accountEntries
 import fr.mediatheque.feature.agenda.agendaEntries
 import fr.mediatheque.feature.digital.digitalEntries
@@ -34,6 +39,7 @@ import kotlinx.coroutines.flow.Flow
  * The app's frame: the navigation suite adapts to the window (bar on a phone, rail on a tablet, a foldable or a
  * desktop window), and each destination keeps its own back stack, as Material asks of a navigation bar.
  */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class) // The list-detail scene strategy for Navigation 3.
 @Composable
 fun MediathequeApp(shortcuts: Flow<TopLevelDestination>, modifier: Modifier = Modifier) {
     var current by rememberSaveable { mutableStateOf(TopLevelDestination.START) }
@@ -77,16 +83,33 @@ fun MediathequeApp(shortcuts: Flow<TopLevelDestination>, modifier: Modifier = Mo
             }
         }
     ) {
+        val navigator = remember(backStack) {
+            object : Navigator {
+                override fun navigate(key: NavKey) {
+                    backStack.add(key)
+                }
+
+                override fun back() {
+                    if (backStack.size > 1) backStack.removeLastOrNull()
+                }
+            }
+        }
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
-            entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
+            // List and detail side by side on a wide window (search, agenda), one after the other on a phone.
+            sceneStrategies = listOf(rememberListDetailSceneStrategy<NavKey>()),
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
+                // Each screen's ViewModel lives as long as the screen stays in the back stack.
+                rememberViewModelStoreNavEntryDecorator<NavKey>()
+            ),
             entryProvider = entryProvider {
-                accountEntries()
-                searchEntries()
-                agendaEntries()
-                digitalEntries()
-                infoEntries()
+                accountEntries(navigator)
+                searchEntries(navigator)
+                agendaEntries(navigator)
+                digitalEntries(navigator)
+                infoEntries(navigator)
             }
         )
     }

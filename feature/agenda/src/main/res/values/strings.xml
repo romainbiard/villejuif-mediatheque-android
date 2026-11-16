@@ -1,4 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="agenda_title">Agenda</string>
+    <string name="agenda_filters">Filtres</string>
+    <plurals name="agenda_filters_count">
+        <item quantity="one">Filtres (%d)</item>
+        <item quantity="other">Filtres (%d)</item>
+    </plurals>
+    <string name="agenda_period_day_by_day">Jour par jour</string>
+    <string name="agenda_period_weekend">Ce week-end</string>
+    <string name="agenda_period_wednesdays">Mercredis</string>
+    <string name="agenda_period_holidays">Vacances scolaires</string>
+    <string name="agenda_this_day">Ce jour-là</string>
+    <string name="agenda_ongoing">En ce moment</string>
+    <string name="agenda_during_period">Pendant cette période</string>
+    <string name="agenda_has_events">Des animations</string>
+    <string name="agenda_libraries_closed">Médiathèques fermées</string>
+    <string name="agenda_empty_day_title">Pas d’animation ce jour-là</string>
+    <string name="agenda_empty_day_closed">Les médiathèques sont fermées ce jour-là. Essayez un autre jour.</string>
+    <string name="agenda_empty_day_message">Essayez un autre jour, ou élargissez vos filtres.</string>
+    <string name="agenda_next_day">Voir le %1$s</string>
+    <string name="agenda_clear_filters">Retirer les filtres</string>
+    <string name="agenda_empty_period_title">Rien de prévu sur cette période</string>
+    <string name="agenda_empty_period_message">Aucune animation ne correspond. Essayez une autre période ou retirez des filtres.</string>
+    <string name="agenda_see_all">Voir tout l’agenda</string>
+    <string name="agenda_weekend_summary">%1$s et %2$s</string>
+    <plurals name="agenda_wednesdays_summary">
+        <item quantity="one">Le prochain mercredi</item>
+        <item quantity="other">Les %1$d prochains mercredis</item>
+    </plurals>
+    <string name="agenda_holidays_summary">%1$s, du %2$s au %3$s</string>
+    <string name="agenda_until">Jusqu’au %1$s</string>
+    <string name="agenda_time_range">%1$s – %2$s</string>
+    <string name="agenda_filter_place">Lieu</string>
+    <string name="agenda_filter_type">Type d’animation</string>
+    <string name="agenda_filter_audience">Public</string>
+    <string name="agenda_filter_reset">Réinitialiser</string>
+    <plurals name="agenda_show_events">
+        <item quantity="one">Voir %d animation</item>
+        <item quantity="other">Voir %d animations</item>
+    </plurals>
+    <string name="agenda_no_event">Aucune animation</string>
+    <string name="agenda_holiday_all_saints">Vacances de la Toussaint</string>
+    <string name="agenda_holiday_christmas">Vacances de Noël</string>
+    <string name="agenda_holiday_winter">Vacances d’hiver</string>
+    <string name="agenda_holiday_spring">Vacances de printemps</string>
+    <string name="agenda_holiday_ascension">Pont de l’Ascension</string>
+    <string name="agenda_holiday_summer">Vacances d’été</string>
+    <string name="event_add_to_calendar">Ajouter au calendrier</string>
+    <string name="event_share">Partager</string>
+    <string name="event_back">Retour</string>
+    <string name="event_map_description">Carte : %1$s</string>
+    <string name="event_no_app">Aucune app ne peut faire cela.</string>
+    <string name="event_detail_unavailable">La description n’a pas pu être chargée.</string>
 </resources>

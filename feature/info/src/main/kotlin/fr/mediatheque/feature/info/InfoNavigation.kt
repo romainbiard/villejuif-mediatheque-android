@@ -4,25 +4,18 @@
 
 package fr.mediatheque.feature.info
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import fr.mediatheque.core.designsystem.R as DesignR
-import fr.mediatheque.core.ui.ComingSoonDestination
+import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
 
-/** Root of the info destination. */
+/** Root of the practical info destination. */
 @Serializable
 data object InfoRoute : NavKey
 
 /** The destination's screens, for the app's navigation. */
-fun EntryProviderScope<NavKey>.infoEntries() {
-    entry<InfoRoute> { InfoScreen() }
-}
-
-@Composable
-internal fun InfoScreen(modifier: Modifier = Modifier) {
-    ComingSoonDestination(stringResource(R.string.info_title), DesignR.drawable.ic_location_on, modifier)
+@Suppress("UNUSED_PARAMETER") // A single screen: nothing to open from it yet.
+fun EntryProviderScope<NavKey>.infoEntries(navigator: Navigator) {
+    entry<InfoRoute> { InfoScreen(hiltViewModel()) }
 }

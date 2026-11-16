@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import fr.mediatheque.core.model.DeviceSettings
 import fr.mediatheque.core.model.ReminderSettings
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +55,15 @@ class SettingsStore(private val settings: DataStore<Preferences>, private val de
         device.edit { it[Keys.onboardingDone] = done }
     }
 
+    /** Recent catalog searches, newest first: on this device only. */
+    val recentSearches: Flow<List<String>> = device.data.map { preferences ->
+        preferences[Keys.recentSearches]?.split(SEPARATOR)?.filter { it.isNotEmpty() }.orEmpty()
+    }
+
+    suspend fun setRecentSearches(searches: List<String>) {
+        device.edit { it[Keys.recentSearches] = searches.joinToString(SEPARATOR) }
+    }
+
     /** On sign-out: the next patron on this device starts from the defaults. */
     suspend fun resetDeviceSettings() {
         device.edit { it.clear() }
@@ -76,11 +86,15 @@ class SettingsStore(private val settings: DataStore<Preferences>, private val de
         val agendaDigest = booleanPreferencesKey("reminders.agendaDigest")
         val biometricLock = booleanPreferencesKey("security.biometricLock")
         val onboardingDone = booleanPreferencesKey("account.onboardingDone")
+        val recentSearches = stringPreferencesKey("search.recent")
     }
 
     companion object {
         /** Backed up: `datastore/settings.preferences_pb`. */
         const val SETTINGS_FILE = "settings"
+
+        /** Unit separator: cannot be typed in a search. */
+        private const val SEPARATOR = "\u001F"
 
         /** Not backed up: `datastore/device.preferences_pb`. */
         const val DEVICE_FILE = "device"

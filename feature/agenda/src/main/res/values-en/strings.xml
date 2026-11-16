@@ -1,4 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="agenda_title">Events</string>
+    <string name="agenda_filters">Filters</string>
+    <plurals name="agenda_filters_count">
+        <item quantity="one">Filters (%d)</item>
+        <item quantity="other">Filters (%d)</item>
+    </plurals>
+    <string name="agenda_period_day_by_day">Day by day</string>
+    <string name="agenda_period_weekend">This weekend</string>
+    <string name="agenda_period_wednesdays">Wednesdays</string>
+    <string name="agenda_period_holidays">School holidays</string>
+    <string name="agenda_this_day">That day</string>
+    <string name="agenda_ongoing">Ongoing</string>
+    <string name="agenda_during_period">During this period</string>
+    <string name="agenda_has_events">Events</string>
+    <string name="agenda_libraries_closed">Libraries closed</string>
+    <string name="agenda_empty_day_title">No events that day</string>
+    <string name="agenda_empty_day_closed">The libraries are closed that day. Try another day.</string>
+    <string name="agenda_empty_day_message">Try another day, or widen your filters.</string>
+    <string name="agenda_next_day">See %1$s</string>
+    <string name="agenda_clear_filters">Clear filters</string>
+    <string name="agenda_empty_period_title">Nothing planned in this period</string>
+    <string name="agenda_empty_period_message">No event matches. Try another period or clear some filters.</string>
+    <string name="agenda_see_all">See all events</string>
+    <string name="agenda_weekend_summary">%1$s and %2$s</string>
+    <plurals name="agenda_wednesdays_summary">
+        <item quantity="one">The next Wednesday</item>
+        <item quantity="other">The next %1$d Wednesdays</item>
+    </plurals>
+    <string name="agenda_holidays_summary">%1$s, %2$s to %3$s</string>
+    <string name="agenda_until">Until %1$s</string>
+    <string name="agenda_time_range">%1$s – %2$s</string>
+    <string name="agenda_filter_place">Place</string>
+    <string name="agenda_filter_type">Type of event</string>
+    <string name="agenda_filter_audience">Audience</string>
+    <string name="agenda_filter_reset">Reset</string>
+    <plurals name="agenda_show_events">
+        <item quantity="one">Show %d event</item>
+        <item quantity="other">Show %d events</item>
+    </plurals>
+    <string name="agenda_no_event">No events</string>
+    <string name="agenda_holiday_all_saints">All Saints’ holidays</string>
+    <string name="agenda_holiday_christmas">Christmas holidays</string>
+    <string name="agenda_holiday_winter">Winter holidays</string>
+    <string name="agenda_holiday_spring">Spring holidays</string>
+    <string name="agenda_holiday_ascension">Ascension bridge</string>
+    <string name="agenda_holiday_summer">Summer holidays</string>
+    <string name="event_add_to_calendar">Add to calendar</string>
+    <string name="event_share">Share</string>
+    <string name="event_back">Back</string>
+    <string name="event_map_description">Map: %1$s</string>
+    <string name="event_no_app">No app can do this.</string>
+    <string name="event_detail_unavailable">The description could not be loaded.</string>
 </resources>

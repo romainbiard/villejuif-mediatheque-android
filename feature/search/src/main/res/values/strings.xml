@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="search_title">Recherche</string>
+    <string name="search_placeholder">Titre, auteur, sujet, ISBN</string>
+    <string name="search_clear">Effacer</string>
+    <string name="search_scope_all">Tout</string>
+    <string name="search_scope_books">Livres</string>
+    <string name="search_scope_dvd">DVD</string>
+    <string name="search_scope_cd">CD</string>
+    <string name="search_scope_audiobooks">Livres audio</string>
+    <string name="search_scope_ebooks">E-books</string>
+    <string name="search_scope_online_films">Films en ligne</string>
+    <string name="search_explore">Explorer</string>
+    <string name="search_explore_new">Nouveautés</string>
+    <string name="search_explore_films">Films</string>
+    <string name="search_explore_music">Musique</string>
+    <string name="search_recent">Récentes</string>
+    <string name="search_all_libraries">Toutes les médiathèques</string>
+    <string name="search_library_filter">Médiathèque</string>
+    <plurals name="search_results">
+        <item quantity="one">%d résultat</item>
+        <item quantity="other">%d résultats</item>
+    </plurals>
+    <string name="search_no_results_title">Aucun résultat</string>
+    <string name="search_no_results_message">Vérifiez l’orthographe, essayez moins de mots ou cherchez dans les 3 médiathèques.</string>
+    <string name="search_clear_filters">Retirer les filtres</string>
+    <string name="search_online_included">En ligne · inclus dans l’abonnement</string>
+    <string name="search_back">Retour</string>
+    <string name="document_where">Où le trouver</string>
+    <string name="document_no_copy">Aucun exemplaire en rayon.</string>
+    <string name="document_copies_unavailable">La disponibilité est indisponible pour le moment.</string>
+    <string name="document_online_title">Disponible en ligne</string>
+    <string name="document_online_message">Cette ressource est incluse dans votre abonnement. Ouvrez-la depuis l’onglet Numérique.</string>
+    <string name="document_details">Informations</string>
+    <string name="document_kind">Type</string>
+    <string name="document_publisher">Éditeur</string>
+    <string name="document_year">Année</string>
+    <string name="document_series">Série</string>
+    <string name="document_volume">tome %1$s</string>
+    <string name="document_on_loan_until">En prêt · retour prévu le %1$s</string>
+    <plurals name="document_holds">
+        <item quantity="one">%d réservation</item>
+        <item quantity="other">%d réservations</item>
+    </plurals>
+    <string name="document_share">Partager</string>
 </resources>

@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="info_title">Practical info</string>
+    <string name="info_map_description">Map of Villejuif’s 3 libraries</string>
+    <string name="info_open_closes_at">Open · closes at %1$s</string>
+    <string name="info_closed_opens_at">Closed · opens at %1$s</string>
+    <string name="info_closed_opens_tomorrow">Closed · opens tomorrow at %1$s</string>
+    <string name="info_closed_opens_on">Closed · opens %1$s at %2$s</string>
+    <string name="info_closed">Closed</string>
+    <string name="info_directions">Directions</string>
+    <string name="info_call">Call</string>
+    <string name="info_write">Message</string>
+    <string name="info_today">today</string>
+    <string name="info_no_app">No app can open this link.</string>
 </resources>

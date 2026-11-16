@@ -4,25 +4,35 @@
 
 package fr.mediatheque.feature.search
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import fr.mediatheque.core.designsystem.R as DesignR
-import fr.mediatheque.core.ui.ComingSoonDestination
+import fr.mediatheque.core.model.Notice
+import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
 
 /** Root of the search destination. */
 @Serializable
 data object SearchRoute : NavKey
 
-/** The destination's screens, for the app's navigation. */
-fun EntryProviderScope<NavKey>.searchEntries() {
-    entry<SearchRoute> { SearchScreen() }
-}
+/** A record's page. The record travels whole from the results: only its copies are read. */
+@Serializable
+data class DocumentRoute(val document: Notice) : NavKey
 
-@Composable
-internal fun SearchScreen(modifier: Modifier = Modifier) {
-    ComingSoonDestination(stringResource(R.string.search_title), DesignR.drawable.ic_search, modifier)
+/** The search's screens: the results, and a record beside them on a wide window. */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+fun EntryProviderScope<NavKey>.searchEntries(navigator: Navigator) {
+    entry<SearchRoute>(metadata = ListDetailSceneStrategy.listPane(sceneKey = SearchRoute)) {
+        SearchScreen(hiltViewModel(), onOpen = { navigator.navigate(DocumentRoute(it)) })
+    }
+    entry<DocumentRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = SearchRoute)) { route ->
+        DocumentDetailScreen(
+            viewModel = hiltViewModel<DocumentDetailViewModel, DocumentDetailViewModel.Factory>(key = "document-${route.document.id}") {
+                it.create(route.document)
+            },
+            onBack = navigator::back
+        )
+    }
 }

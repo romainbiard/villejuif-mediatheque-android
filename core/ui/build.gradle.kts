@@ -12,4 +12,9 @@ dependencies {
     api(projects.core.designsystem)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    api(libs.coil.compose)
+    implementation(libs.androidx.browser)
+    implementation(libs.androidx.core.ktx)
+    api(libs.androidx.navigation3.runtime)
+    implementation(libs.maplibre.android)
 }

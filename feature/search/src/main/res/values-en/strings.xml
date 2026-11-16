@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="search_title">Search</string>
+    <string name="search_placeholder">Title, author, subject, ISBN</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_scope_all">All</string>
+    <string name="search_scope_books">Books</string>
+    <string name="search_scope_dvd">DVDs</string>
+    <string name="search_scope_cd">CDs</string>
+    <string name="search_scope_audiobooks">Audiobooks</string>
+    <string name="search_scope_ebooks">E-books</string>
+    <string name="search_scope_online_films">Online films</string>
+    <string name="search_explore">Explore</string>
+    <string name="search_explore_new">New books</string>
+    <string name="search_explore_films">Films</string>
+    <string name="search_explore_music">Music</string>
+    <string name="search_recent">Recent</string>
+    <string name="search_all_libraries">All libraries</string>
+    <string name="search_library_filter">Library</string>
+    <plurals name="search_results">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
+    <string name="search_no_results_title">No results</string>
+    <string name="search_no_results_message">Check the spelling, try fewer words or search all 3 libraries.</string>
+    <string name="search_clear_filters">Clear filters</string>
+    <string name="search_online_included">Online · included in your membership</string>
+    <string name="search_back">Back</string>
+    <string name="document_where">Where to find it</string>
+    <string name="document_no_copy">No copy on the shelves.</string>
+    <string name="document_copies_unavailable">Availability can’t be shown right now.</string>
+    <string name="document_online_title">Available online</string>
+    <string name="document_online_message">This resource is included in your membership. Open it from the Digital tab.</string>
+    <string name="document_details">Details</string>
+    <string name="document_kind">Type</string>
+    <string name="document_publisher">Publisher</string>
+    <string name="document_year">Year</string>
+    <string name="document_series">Series</string>
+    <string name="document_volume">volume %1$s</string>
+    <string name="document_on_loan_until">On loan · due back %1$s</string>
+    <plurals name="document_holds">
+        <item quantity="one">%d hold</item>
+        <item quantity="other">%d holds</item>
+    </plurals>
+    <string name="document_share">Share</string>
 </resources>

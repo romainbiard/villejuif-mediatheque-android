@@ -30,6 +30,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.library("androidx-lifecycle-viewmodel-compose"))
                 add("implementation", libs.library("androidx-hilt-lifecycle-viewmodel-compose"))
                 add("implementation", libs.library("androidx-navigation3-runtime"))
+                add("implementation", libs.library("androidx-compose-material3-adaptive-navigation3"))
                 add("testImplementation", project(":core:testing"))
                 add("testImplementation", libs.library("turbine"))
             }

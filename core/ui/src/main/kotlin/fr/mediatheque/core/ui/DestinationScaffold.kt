@@ -7,6 +7,7 @@ package fr.mediatheque.core.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -31,11 +32,24 @@ import fr.mediatheque.core.designsystem.component.EmptyState
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DestinationScaffold(title: String, modifier: Modifier = Modifier, content: @Composable (PaddingValues) -> Unit) {
+fun DestinationScaffold(
+    title: String,
+    modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit
+) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { LargeTopAppBar(title = { Text(title) }, scrollBehavior = scrollBehavior) },
+        topBar = {
+            LargeTopAppBar(
+                title = { Text(title) },
+                navigationIcon = navigationIcon,
+                actions = actions,
+                scrollBehavior = scrollBehavior
+            )
+        },
         content = content
     )
 }
