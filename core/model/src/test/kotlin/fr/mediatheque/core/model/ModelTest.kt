@@ -180,7 +180,7 @@ class InboxTest {
     private val now = Paris.instant(2026, 11, 16, 9)
 
     private fun item(id: String, date: java.time.Instant, isRead: Boolean = false) =
-        InboxItem(id = id, kind = InboxItem.Kind.LOAN_DUE_SOON, title = id, body = "", date = date, isRead = isRead)
+        InboxItem(id = id, kind = InboxItem.Kind.LOAN_DUE_SOON, date = date, isRead = isRead, documentTitle = id)
 
     @Test
     fun mergeAddsOnlyNewEntriesKeepsReadStateAndDropsOldOnes() {

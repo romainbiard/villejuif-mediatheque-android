@@ -10,19 +10,33 @@ import kotlinx.serialization.Serializable
 /**
  * An entry in the notification center (the bell in My Account). The site has no notifications API:
  * everything is derived from loans, holds, and the library's message, then kept on the device.
+ *
+ * The entry holds facts, not sentences: the UI words it in the device's language, so a language change
+ * also rewords the history.
  */
 @Serializable
 data class InboxItem(
     /** Stable from one sync to the next: this is what prevents duplicates. */
     val id: String,
     val kind: Kind,
-    val title: String,
-    val body: String,
     @Serializable(with = InstantSerializer::class)
     val date: Instant,
     val isRead: Boolean = false,
-    /** Loan concerned, for "Prolonger" (renew) from the list. */
-    val loanId: String? = null
+    /** Loan concerned, to renew it from the list. */
+    val loanId: String? = null,
+    /** Title of the loan or hold. */
+    val documentTitle: String? = null,
+    /** Due date of the loan. */
+    @Serializable(with = InstantSerializer::class)
+    val dueDate: Instant? = null,
+    /** Days left before the due date, for [Kind.LOAN_DUE_SOON]. */
+    val daysLeft: Int? = null,
+    /** Return or pickup library, as a short name. */
+    val place: String? = null,
+    /** The hold's status as the site words it, for [Kind.HOLD_READY]. */
+    val statusText: String? = null,
+    /** The library's message, as plain text, for [Kind.LIBRARY_MESSAGE]. */
+    val message: String? = null
 ) {
     @Serializable
     enum class Kind { LOAN_DUE_SOON, LOAN_LATE, HOLD_READY, LIBRARY_MESSAGE }

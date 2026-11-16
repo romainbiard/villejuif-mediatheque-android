@@ -43,11 +43,12 @@ data class Patron(
     )
 
     /** "Camille Martin": the site writes the last name in capitals ("MARTIN-DUPONT" → "Martin-Dupont"). */
-    val displayName: String get() = "$firstName ${capitalizedWords(lastName)}"
+    val displayName: String get() = "$firstName ${lastName.capitalizedWords()}"
 }
 
 /** Capital letter at the start of each word, after a space, a hyphen, or an apostrophe. */
-internal fun capitalizedWords(text: String): String {
+fun String.capitalizedWords(): String {
+    val text = this
     val builder = StringBuilder(text.length)
     var startOfWord = true
     for (character in text.lowercase(Paris.locale)) {
