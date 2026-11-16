@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Europe/Paris",
+  "packageRules": [
+    {
+      "description": "Kotlin, compilateur Compose et KSP montent ensemble",
+      "matchPackageNames": ["org.jetbrains.kotlin{/,}**", "com.google.devtools.ksp{/,}**"],
+      "groupName": "Kotlin"
+    },
+    {
+      "matchPackageNames": ["androidx.compose{/,}**"],
+      "groupName": "Compose"
+    }
+  ]
+}

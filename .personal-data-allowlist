@@ -1,0 +1,19 @@
+# Valeurs admises par scripts/check-personal-data.sh : une expression régulière étendue par ligne,
+# appliquée à la valeur trouvée. N'ajouter que des valeurs fictives ou publiques.
+
+# Domaines fictifs et adresse de co-auteur des commits
+@exemple\.fr$
+@example\.(com|org|net)$
+^noreply@anthropic\.com$
+# Adresses institutionnelles du réseau des médiathèques (publiques)
+@villejuif\.fr$
+
+# Téléphones : standard public des médiathèques (01 86 93 33 xx) et numéros fictifs des tests
+^0 ?1[ .-]?86[ .-]?93[ .-]?33[ .-]?[0-9]{2}$
+^(\+33 ?|0)[16]([ .-]?00){4}$
+
+# Numéro de carte fictif de l'abonnée de démonstration
+[^0-9]0012345$
+
+# Dossiers personnels génériques (machines de CI, exemples de documentation)
+^/(Users|home)/(runner|example|exemple)/$

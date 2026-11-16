@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Médiathèque
+# SPDX-License-Identifier: MIT
+# See LICENSE in the project root for the full license text and copyright notice.
+#
+# Activé par : git config core.hooksPath .githooks
+
+set -euo pipefail
+
+# 1. Identité propre au dépôt : jamais l'identité globale de la machine par accident.
+if [[ -z "$(git config --local user.email || true)" ]]; then
+    echo "✖ Aucune identité locale. Lancez dans ce dépôt :" >&2
+    echo "    git config --local user.name  \"Votre nom\"" >&2
+    echo "    git config --local user.email \"votre@adresse\"" >&2
+    exit 1
+fi
+
+# 2. Secrets (clés, jetons, mots de passe).
+if ! command -v gitleaks >/dev/null; then
+    echo "✖ gitleaks est introuvable : brew install gitleaks" >&2
+    exit 1
+fi
+gitleaks git --pre-commit --staged --redact --no-banner --log-level warn
+
+# 3. Données personnelles (e-mails, téléphones, n° de carte, cookies, chemins personnels).
+"$(git rev-parse --show-toplevel)/scripts/check-personal-data.sh"

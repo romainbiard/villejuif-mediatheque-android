@@ -1,0 +1,61 @@
+# Médiathèque : contrôles à chaque push et pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  privacy:
+    name: Données personnelles et secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Données personnelles
+        run: scripts/check-personal-data.sh
+      - name: Secrets (gitleaks, tout l'historique)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Format, lint, tests et APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      # Vérifie aussi que gradle-wrapper.jar est authentique.
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Build
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew spotlessCheck lint testDebugUnitTest assembleDebug
+      - name: Rapports lint et tests
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: rapports
+          path: |
+            **/build/reports/
+            **/build/test-results/
+          retention-days: 14
+      - name: APK de debug
+        uses: actions/upload-artifact@v5
+        with:
+          name: mediatheque-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14

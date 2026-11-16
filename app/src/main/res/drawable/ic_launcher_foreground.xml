@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Provisoire (livre ouvert) : le blason de Villejuif le remplace au lot 3.
+     Contenu dans la zone sûre de 66 dp au centre du canevas de 108 dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,37L51,41L51,73L31,69Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M57,41L77,37L77,69L57,73Z" />
+</vector>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Langue source : français (comme le String Catalog iOS). Traduction anglaise dans values-en. -->
+<resources>
+    <string name="app_name" translatable="false">Médiathèque</string>
+    <string name="tagline">Les médiathèques de Villejuif dans la poche.</string>
+</resources>

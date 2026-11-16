@@ -1,0 +1,10 @@
+# Aucun journal en release : ni donnée personnelle, ni URL de connexion aux services numériques.
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+    public static int w(...);
+    public static int e(...);
+    public static int wtf(...);
+    public static int println(...);
+}
