@@ -6,34 +6,34 @@ package fr.mediatheque.core.bokeh.parser
 
 import java.net.URLDecoder
 
-// Pages `/abonne/*` de l'espace abonné, vérifiées le 31/10/2026.
+// `/abonne/*` pages of the patron area, verified on 10/31/2026.
 
-/** Une carte de `/abonne/selections`. */
+/** A card from `/abonne/selections`. */
 data class SelectionDto(
     val id: Int,
-    /** Panier de recherche, présent dès que la sélection contient un document. */
+    /** Search basket, present as soon as the selection contains an item. */
     val basketId: Int?,
     val title: String,
     val count: Int,
-    /** « 30/10/2026 ». */
+    /** "30/10/2026". */
     val updatedText: String?,
     val coverUrls: List<String>,
     val previewTitles: List<String>
 )
 
-/** Un document emprunté à noter (`/abonne/donner-des-avis`). */
+/** A borrowed item to rate (`/abonne/donner-des-avis`). */
 data class RecordToRateDto(val recordId: Int, val recordKey: String, val title: String, val author: String?, val coverUrl: String?)
 
 /**
- * Un avis publié (`/abonne/mes-avis`).
- * ⚠️ Lu sur un compte sans avis : la structure d'une carte est supposée identique aux autres listes
- * Intonation (titre lié à la notice, texte, étoiles).
+ * A published review (`/abonne/mes-avis`).
+ * ⚠️ Read from an account with no reviews: a card's structure is assumed identical to the other Intonation
+ * lists (title linked to the record, text, stars).
  */
 data class ReviewDto(val recordId: Int?, val title: String, val text: String, val rating: Int?)
 
 /**
- * Une suggestion d'achat envoyée (`/abonne/suggestions`).
- * ⚠️ Lue sur un compte sans suggestion : la structure est supposée.
+ * A submitted purchase suggestion (`/abonne/suggestions`).
+ * ⚠️ Read from an account with no suggestions: the structure is assumed.
  */
 data class SuggestionDto(val title: String, val detail: String?)
 
@@ -56,7 +56,7 @@ fun HtmlParsers.selections(html: String): List<SelectionDto> =
         )
     }
 
-/** Documents empruntés proposés à la notation, avec leur formulaire `ajax-review`. */
+/** Borrowed items offered for rating, with their `ajax-review` form. */
 fun HtmlParsers.recordsToRate(html: String): List<RecordToRateDto> = parse(html).select("form[action*=ajax-review]").mapNotNull { form ->
     val action = form.attr("action")
     val recordId = firstInt("record_id/", action) ?: return@mapNotNull null
@@ -106,43 +106,43 @@ fun HtmlParsers.suggestions(html: String): List<SuggestionDto> {
     }
 }
 
-/** Médiathèques favorites : celles qui proposent le lien « retirer des favoris ». */
+/** Favorite libraries: those that offer the "retirer des favoris" link. */
 fun HtmlParsers.bookmarkedLibraryIds(html: String): Set<Int> =
     parse(html).select("a[href*=remove-library-from-bookmarks]").mapNotNull { firstInt("library_id/", it.attr("href")) }.toSet()
 
-/** Valeur préremplie d'un champ de formulaire (par exemple `Library` dans la suggestion d'achat). */
+/** Prefilled value of a form field (for example `Library` in the purchase suggestion). */
 fun HtmlParsers.fieldValue(name: String, html: String): String? = parse(html).selectFirst("[name=$name]")?.attr("value")?.nullIfBlank()
 
-/** Valeur du bouton radio coché (par exemple `favoriteSendingChannel`). */
+/** Value of the checked radio button (for example `favoriteSendingChannel`). */
 fun HtmlParsers.checkedValue(name: String, html: String): String? = parse(html).selectFirst("input[name=$name][checked]")?.attr("value")
 
 /**
- * Vrai si la page a été servie à un abonné connecté : elle propose alors la déconnexion. Une page publique
- * (session expirée) montre les mêmes liens de sélection, tous dans l'état « ajouter ».
+ * True if the page was served to a signed-in patron: it then offers the logout link. A public page
+ * (expired session) shows the same selection links, all in the "ajouter" state.
  */
 fun HtmlParsers.isSignedIn(html: String): Boolean = parse(html).select("a[href*=/auth/logout]").isNotEmpty()
 
-/** Sélections par défaut qui contiennent la notice, lues sur sa page : leur lien est « supprimer-de-la-selection ». */
+/** Default selections that contain the record, read from its page: their link is "supprimer-de-la-selection". */
 fun HtmlParsers.defaultSelectionsHolding(html: String): Set<String> =
     parse(html).select("a[href*=/supprimer-de-la-selection/selection_label/]").mapNotNull { link ->
         val label = link.attr("href").substringAfterLast("selection_label/").substringBefore('/')
         label.takeIf { it.isNotEmpty() }?.let { runCatching { URLDecoder.decode(it, Charsets.UTF_8) }.getOrNull() }
     }.toSet()
 
-/** Messages d'erreur d'un formulaire renvoyé par le site (champs invalides, mot de passe refusé…). */
+/** Error messages of a form returned by the site (invalid fields, rejected password, etc.). */
 fun HtmlParsers.formErrors(html: String): List<String> =
     parse(html).select(".jumbotron_rich_content ul.errors li, .jumbotron_rich_content .alert-danger, .jumbotron_rich_content .error")
         .map { it.text() }
         .filter { it.isNotEmpty() }
 
-/** Segment qui suit [name] dans un chemin Bokeh `/cle/valeur`. */
+/** Segment that follows [name] in a Bokeh `/key/value` path. */
 private fun segmentAfter(name: String, path: String): String? {
     val segments = path.split('/').filter { it.isNotEmpty() }
     val index = segments.indexOf(name)
     return segments.getOrNull(index + 1)?.takeIf { index >= 0 }
 }
 
-/** Nombre qui suit immédiatement [marker] dans [text]. */
+/** Number that immediately follows [marker] in [text]. */
 private fun firstInt(marker: String, text: String): Int? {
     val start = text.indexOf(marker).takeIf { it >= 0 } ?: return null
     return text.substring(start + marker.length).takeWhile { it.isDigit() }.toIntOrNull()

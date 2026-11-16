@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.mediatheque.android.library)
 }
 
-// Fakes des dépôts, règles de test et fixtures du portail (anonymisées), partagés par les tests.
+// Repository fakes, test rules and (anonymized) portal fixtures, shared by the tests.
 dependencies {
     api(projects.core.model)
     api(libs.junit)

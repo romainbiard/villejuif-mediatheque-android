@@ -3,14 +3,14 @@
 # SPDX-License-Identifier: MIT
 # See LICENSE in the project root for the full license text and copyright notice.
 #
-# Refuse tout ce qui ressemble à une donnée personnelle dans l'index git :
-# e-mails, téléphones, numéros de carte, cookies de session, chemins de dossier personnel,
-# fichiers de signature ou de configuration locale.
+# Rejects anything that looks like personal data in the git index:
+# emails, phone numbers, card numbers, session cookies, home directory paths,
+# signing files or local configuration files.
 #
-# Seules les valeurs fictives (abonnée « Camille MARTIN », carte 0012345, domaines exemple.fr /
-# example.*) et les coordonnées publiques des médiathèques passent : voir .personal-data-allowlist.
+# Only fictitious values (subscriber "Camille MARTIN", card 0012345, domains exemple.fr /
+# example.*) and the libraries' public contact details get through: see .personal-data-allowlist.
 #
-# Usage : scripts/check-personal-data.sh   (hook pre-commit et CI ; analyse l'index entier)
+# Usage: scripts/check-personal-data.sh   (pre-commit hook and CI; scans the entire index)
 
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
@@ -25,15 +25,15 @@ report() {
     status=1
 }
 
-# Correspondances d'une règle, une par ligne (« fichier:ligne:valeur »), moins la liste blanche.
-# $2 : options supplémentaires de git grep (`-w` : la valeur doit être un mot entier).
+# Matches of a rule, one per line ("file:line:value"), minus the allowlist.
+# $2: extra git grep options (`-w`: the value must be a whole word).
 matches() {
     local found
     found=$(git grep --cached -I -n -o ${2:-} -E "$1" -- . "${excluded[@]}" || true)
     [[ -z "$found" ]] && return 0
     if [[ -f "$allowlist" ]]; then
-        # Chaque ligne non vide et non commentée de la liste blanche est une expression régulière
-        # qui doit couvrir la valeur trouvée (la partie après « fichier:ligne: »).
+        # Each non-empty, non-comment line of the allowlist is a regular expression
+        # that must cover the value found (the part after "file:line:").
         local patterns
         patterns=$(grep -vE '^\s*(#|$)' "$allowlist" || true)
         found=$(while IFS= read -r line; do
@@ -51,29 +51,29 @@ check() {
     if [[ -n "$found" ]]; then report "$name" <<<"$found"; fi
 }
 
-# 1. Fichiers qui n'ont rien à faire dans le dépôt.
+# 1. Files that have no business being in the repo.
 forbidden=$(git ls-files --cached | grep -E '(^|/)(local\.properties|keystore\.properties|google-services\.json)$|\.(jks|keystore|p12|pepk)$' || true)
-if [[ -n "$forbidden" ]]; then report "Fichier local ou de signature" <<<"$forbidden"; fi
+if [[ -n "$forbidden" ]]; then report "Local or signing file" <<<"$forbidden"; fi
 
-# 2. Adresses e-mail (seuls les domaines fictifs et institutionnels sont admis).
-check "Adresse e-mail" '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}'
+# 2. Email addresses (only fictitious and institutional domains are allowed).
+check "Email address" '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}'
 
-# 3. Numéros de téléphone français (fixes et mobiles, avec ou sans espaces).
-# `-w` : pas de faux positif au milieu d'un horodatage ou d'un identifiant plus long.
-check "Numéro de téléphone" '(\+33 ?|0)[1-9]([ .-]?[0-9]{2}){4}' -w
+# 3. French phone numbers (landline and mobile, with or without spaces).
+# `-w`: no false positive in the middle of a timestamp or a longer identifier.
+check "Phone number" '(\+33 ?|0)[1-9]([ .-]?[0-9]{2}){4}' -w
 
-# 4. Numéros de carte d'abonné derrière un identifiant connu du portail.
-check "Numéro de carte" '(login|username|lost_username|cardNumber|card_number|iduser|id_abonne)["'\'']?[[:space:]]*[:=][[:space:]]*["'\'']?[0-9]{5,}'
+# 4. Subscriber card numbers behind a known portal identifier.
+check "Card number" '(login|username|lost_username|cardNumber|card_number|iduser|id_abonne)["'\'']?[[:space:]]*[:=][[:space:]]*["'\'']?[0-9]{5,}'
 
-# 5. Cookies et jetons de session ou de SSO.
-check "Cookie ou jeton de session" '(PHPSESSID|bunkerweb[A-Za-z_]*)=[A-Za-z0-9%,-]{10,}|[?&](hash|token|ticket|sso)=[A-Za-z0-9]{16,}'
+# 5. Session or SSO cookies and tokens.
+check "Session cookie or token" '(PHPSESSID|bunkerweb[A-Za-z_]*)=[A-Za-z0-9%,-]{10,}|[?&](hash|token|ticket|sso)=[A-Za-z0-9]{16,}'
 
-# 6. Chemins de dossier personnel (nom d'utilisateur de la machine).
-check "Chemin de dossier personnel" '/(Users|home)/[A-Za-z0-9._-]+/'
+# 6. Home directory paths (the machine's user name).
+check "Home directory path" '/(Users|home)/[A-Za-z0-9._-]+/'
 
 if [[ $status -ne 0 ]]; then
     echo >&2
-    echo "Données personnelles possibles : anonymisez-les (voir docs/PLAN-PORTAGE.md § 7)," >&2
-    echo "ou, si c'est une valeur publique ou fictive, ajoutez-la à $allowlist." >&2
+    echo "Possible personal data: anonymize it (see docs/PLAN-PORTAGE.md § 7)," >&2
+    echo "or, if it is a public or fictitious value, add it to $allowlist." >&2
 fi
 exit $status

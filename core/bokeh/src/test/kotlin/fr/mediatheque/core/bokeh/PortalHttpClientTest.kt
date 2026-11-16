@@ -22,7 +22,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-/** Le client contre un faux portail : défi BunkerWeb, session expirée, erreurs de l'API, cookies. */
+/** The client against a fake portal: BunkerWeb challenge, expired session, API errors, cookies. */
 class PortalHttpClientTest {
     private val server = MockWebServer()
 
@@ -83,7 +83,7 @@ class PortalHttpClientTest {
         route { request -> if (request.url.encodedPath.startsWith("/auth/login")) html("connexion") else redirect("/auth/login") }
         val error = runCatching { client().string(Endpoint.holdsPage("100001")) }.exceptionOrNull()
         assertEquals(BokehError.Unauthorized, error)
-        // La page de connexion elle-même n'est pas une session expirée.
+        // The login page itself is not an expired session.
         assertEquals("connexion", client().string(Endpoint.LOGIN_PAGE))
     }
 
@@ -98,7 +98,7 @@ class PortalHttpClientTest {
         }
         val portal = client()
         assertEquals(BokehError.Unauthorized, runCatching { portal.string(Endpoint.LOANS) }.exceptionOrNull())
-        // Un popup AJAX répond en JSON même quand le site annonce du HTML.
+        // An AJAX popup responds with JSON even when the site announces HTML.
         assertEquals(
             BokehError.Api("not_holdable", "Non réservable"),
             runCatching {

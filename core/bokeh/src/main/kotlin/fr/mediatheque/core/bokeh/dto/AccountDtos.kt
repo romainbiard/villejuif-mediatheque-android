@@ -8,7 +8,7 @@ import fr.mediatheque.core.bokeh.BokehError
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 
-/** `GET /api/user/account`, accessible avec le seul cookie de session. */
+/** `GET /api/user/account`, accessible with just the session cookie. */
 data class AccountResponseDto(val account: AccountDto) {
     companion object {
         fun parse(text: String) = AccountResponseDto(AccountDto.read(parseObject(text).requiredObject("account")))
@@ -16,7 +16,7 @@ data class AccountResponseDto(val account: AccountDto) {
 }
 
 data class AccountDto(
-    /** Le numéro de carte : le seul champ dont le compte ne peut pas se passer. */
+    /** The card number: the only field the account cannot do without. */
     val login: String,
     val identity: Identity,
     val contact: Contact,
@@ -26,7 +26,7 @@ data class AccountDto(
     val counters: Counters,
     val message: Message,
     val preferences: Preferences?,
-    /** Cartes liées au compte : leur `id` est l'identifiant d'abonné des routes `/abonne/...`. `null` si absent. */
+    /** Cards linked to the account: their `id` is the patron ID used in `/abonne/...` routes. `null` if absent. */
     val cards: List<LinkedCard>?
 ) {
     data class Identity(val firstName: String, val lastName: String, val nickname: String?)
@@ -43,7 +43,7 @@ data class AccountDto(
 
     data class Message(val content: String, val unread: Boolean)
 
-    /** Lettres d'information souscrites : le format d'un élément n'a jamais été vu (liste vide), on ne lit que leur nombre. */
+    /** Subscribed newsletters: the format of an element has never been seen (empty list), so only their count is read. */
     data class Preferences(val newsletterCount: Int)
 
     data class LinkedCard(val id: Int)
@@ -51,7 +51,7 @@ data class AccountDto(
     companion object {
         internal fun read(json: JsonObject): AccountDto {
             val login = json.lenientString("login")?.takeIf { it.isNotEmpty() }
-                ?: throw BokehError.UnexpectedFormat("compte sans numéro de carte")
+                ?: throw BokehError.UnexpectedFormat("account without a card number")
             return AccountDto(
                 login = login,
                 identity = json.lenientObject("identity") {
@@ -107,7 +107,7 @@ data class AccountDto(
     }
 }
 
-/** Référence à la notice d'un prêt ou d'une réservation. */
+/** Reference to the record of a loan or hold. */
 data class RecordRefDto(val id: Int, val thumbnail: String?) {
     companion object {
         internal fun read(json: JsonObject) = RecordRefDto(json.requiredInt("id"), json.optionalString("thumbnail"))
@@ -122,7 +122,7 @@ data class LoansResponseDto(val loans: List<LoanDto>) {
 }
 
 data class LoanDto(
-    /** `{idAbonné}_{idPrêt}`, réutilisable tel quel pour `prolongerPret`. Strict : un prêt sans identifiant est écarté. */
+    /** `{patronId}_{loanId}`, reusable as-is for `prolongerPret`. Strict: a loan without an ID is discarded. */
     val id: String,
     val title: String,
     val author: String,
@@ -142,7 +142,7 @@ data class LoanDto(
     }
 }
 
-/** `GET /api/user/holds`. Le rang dans la file n'y figure pas (seulement dans le HTML du compte). */
+/** `GET /api/user/holds`. The queue position is not included (only in the account HTML). */
 data class HoldsResponseDto(val holds: List<HoldDto>) {
     companion object {
         fun parse(text: String) = HoldsResponseDto(parseObject(text).lossyList("holds", HoldDto::read))
@@ -150,12 +150,12 @@ data class HoldsResponseDto(val holds: List<HoldDto>) {
 }
 
 data class HoldDto(
-    /** Nécessaire pour annuler la réservation. Strict : une réservation sans identifiant est écartée. */
+    /** Needed to cancel the hold. Strict: a hold without an ID is discarded. */
     val id: String,
     val title: String,
-    /** Texte libre, par exemple « Pas disponible avant le 14/11/2026 ». `null` pour certaines réservations (vu en novembre 2026). */
+    /** Free text, for example "Pas disponible avant le 14/11/2026". `null` for some holds (seen in November 2026). */
     val status: String?,
-    /** Lieu de retrait. */
+    /** Pickup location. */
     val library: String,
     val record: RecordRefDto?
 ) {
@@ -170,7 +170,7 @@ data class HoldDto(
     }
 }
 
-/** Réponse à la bascule d'une sélection par défaut : le nouveau lien du site, « supprimer… » une fois ajouté, « ajouter… » une fois retiré. */
+/** Response to toggling a default selection: the site's new link, "supprimer..." once added, "ajouter..." once removed. */
 data class SelectionToggleDto(val anchor: String) {
     val holdsRecord: Boolean get() = "supprimer-de-la-selection" in anchor
 
@@ -179,7 +179,7 @@ data class SelectionToggleDto(val anchor: String) {
     }
 }
 
-/** Réponse JSON des popups AJAX (réservations…). */
+/** JSON response of AJAX popups (holds, etc.). */
 data class PopupDto(val title: String?, val content: String) {
     companion object {
         fun parse(text: String): PopupDto {

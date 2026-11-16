@@ -16,7 +16,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
 /**
- * Bibliothèque Android. L'espace de noms suit le chemin du module :
+ * Android library. The namespace follows the module path:
  * `:feature:account` → `fr.mediatheque.feature.account`.
  */
 class AndroidLibraryConventionPlugin : Plugin<Project> {

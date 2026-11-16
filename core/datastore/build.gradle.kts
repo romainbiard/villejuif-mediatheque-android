@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.mediatheque.hilt)
 }
 
-// Stockage local : réglages (DataStore), coffre des identifiants (Tink + Android Keystore),
-// instantané du compte et centre de notifications. Exclus des sauvegardes (voir app/src/main/res/xml).
+// Local storage: settings (DataStore), credential vault (Tink + Android Keystore),
+// account snapshot and notification center. Excluded from backups (see app/src/main/res/xml).
 dependencies {
     implementation(projects.core.model)
     implementation(libs.androidx.datastore.preferences)

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // See LICENSE in the project root for the full license text and copyright notice.
 
-// Les plugins sont déclarés ici sans être appliqués : une seule version chargée pour tout le build.
+// Plugins are declared here without being applied: a single version loaded for the whole build.
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -14,7 +14,7 @@ plugins {
     alias(libs.plugins.spotless)
 }
 
-// Format du code : ktlint (règles dans .editorconfig) et en-tête de licence, comme sur iOS.
+// Code format: ktlint (rules in .editorconfig) and license header, as on iOS.
 spotless {
     val ktlintVersion = libs.versions.ktlint.get()
     val header =

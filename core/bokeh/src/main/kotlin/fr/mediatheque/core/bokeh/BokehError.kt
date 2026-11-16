@@ -9,30 +9,30 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-/** Erreurs signalées par le portail Bokeh ou par le transport. */
+/** Errors reported by the Bokeh portal or by the transport. */
 sealed class BokehError(message: String) : Exception(message) {
     /**
-     * La session web a expiré ou n'a jamais été ouverte
+     * The web session expired or was never opened
      * (`Autorisation non spécifiée` / `Jeton d'autorisation invalide`).
      */
-    data object Unauthorized : BokehError("Session expirée")
+    data object Unauthorized : BokehError("Session expired")
 
-    /** Erreur métier renvoyée par l'API JSON (`{"error", "message"}`). */
-    data class Api(val code: String, val detail: String) : BokehError("$code : $detail")
+    /** Business error returned by the JSON API (`{"error", "message"}`). */
+    data class Api(val code: String, val detail: String) : BokehError("$code: $detail")
 
-    /** Réponse HTTP inattendue (5xx, 404…). */
+    /** Unexpected HTTP response (5xx, 404...). */
     data class Http(val status: Int) : BokehError("HTTP $status")
 
-    /** Le contenu reçu ne correspond plus au format attendu. */
+    /** The received content no longer matches the expected format. */
     data class UnexpectedFormat(val detail: String) : BokehError(detail)
 
-    /** Le défi anti-robots BunkerWeb devant le portail n'a pas pu être résolu. */
-    data object ChallengeFailed : BokehError("Défi anti-robots non résolu")
+    /** The BunkerWeb anti-bot challenge in front of the portal could not be solved. */
+    data object ChallengeFailed : BokehError("Anti-bot challenge not solved")
 
     companion object {
         private val unauthorizedMessages = setOf("Autorisation non spécifiée", "Jeton d'autorisation invalide")
 
-        /** Erreur Bokeh contenue dans un corps JSON, `null` si ce n'en est pas une. */
+        /** Bokeh error contained in a JSON body, or `null` if it is not one. */
         fun fromJson(body: String): BokehError? {
             val json = try {
                 Json.parseToJsonElement(body) as? JsonObject

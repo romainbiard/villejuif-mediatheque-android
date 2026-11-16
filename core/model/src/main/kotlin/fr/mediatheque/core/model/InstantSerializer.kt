@@ -12,7 +12,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-/** `Instant` en texte ISO 8601, pour l'instantané du compte et le cache. */
+/** `Instant` as ISO 8601 text, for the account snapshot and the cache. */
 object InstantSerializer : KSerializer<Instant> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("fr.mediatheque.Instant", PrimitiveKind.STRING)
 

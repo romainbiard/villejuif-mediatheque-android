@@ -13,7 +13,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
-/** Module Kotlin/JVM pur (portail, modèle, domaine) : sans Android, testé en quelques secondes. */
+/** Pure Kotlin/JVM module (portal, model, domain): no Android, tested in a few seconds. */
 class JvmLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {

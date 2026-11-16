@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <!-- Lance l'app (variante debug) sur l'appareil choisi dans la barre d'outils. -->
+  <!-- Launches the app (debug variant) on the device chosen in the toolbar. -->
   <configuration default="false" name="Médiathèque" type="AndroidRunConfigurationType" factoryName="Android App">
     <module name="Mediatheque.app" />
     <option name="DEPLOY" value="true" />

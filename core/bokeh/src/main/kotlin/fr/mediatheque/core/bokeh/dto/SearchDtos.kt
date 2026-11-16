@@ -8,7 +8,7 @@ import fr.mediatheque.core.bokeh.BokehError
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 
-/** Réponse de `recherche/simple/.../format/json`, calquée sur le JSON reçu. */
+/** Response of `recherche/simple/.../format/json`, modeled on the received JSON. */
 data class SearchResponseDto(val total: Int, val records: List<RecordDto>) {
     companion object {
         fun parse(text: String): SearchResponseDto = read(parseObject(text))
@@ -16,7 +16,7 @@ data class SearchResponseDto(val total: Int, val records: List<RecordDto>) {
         internal fun read(json: JsonObject) = SearchResponseDto(
             total = json.requiredInt("total"),
             records = (json["records"] as? JsonArray).orEmpty().map { element ->
-                RecordDto.read(element as? JsonObject ?: throw BokehError.UnexpectedFormat("notice invalide"))
+                RecordDto.read(element as? JsonObject ?: throw BokehError.UnexpectedFormat("invalid record"))
             }
         )
     }
@@ -36,7 +36,7 @@ data class RecordDto(
 ) {
     data class DocumentType(val code: String, val label: String)
 
-    /** Identifiant numérique de la notice, lu dans le permalien (`/id/474169`). */
+    /** Numeric record ID, read from the permalink (`/id/474169`). */
     val noticeId: Int? get() = permalink.split('/').lastOrNull()?.toIntOrNull()
 
     companion object {
@@ -53,7 +53,7 @@ data class RecordDto(
                 thumbnail = json.optionalString("thumbnail"),
                 permalink = json.requiredString("permalink"),
                 items = (json["items"] as? JsonArray).orEmpty().map { element ->
-                    ItemDto.read(element as? JsonObject ?: throw BokehError.UnexpectedFormat("exemplaire invalide"))
+                    ItemDto.read(element as? JsonObject ?: throw BokehError.UnexpectedFormat("invalid copy"))
                 }
             )
         }
@@ -64,7 +64,7 @@ data class ItemDto(
     val annex: String?,
     val shelfMark: String,
     val activity: String,
-    /** Zone 995 de l'exemplaire ; `false` dans le JSON pour les ressources numériques. */
+    /** Zone 995 of the copy; `false` in the JSON for digital resources. */
     val zone995: List<Subfield>
 ) {
     data class Subfield(val code: String, val value: String)

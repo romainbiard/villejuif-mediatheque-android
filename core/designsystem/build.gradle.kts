@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.mediatheque.android.compose)
 }
 
-// Charte de Villejuif sur Material 3 : couleurs, typographie, composants. Ne dépend d'aucun autre module.
+// Villejuif style guide on Material 3: colors, typography, components. Depends on no other module.
 dependencies {
     api(libs.androidx.compose.material3)
 }

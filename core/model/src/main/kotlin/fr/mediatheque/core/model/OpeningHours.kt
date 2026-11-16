@@ -10,12 +10,12 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.serialization.Serializable
 
-/** Horaires habituels d'une médiathèque, lus depuis « Mardi : 13h - 19h ». */
+/** Regular opening hours of a library, parsed from "Mardi : 13h - 19h". */
 @Serializable
 data class OpeningHours(val slotsByDay: Map<DayOfWeek, List<Slot>>) {
     @Serializable
     data class Slot(
-        /** Minutes depuis minuit. */
+        /** Minutes since midnight. */
         val opens: Int,
         val closes: Int
     )
@@ -26,7 +26,7 @@ data class OpeningHours(val slotsByDay: Map<DayOfWeek, List<Slot>>) {
         data class Closed(val reopensAt: Instant?) : Status
     }
 
-    /** Ouvert ou fermé à [now], et l'heure du prochain changement. */
+    /** Open or closed at [now], and the time of the next change. */
     fun status(now: Instant): Status {
         val local = now.atZone(Paris.zone)
         val today = local.toLocalDate()
@@ -47,7 +47,7 @@ data class OpeningHours(val slotsByDay: Map<DayOfWeek, List<Slot>>) {
         return Status.Closed(reopensAt = null)
     }
 
-    /** Jour sans aucun créneau (dimanche et lundi pour le réseau). */
+    /** Day with no time slot at all (Sunday and Monday for the network). */
     fun isClosedAllDay(day: LocalDate): Boolean = slotsByDay[day.dayOfWeek].isNullOrEmpty()
 
     private fun at(day: LocalDate, minutes: Int): Instant =
@@ -65,7 +65,7 @@ data class OpeningHours(val slotsByDay: Map<DayOfWeek, List<Slot>>) {
         )
         private val range = Regex("""(\d{1,2})h(\d{2})?\s*-\s*(\d{1,2})h(\d{2})?""")
 
-        /** Lignes du site : « Mardi : 13h - 19h », « Samedi : 10h - 12h30 / 14h - 18h ». */
+        /** Lines from the site: "Mardi : 13h - 19h", "Samedi : 10h - 12h30 / 14h - 18h". */
         fun parse(lines: List<String>): OpeningHours {
             val slots = mutableMapOf<DayOfWeek, MutableList<Slot>>()
             for (line in lines) {
@@ -85,7 +85,7 @@ data class OpeningHours(val slotsByDay: Map<DayOfWeek, List<Slot>>) {
     }
 }
 
-/** Infos pratiques d'une médiathèque. */
+/** Practical information about a library. */
 @Serializable
 data class LibraryInfo(
     val library: Library?,

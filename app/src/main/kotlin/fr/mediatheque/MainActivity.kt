@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 
-/** Activité unique. Lot 0 : un écran d'accueil provisoire ; la navigation arrive au lot 3. */
+/** Single activity. Batch 0: a temporary home screen; navigation arrives in batch 3. */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // Provisoire : le thème aux couleurs de Villejuif arrive avec core:designsystem (lot 3).
+            // Temporary: the Villejuif-colored theme arrives with core:designsystem (batch 3).
             val colors = if (isSystemInDarkTheme()) {
                 darkColorScheme(primary = Color(0xFFAE8BE6))
             } else {

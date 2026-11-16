@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- HTTPS uniquement, autorités système seulement. En debug, les autorités ajoutées par l'utilisateur
-     sont acceptées pour inspecter le trafic vers le portail (proxy local). -->
+<!-- HTTPS only, system authorities only. In debug, user-added authorities
+     are accepted to inspect traffic to the portal (local proxy). -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>

@@ -46,7 +46,7 @@ class DecodingTest {
         assertEquals(1, account.counters.waitingToBePulled)
         assertEquals("2027-03-14", account.card.expireAt)
         assertFalse(account.permissions.holdForbidden)
-        // Identifiant d'abonné des routes /abonne/... et préférences.
+        // Patron ID of the /abonne/... routes, and preferences.
         assertEquals(100001, account.cards?.first()?.id)
         assertEquals("", account.identity.nickname)
         assertEquals(0, account.preferences?.newsletterCount)
@@ -92,12 +92,12 @@ class LenientAccountDecodingTest {
             """.trimIndent()
         ).holds
 
-        // La réservation sans identifiant ne peut pas être annulée : c'est la seule écartée.
+        // The hold without an ID cannot be canceled: it is the only one discarded.
         assertEquals(listOf("100001_1", "100001_2"), holds.map { it.id })
         assertNull(holds[0].status)
         assertEquals("", holds[0].title)
         assertEquals("", holds[0].library)
-        // Une notice mal formée ne fait perdre que la couverture, pas la réservation.
+        // A malformed record only loses the cover, not the hold.
         assertNull(holds[1].record)
     }
 
@@ -162,7 +162,7 @@ class LenientAccountDecodingTest {
         assertNull(account.cards)
     }
 
-    /** Sans numéro de carte, rien du compte ne peut fonctionner : ce champ reste strict. */
+    /** Without a card number, nothing in the account can work: this field stays strict. */
     @Test
     fun anAccountWithoutCardNumberFails() {
         assertThrows(BokehError.UnexpectedFormat::class.java) {

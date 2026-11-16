@@ -9,8 +9,8 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
 /**
- * Module d'écran (`:feature:*`) : Compose, Hilt, ViewModel, Navigation 3 et les modules `core` utiles.
- * Un module feature ne dépend jamais d'un autre module feature.
+ * Screen module (`:feature:*`): Compose, Hilt, ViewModel, Navigation 3, and the useful `core` modules.
+ * A feature module never depends on another feature module.
  */
 class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

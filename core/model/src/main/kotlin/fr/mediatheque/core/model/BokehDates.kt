@@ -9,11 +9,11 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-/** Formats de date du portail, tous à l'heure de Paris. */
+/** Portal date formats, all in Paris time. */
 object BokehDates {
     private val frenchDatePattern = Regex("""(\d{2})/(\d{2})/(\d{4})(?:\s+à\s+(\d{1,2}):(\d{2}))?""")
 
-    /** `2026-11-20` (API JSON) : début de ce jour à Paris. */
+    /** `2026-11-20` (JSON API): start of that day in Paris. */
     fun isoDay(text: String): Instant? {
         val parts = text.split('-').mapNotNull { it.toIntOrNull() }
         if (parts.size != 3 || parts[0] <= 0) return null
@@ -24,10 +24,10 @@ object BokehDates {
         }
     }
 
-    /** Date lue dans le HTML, et si une heure l'accompagnait. */
+    /** Date parsed from the HTML, and whether a time came with it. */
     data class FrenchDate(val instant: Instant, val hasTime: Boolean)
 
-    /** `31/10/2026` ou `31/10/2026 à 10:30` (HTML). */
+    /** `31/10/2026` or `31/10/2026 à 10:30` (HTML). */
     fun frenchDate(text: String): FrenchDate? {
         val match = frenchDatePattern.find(text) ?: return null
         val (day, month, year, hour, minute) = match.destructured
@@ -43,6 +43,6 @@ object BokehDates {
         }
     }
 
-    /** Première date `jj/mm/aaaa` d'un texte libre (« Pas disponible avant le 14/11/2026 »). */
+    /** First `dd/mm/yyyy` date in free text ("Pas disponible avant le 14/11/2026"). */
     fun firstDate(text: String): Instant? = frenchDate(text)?.instant
 }

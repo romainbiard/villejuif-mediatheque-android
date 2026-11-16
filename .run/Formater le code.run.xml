@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <!-- Corrige le format (ktlint) et ajoute l'en-tête de licence. -->
+  <!-- Fixes the format (ktlint) and adds the license header. -->
   <configuration default="false" name="Formater le code" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />

@@ -25,23 +25,23 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
 /**
- * Résout le défi BunkerWeb à [url] et rend les cookies à garder. [userAgent] doit être celui des requêtes :
- * BunkerWeb lie sa session au User-Agent. [cookies] amorcent la résolution (une session ouverte survit ainsi).
+ * Solves the BunkerWeb challenge at [url] and returns the cookies to keep. [userAgent] must be the one used by requests:
+ * BunkerWeb ties its session to the User-Agent. [cookies] seed the solving (so an open session survives).
  */
 fun interface ChallengeSolver {
     suspend fun solve(url: HttpUrl, userAgent: String, cookies: List<Cookie>): List<Cookie>
 
     companion object {
-        /** Pour les tests et les modules sans WebView : le défi échoue. */
+        /** For tests and modules without a WebView: the challenge fails. */
         val Unavailable = ChallengeSolver { _, _, _ -> throw BokehError.ChallengeFailed }
     }
 }
 
 /**
- * Transport vers le portail. Il porte la session web (cookie `PHPSESSID`), qui suffit à l'API JSON
- * `/api/user/…` comme aux pages du compte. Les cookies ne vivent qu'en mémoire.
+ * Transport to the portal. It carries the web session (`PHPSESSID` cookie), which is enough for the `/api/user/...`
+ * JSON API as well as for the account pages. Cookies live in memory only.
  *
- * Toutes les fonctions sont sûres depuis le thread principal : OkHttp exécute et lit les réponses sur ses threads.
+ * All functions are safe to call from the main thread: OkHttp executes requests and reads responses on its own threads.
  */
 class PortalHttpClient(
     val baseUrl: HttpUrl = VILLEJUIF_BASE_URL,
@@ -57,27 +57,27 @@ class PortalHttpClient(
         .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .build()
 
-    /** Partagé par les requêtes qui tombent en même temps sur le défi : il n'est résolu qu'une fois. */
+    /** Shared by requests that hit the challenge at the same time: it is solved only once. */
     private val challengeMutex = Mutex()
 
-    /** Incrémenté à chaque défi résolu : une requête envoyée avant la dernière résolution n'a qu'à être rejouée. */
+    /** Incremented each time a challenge is solved: a request sent before the last solve only needs to be replayed. */
     @Volatile
     private var challengeGeneration = 0
 
-    // Requêtes
+    // Requests
 
     suspend fun bytes(endpoint: Endpoint): ByteArray {
         val generation = challengeGeneration
         var response = execute(endpoint)
         challengeUrl(response)?.let { url ->
-            // BunkerWeb veut vérifier qu'on est un navigateur : on le résout (sauf si une autre requête
-            // l'a déjà fait pendant que celle-ci était en vol), puis on rejoue la requête une fois.
+            // BunkerWeb wants to verify that we are a browser: solve it (unless another request
+            // already did so while this one was in flight), then replay the request once.
             passChallenge(url, generation)
             response = execute(endpoint)
             if (challengeUrl(response) != null) throw BokehError.ChallengeFailed
         }
         if (response.finalUrl.encodedPath.startsWith("/auth/login") && endpoint.pathSegments.firstOrNull() != "auth") {
-            // Une page protégée nous a renvoyés vers la connexion.
+            // A protected page redirected us to the login.
             throw BokehError.Unauthorized
         }
         if (response.status !in 200..399) throw BokehError.Http(response.status)
@@ -89,7 +89,7 @@ class PortalHttpClient(
 
     suspend fun string(endpoint: Endpoint): String = bytes(endpoint).decodeToString()
 
-    /** Lit la réponse avec [parse] ; une erreur de lecture devient [BokehError.UnexpectedFormat]. */
+    /** Reads the response with [parse]; a read error becomes [BokehError.UnexpectedFormat]. */
     suspend fun <T> decode(endpoint: Endpoint, parse: (String) -> T): T {
         val text = string(endpoint)
         return try {
@@ -97,20 +97,20 @@ class PortalHttpClient(
         } catch (error: BokehError) {
             throw error
         } catch (error: RuntimeException) {
-            throw BokehError.UnexpectedFormat("${endpoint.pathSegments.take(3).joinToString("/")} : ${error.message}")
+            throw BokehError.UnexpectedFormat("${endpoint.pathSegments.take(3).joinToString("/")}: ${error.message}")
         }
     }
 
     // Session
 
-    /** Cookies de la session web, à injecter dans une WebView pour la connexion aux services numériques. */
+    /** Web session cookies, to inject into a WebView for signing in to digital services. */
     fun sessionCookies(): List<Cookie> = cookieJar.loadForRequest(baseUrl)
 
     val hasSessionCookie: Boolean get() = sessionCookies().any { it.name == "PHPSESSID" }
 
     fun clearSession() = cookieJar.clear()
 
-    // Défi BunkerWeb
+    // BunkerWeb challenge
 
     private fun challengeUrl(response: PortalResponse): HttpUrl? = response.finalUrl.takeIf { it.encodedPath == CHALLENGE_PATH }
 
@@ -123,7 +123,7 @@ class PortalHttpClient(
         }
     }
 
-    // Construction et exécution
+    // Building and execution
 
     internal fun request(endpoint: Endpoint): Request {
         val builder = Request.Builder()
@@ -177,14 +177,14 @@ class PortalHttpClient(
         private const val TIMEOUT_SECONDS = 20L
         private val FORM_MEDIA_TYPE = "application/x-www-form-urlencoded".toMediaType()
 
-        /** Corps de formulaire : espaces en `+`, tout sauf les lettres et chiffres ASCII et `-._*` encodé en UTF-8. */
+        /** Form body: spaces as `+`, everything except ASCII letters and digits and `-._*` encoded in UTF-8. */
         internal fun formEncoded(fields: List<Endpoint.FormField>): String = fields.joinToString("&") {
             "${URLEncoder.encode(it.name, Charsets.UTF_8)}=${URLEncoder.encode(it.value, Charsets.UTF_8)}"
         }
     }
 }
 
-/** Cookies en mémoire seulement, comme une session éphémère : rien n'est écrit sur l'appareil. */
+/** In-memory cookies only, like an ephemeral session: nothing is written to the device. */
 private class MemoryCookieJar : CookieJar {
     private val cookies = mutableListOf<Cookie>()
 

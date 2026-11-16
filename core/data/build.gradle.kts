@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.mediatheque.hilt)
 }
 
-// Dépôts, session (reconnexion automatique), cache des données publiques, synchronisation du compte,
-// solveur du défi BunkerWeb (WebView hors écran).
+// Repositories, session (automatic reconnection), public data cache, account synchronization,
+// BunkerWeb challenge solver (off-screen WebView).
 dependencies {
     api(projects.core.model)
     implementation(projects.core.bokeh)

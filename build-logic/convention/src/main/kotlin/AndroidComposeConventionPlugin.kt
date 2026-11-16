@@ -11,7 +11,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
 
-/** Jetpack Compose (BOM, aperçus, règles de lint Compose) sur un module `:app` ou bibliothèque. */
+/** Jetpack Compose (BOM, previews, Compose lint rules) on an `:app` or library module. */
 class AndroidComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {

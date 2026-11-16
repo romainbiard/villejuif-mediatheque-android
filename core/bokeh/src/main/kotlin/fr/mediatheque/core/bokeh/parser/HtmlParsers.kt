@@ -12,68 +12,68 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
-// Données extraites du HTML
+// Data extracted from HTML
 
-/** Un événement de l'agenda (une carte « Article »). */
+/** An event from the calendar (an "Article" card). */
 data class CalendarEventDto(
     val articleId: Int,
     val title: String,
     val imageUrl: String?,
     val location: String?,
-    /** Texte brut des badges « 31/10/2026 à 10:30 » ou « 26/09/2026 ». */
+    /** Raw badge text, "31/10/2026 à 10:30" or "26/09/2026". */
     val startText: String?,
     val endText: String?,
     val eventType: String?,
     val audience: String?,
-    /** Phrase complète du site, par exemple « Samedi 31 octobre 2026 de 10:30 à 11:00 ». */
+    /** Full sentence from the site, for example "Samedi 31 octobre 2026 de 10:30 à 11:00". */
     val dateSentence: String?
 )
 
-/** Un exemplaire de `/noticeajax/exemplaires/id/{id}`. */
+/** A copy from `/noticeajax/exemplaires/id/{id}`. */
 data class CopyDto(
     val libraryName: String,
     val availability: String,
     val section: String?,
     val shelfMark: String?,
-    /** « 17/11/2026 ». */
+    /** "17/11/2026". */
     val dueDateText: String?,
-    /** « Déjà 2 réservations ». */
+    /** "Déjà 2 réservations". */
     val holdsText: String?
 )
 
-/** Badge de disponibilité d'une notice. */
+/** Availability badge of a record. */
 data class AvailabilityDto(val label: String, val isAvailable: Boolean)
 
-/** Une médiathèque de la page Infos pratiques. */
+/** A library from the Practical Information page. */
 data class LibraryDto(
     val slug: String,
     val name: String,
     val addressLines: List<String>,
     val phone: String?,
     val contactUrl: String?,
-    /** Lignes « Mardi : 13h - 19h ». */
+    /** Lines like "Mardi : 13h - 19h". */
     val openingHours: List<String>,
     val bookmarkLibraryId: Int?
 )
 
-/** Un lieu de retrait proposé à la réservation (`code_annexe`). */
+/** A pickup location offered when placing a hold (`code_annexe`). */
 data class PickupOptionDto(val code: String, val label: String, val isSelected: Boolean)
 
-/** Analyse des pages du portail. Tout ce qui dépend du HTML du site est ici. */
+/** Parsing of portal pages. Everything that depends on the site's HTML lives here. */
 object HtmlParsers {
     private val baseUri = PortalHttpClient.VILLEJUIF_BASE_URL.toString()
 
     internal fun parse(html: String): Document = Jsoup.parse(html, baseUri)
 
-    /** Jeton CSRF des formulaires (`auth/login`, `auth/lostpass`). */
+    /** CSRF token of the forms (`auth/login`, `auth/lostpass`). */
     fun csrfToken(html: String): String = parse(html).selectFirst("input[name=csrftoken]")?.attr("value")
         ?.takeIf { it.isNotEmpty() }
-        ?: throw BokehError.UnexpectedFormat("csrftoken introuvable")
+        ?: throw BokehError.UnexpectedFormat("csrftoken not found")
 
     /**
-     * Vrai seulement si la page porte le refus explicite des identifiants par le portail, affiché sous le champ
-     * du numéro de carte : « L'identifiant ou le mot de passe est invalide. » Tout le reste (autre page, autre
-     * erreur) n'est pas un refus : le mot de passe enregistré doit y survivre.
+     * True only if the page carries the portal's explicit rejection of the credentials, displayed under the
+     * card number field: "L'identifiant ou le mot de passe est invalide." Everything else (another page, another
+     * error) is not a rejection: the saved password must survive it.
      */
     fun loginRejected(html: String): Boolean = parse(html)
         .select("li.element_error_message, ul.element_error_messages li")
@@ -114,10 +114,10 @@ object HtmlParsers {
         )
     }
 
-    /** Badge de `/noticeajax/availability/id/{id}` : libellé et disponibilité. */
+    /** Badge from `/noticeajax/availability/id/{id}`: label and availability. */
     fun availability(html: String): AvailabilityDto {
         val badge = parse(html).selectFirst(".badge_record_availability")
-            ?: throw BokehError.UnexpectedFormat("badge de disponibilité introuvable")
+            ?: throw BokehError.UnexpectedFormat("availability badge not found")
         return AvailabilityDto(badge.text(), isAvailable = !badge.hasClass("record_not_available"))
     }
 
@@ -128,7 +128,7 @@ object HtmlParsers {
             val slug = link.attr("href").trimStart('/')
             if (!seen.add(slug)) return@mapNotNull null
 
-            // Le site sépare les lignes par un `</br>` invalide : on lit les nœuds de texte un par un.
+            // The site separates lines with an invalid `</br>`: read the text nodes one by one.
             val addressLines = card.selectFirst(".badge_address .badge_text")?.textNodes().orEmpty()
                 .map { it.text().trim() }
                 .filter { it.isNotEmpty() }
@@ -146,7 +146,7 @@ object HtmlParsers {
         }
     }
 
-    /** Lieux de retrait du formulaire `reservation-pickup-ajax` (contenu d'un popup). */
+    /** Pickup locations from the `reservation-pickup-ajax` form (popup content). */
     fun pickupOptions(html: String): List<PickupOptionDto> {
         val document = parse(html)
         return document.select("input[name=code_annexe]").map { input ->
@@ -156,27 +156,27 @@ object HtmlParsers {
         }
     }
 
-    /** Liens de réservation par exemplaire dans `recherche/reserver/.../render/popup`. */
+    /** Per-copy hold links in `recherche/reserver/.../render/popup`. */
     fun holdPickupPaths(html: String): List<String> = parse(html).select("a[href*=reservation-pickup-ajax]")
         .map { it.attr("href").trimStart('/') }
         .distinct()
 
     /**
-     * Rangs « Rang N » affichés sur la page « Mes réservations », dans l'ordre des réservations.
-     * La page n'a été vue qu'avec une seule réservation : le rang est associé à la réservation par ordre d'apparition.
+     * "Rang N" ranks displayed on the "Mes réservations" page, in hold order.
+     * The page has only been seen with a single hold: the rank is matched to the hold by order of appearance.
      */
     fun holdRanks(html: String): List<Int> = Regex("""Rang\s+(\d+)""").findAll(parse(html).text())
         .mapNotNull { it.groupValues[1].toIntOrNull() }
         .toList()
 
-    /** URL du fournisseur portée par une page `/modules/{service}`. */
+    /** Provider URL carried by a `/modules/{service}` page. */
     fun ssoTarget(html: String): HttpUrl? = Regex("""location\.href\s*=\s*"([^"]+)"""").find(html)?.groupValues?.get(1)?.toHttpUrlOrNull()
 
-    // Utilitaires
+    // Utilities
 
     /**
-     * Le site imbrique un lien dans le `mailto:` du badge (`mailto:<a href="https://…">`) :
-     * on extrait directement l'URL du formulaire de contact de l'attribut.
+     * The site nests a link inside the badge's `mailto:` (`mailto:<a href="https://...">`):
+     * the contact form URL is extracted directly from the attribute.
      */
     private fun contactUrl(card: Element): String? {
         val href = card.selectFirst("a.badge_mail")?.attr("href") ?: return null
@@ -190,8 +190,8 @@ object HtmlParsers {
     }
 }
 
-/** L'URL si elle est valide (`http` ou `https`), sinon `null`. */
+/** The URL if it is valid (`http` or `https`), otherwise `null`. */
 internal fun String.urlOrNull(): String? = takeIf { it.toHttpUrlOrNull() != null }
 
-/** `null` si le texte est vide ou blanc, sinon le texte sans espaces autour. */
+/** `null` if the text is empty or blank, otherwise the text trimmed of surrounding whitespace. */
 internal fun String.nullIfBlank(): String? = trim().ifEmpty { null }

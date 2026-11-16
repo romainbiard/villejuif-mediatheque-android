@@ -16,24 +16,24 @@ import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.longOrNull
 
-// Lecture du JSON de Bokeh, champ par champ.
+// Reading Bokeh JSON, field by field.
 //
-// Bokeh mélange nombres et textes, et envoie `null` pour des champs qu'il remplit d'habitude
-// (le statut d'une réservation, l'auteur d'un prêt…). Seuls les identifiants restent stricts :
-// le reste retombe sur une valeur vide plutôt que de faire échouer toute la réponse.
+// Bokeh mixes numbers and strings, and sends `null` for fields it usually fills in
+// (a hold's status, a loan's author...). Only identifiers stay strict:
+// everything else falls back to an empty value rather than failing the whole response.
 
-/** Objet JSON racine d'une réponse, sinon [BokehError.UnexpectedFormat]. */
+/** Root JSON object of a response, otherwise [BokehError.UnexpectedFormat]. */
 internal fun parseObject(text: String): JsonObject = try {
     Json.parseToJsonElement(text) as? JsonObject
 } catch (error: SerializationException) {
-    throw BokehError.UnexpectedFormat("JSON illisible : ${error.message}")
-} ?: throw BokehError.UnexpectedFormat("JSON : un objet était attendu")
+    throw BokehError.UnexpectedFormat("Unreadable JSON: ${error.message}")
+} ?: throw BokehError.UnexpectedFormat("JSON: an object was expected")
 
 private fun JsonObject.primitive(key: String): JsonPrimitive? = (this[key] as? JsonPrimitive)?.takeUnless { it is JsonNull }
 
-private fun malformed(key: String): Nothing = throw BokehError.UnexpectedFormat("champ « $key » invalide")
+private fun malformed(key: String): Nothing = throw BokehError.UnexpectedFormat("invalid field \"$key\"")
 
-// Stricts : la clé doit exister avec le bon type.
+// Strict: the key must exist with the right type.
 
 internal fun JsonObject.requiredString(key: String): String = primitive(key)?.takeIf { it.isString }?.content ?: malformed(key)
 
@@ -41,14 +41,14 @@ internal fun JsonObject.requiredInt(key: String): Int = primitive(key)?.takeUnle
 
 internal fun JsonObject.requiredObject(key: String): JsonObject = this[key] as? JsonObject ?: malformed(key)
 
-/** Absent ou `null` → `null` ; présent, ce doit être un texte. */
+/** Absent or `null` -> `null`; if present, it must be a string. */
 internal fun JsonObject.optionalString(key: String): String? {
     val element = this[key] ?: return null
     if (element is JsonNull) return null
     return (element as? JsonPrimitive)?.takeIf { it.isString }?.content ?: malformed(key)
 }
 
-/** Absent ou `null` → liste vide ; présent, ce doit être une liste de textes. */
+/** Absent or `null` -> empty list; if present, it must be a list of strings. */
 internal fun JsonObject.stringList(key: String): List<String> {
     val element = this[key] ?: return emptyList()
     if (element is JsonNull) return emptyList()
@@ -56,32 +56,32 @@ internal fun JsonObject.stringList(key: String): List<String> {
     return array.map { (it as? JsonPrimitive)?.takeIf { primitive -> primitive.isString }?.content ?: malformed(key) }
 }
 
-// Tolérants.
+// Lenient.
 
-/** Un texte ou un nombre entier, `null` sinon. */
+/** A string or an integer, `null` otherwise. */
 internal fun JsonObject.lenientString(key: String): String? {
     val primitive = primitive(key) ?: return null
     if (primitive.isString) return primitive.content
     return primitive.longOrNull?.toString()
 }
 
-/** Un texte ou un nombre, `""` s'il manque ou vaut `null`. */
+/** A string or a number, `""` if missing or `null`. */
 internal fun JsonObject.lenientText(key: String): String = lenientString(key).orEmpty()
 
-/** Un nombre ou un texte numérique, `0` s'il manque ou vaut `null`. */
+/** A number or a numeric string, `0` if missing or `null`. */
 internal fun JsonObject.lenientCount(key: String): Int {
     val primitive = primitive(key) ?: return 0
     return (if (primitive.isString) primitive.content.toIntOrNull() else primitive.intOrNull) ?: 0
 }
 
-/** Un booléen, `0`/`1` ou `"0"`/`"1"`, `false` s'il manque ou vaut `null`. */
+/** A boolean, `0`/`1` or `"0"`/`"1"`, `false` if missing or `null`. */
 internal fun JsonObject.lenientFlag(key: String): Boolean {
     val primitive = primitive(key) ?: return false
     if (!primitive.isString) primitive.booleanOrNull?.let { return it }
     return lenientCount(key) != 0
 }
 
-/** `null` s'il manque, vaut `null` ou ne se lit pas. */
+/** `null` if missing, `null`, or unreadable. */
 internal fun <T> JsonObject.lenientObject(key: String, read: (JsonObject) -> T): T? {
     val element = this[key] as? JsonObject ?: return null
     return try {
@@ -91,7 +91,7 @@ internal fun <T> JsonObject.lenientObject(key: String, read: (JsonObject) -> T):
     }
 }
 
-/** Les éléments qui se lisent : un prêt ou une réservation mal formé ne cache plus les autres. */
+/** The elements that can be read: a malformed loan or hold no longer hides the others. */
 internal fun <T> JsonObject.lossyList(key: String, read: (JsonObject) -> T): List<T> {
     val array = this[key] as? JsonArray ?: return emptyList()
     return array.mapNotNull { element: JsonElement ->

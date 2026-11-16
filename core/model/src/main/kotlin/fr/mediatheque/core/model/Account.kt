@@ -23,11 +23,11 @@ data class Patron(
     val cardExpiresInDays: Int,
     val permissions: Permissions,
     val counters: Counters,
-    /** Message de la médiathèque, s'il y en a un. */
+    /** Message from the library, if there is one. */
     val message: String?,
     val hasUnreadMessage: Boolean,
     val nickname: String? = null,
-    /** Adresse postale sur une ligne. Elle ne se modifie qu'à l'accueil. */
+    /** Postal address on one line. It can only be changed at the front desk. */
     val postalAddress: String? = null,
     val newsletterSubscribed: Boolean = false
 ) {
@@ -38,15 +38,15 @@ data class Patron(
     data class Counters(
         val loans: Int,
         val lateLoans: Int,
-        /** Réservations qui attendent d'être retirées. */
+        /** Holds waiting to be picked up. */
         val waitingToBePulled: Int
     )
 
-    /** « Camille Martin » : le site écrit le nom en capitales (« MARTIN-DUPONT » → « Martin-Dupont »). */
+    /** "Camille Martin": the site writes the last name in capitals ("MARTIN-DUPONT" → "Martin-Dupont"). */
     val displayName: String get() = "$firstName ${capitalizedWords(lastName)}"
 }
 
-/** Majuscule en tête de chaque mot, après une espace, un trait d'union ou une apostrophe. */
+/** Capital letter at the start of each word, after a space, a hyphen, or an apostrophe. */
 internal fun capitalizedWords(text: String): String {
     val builder = StringBuilder(text.length)
     var startOfWord = true
@@ -59,7 +59,7 @@ internal fun capitalizedWords(text: String): String {
 
 @Serializable
 data class Loan(
-    /** `{idAbonné}_{idPrêt}`. */
+    /** `{patronId}_{loanId}`. */
     val id: String,
     val title: String,
     val author: String,
@@ -70,7 +70,7 @@ data class Loan(
     val recordId: Int?,
     val coverUrl: String?
 ) {
-    /** Identifiant de l'abonné, préfixe de l'identifiant du prêt (utile pour les routes HTML). */
+    /** Patron ID, prefix of the loan ID (useful for HTML routes). */
     val patronId: String get() = id.substringBefore('_')
 
     sealed interface DueState {
@@ -83,7 +83,7 @@ data class Loan(
         data class OnTime(override val days: Int) : DueState
     }
 
-    /** État par rapport à [now], « bientôt » à 7 jours ou moins, en jours calendaires à Paris. */
+    /** Status relative to [now], "soon" at 7 days or fewer, in calendar days in Paris. */
     fun dueState(now: Instant): DueState {
         val days = ChronoUnit.DAYS.between(Paris.dayOf(now), Paris.dayOf(dueDate)).toInt()
         return when {
@@ -102,19 +102,19 @@ data class Loan(
 data class Hold(
     val id: String,
     val title: String,
-    /** Texte du site, par exemple « Pas disponible avant le 14/11/2026 ». */
+    /** Text from the site, for example "Pas disponible avant le 14/11/2026". */
     val statusText: String,
     val pickupLibrary: Library?,
     val pickupLibraryName: String,
     val recordId: Int?,
     val coverUrl: String?,
-    /** Position dans la file, lue dans le HTML du compte (absente de l'API). */
+    /** Position in the queue, parsed from the account HTML (absent from the API). */
     val rank: Int? = null
 ) {
-    /** Date lue dans le statut « Pas disponible avant le … ». */
+    /** Date parsed from the status "Pas disponible avant le …". */
     val expectedDate: Instant? get() = BokehDates.firstDate(statusText)
 
-    /** Vrai quand le document attend l'abonné. */
+    /** True when the document is waiting for the patron. */
     val isReadyForPickup: Boolean
         get() {
             val status = statusText.folded()

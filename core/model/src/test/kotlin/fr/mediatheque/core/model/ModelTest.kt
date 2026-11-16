@@ -34,7 +34,7 @@ class OpeningHoursTest {
 
     @Test
     fun openDuringASlot() {
-        // Mercredi 4 novembre 2026, 11 h.
+        // Wednesday, November 4, 2026, 11 a.m.
         assertEquals(
             OpeningHours.Status.Open(closesAt = Paris.instant(2026, 11, 4, 19)),
             elsa.status(Paris.instant(2026, 11, 4, 11))
@@ -51,7 +51,7 @@ class OpeningHoursTest {
 
     @Test
     fun closedOverTheWeekendReopensTuesday() {
-        // Dimanche 1er novembre 2026.
+        // Sunday, November 1, 2026.
         assertEquals(
             OpeningHours.Status.Closed(reopensAt = Paris.instant(2026, 11, 3, 13)),
             elsa.status(Paris.instant(2026, 11, 1, 15))
@@ -61,7 +61,7 @@ class OpeningHoursTest {
 
     @Test
     fun lunchBreakIsHandled() {
-        // Samedi 31 octobre 2026, 13 h : entre les deux créneaux.
+        // Saturday, October 31, 2026, 1 p.m.: between the two slots.
         assertEquals(
             OpeningHours.Status.Closed(reopensAt = Paris.instant(2026, 10, 31, 14)),
             elsa.status(Paris.instant(2026, 10, 31, 13))
@@ -71,7 +71,7 @@ class OpeningHoursTest {
 
     @Test
     fun theDaylightSavingSwitchKeepsLocalTimes() {
-        // Dimanche 25 octobre 2026 : passage à l'heure d'hiver ; mardi 27, on ouvre bien à 13 h, heure de Paris.
+        // Sunday, October 25, 2026: switch to winter time; on Tuesday the 27th, it does open at 1 p.m., Paris time.
         assertEquals(
             OpeningHours.Status.Closed(reopensAt = Paris.instant(2026, 10, 27, 13)),
             elsa.status(Paris.instant(2026, 10, 25, 12))

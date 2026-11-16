@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+ : seuls les réglages (DataStore « settings ») partent dans la sauvegarde et le transfert
-     d'appareil. Identifiants, compte, instantané et cache restent sur cet appareil. -->
+<!-- Android 12+: only the settings (DataStore "settings") go into backup and device
+     transfer. Credentials, account, snapshot and cache stay on this device. -->
 <data-extraction-rules>
     <cloud-backup>
         <include domain="file" path="datastore/settings.preferences_pb" />

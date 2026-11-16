@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Provisoire (livre ouvert) : le blason de Villejuif le remplace au lot 3.
-     Contenu dans la zone sûre de 66 dp au centre du canevas de 108 dp. -->
+<!-- Placeholder (open book): the Villejuif coat of arms replaces it in batch 3.
+     Contained within the 66 dp safe zone at the center of the 108 dp canvas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"

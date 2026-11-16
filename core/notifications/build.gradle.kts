@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.mediatheque.hilt)
 }
 
-// Canaux, contenus et planification des notifications (rappels de retour, réservations, agenda).
+// Notification channels, content and scheduling (return reminders, reservations, agenda).
 dependencies {
     implementation(projects.core.model)
     implementation(projects.core.domain)

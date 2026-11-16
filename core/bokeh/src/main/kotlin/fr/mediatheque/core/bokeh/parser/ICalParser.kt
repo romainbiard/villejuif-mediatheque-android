@@ -13,7 +13,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-/** Un VEVENT de `/cms/ical/id_article/{id}`. */
+/** A VEVENT from `/cms/ical/id_article/{id}`. */
 data class ICalEventDto(
     val uid: String? = null,
     val summary: String? = null,
@@ -25,7 +25,7 @@ data class ICalEventDto(
     val imageUrl: String? = null
 )
 
-/** Analyseur RFC 5545 minimal : il couvre ce que Bokeh produit (lignes repliées, `TZID=Europe/Paris`, `GEO`). */
+/** Minimal RFC 5545 parser: it covers what Bokeh produces (folded lines, `TZID=Europe/Paris`, `GEO`). */
 object ICalParser {
     private val parisZone: ZoneId = ZoneId.of("Europe/Paris")
     private val dayFormat = DateTimeFormatter.ofPattern("yyyyMMdd")
@@ -71,7 +71,7 @@ object ICalParser {
         else -> event
     }
 
-    /** Déplie les lignes repliées (une ligne qui commence par une espace prolonge la précédente). */
+    /** Unfolds folded lines (a line that starts with whitespace continues the previous one). */
     internal fun unfold(text: String): List<String> {
         val lines = mutableListOf<String>()
         for (raw in text.replace("\r\n", "\n").split('\n')) {
@@ -109,8 +109,8 @@ object ICalParser {
     }
 
     /**
-     * `NOM;PARAM=val;…:valeur`. Bokeh produit parfois des paramètres étranges
-     * (`ATTACH;X-BKH-=IMAGE:https://…`) : on coupe au premier `:` hors guillemets.
+     * `NAME;PARAM=val;...:value`. Bokeh sometimes produces odd parameters
+     * (`ATTACH;X-BKH-=IMAGE:https://...`): split at the first `:` outside quotes.
      */
     internal data class Property(val name: String, val parameters: Map<String, String>, val value: String) {
         companion object {

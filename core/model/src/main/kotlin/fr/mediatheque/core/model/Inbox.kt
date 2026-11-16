@@ -8,12 +8,12 @@ import java.time.Instant
 import kotlinx.serialization.Serializable
 
 /**
- * Une entrée du centre de notifications (la cloche de Mon compte). Le site n'a pas d'API de notifications :
- * tout est déduit des prêts, des réservations et du message de la médiathèque, puis gardé sur l'appareil.
+ * An entry in the notification center (the bell in My Account). The site has no notifications API:
+ * everything is derived from loans, holds, and the library's message, then kept on the device.
  */
 @Serializable
 data class InboxItem(
-    /** Stable d'une synchronisation à l'autre : c'est ce qui évite les doublons. */
+    /** Stable from one sync to the next: this is what prevents duplicates. */
     val id: String,
     val kind: Kind,
     val title: String,
@@ -21,7 +21,7 @@ data class InboxItem(
     @Serializable(with = InstantSerializer::class)
     val date: Instant,
     val isRead: Boolean = false,
-    /** Prêt concerné, pour « Prolonger » depuis la liste. */
+    /** Loan concerned, for "Prolonger" (renew) from the list. */
     val loanId: String? = null
 ) {
     @Serializable
@@ -33,8 +33,8 @@ data class Inbox(val items: List<InboxItem> = emptyList()) {
     val unreadCount: Int get() = items.count { !it.isRead }
 
     /**
-     * Ajoute les nouvelles entrées (non lues), garde l'état lu des anciennes et retire celles de plus de
-     * [RETENTION_DAYS] jours. Rend la boîte à jour et les entrées ajoutées.
+     * Adds the new entries (unread), keeps the read state of the old ones, and removes those older than
+     * [RETENTION_DAYS] days. Returns the updated inbox and the entries that were added.
      */
     fun merge(fresh: List<InboxItem>, now: Instant): Merge {
         val known = items.map { it.id }.toSet()
@@ -53,7 +53,7 @@ data class Inbox(val items: List<InboxItem> = emptyList()) {
     fun markAllRead(): Inbox = copy(items = items.map { it.copy(isRead = true) })
 
     companion object {
-        /** Durée de conservation de l'historique sur l'appareil. */
+        /** How long the history is kept on the device. */
         const val RETENTION_DAYS = 30L
     }
 }

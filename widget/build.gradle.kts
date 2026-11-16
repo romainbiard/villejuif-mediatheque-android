@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.mediatheque.hilt)
 }
 
-// Widget « Prochains retours » (Jetpack Glance), lu depuis l'instantané du compte.
+// "Upcoming returns" widget (Jetpack Glance), read from the account snapshot.
 dependencies {
     implementation(projects.core.model)
     implementation(libs.androidx.glance.appwidget)

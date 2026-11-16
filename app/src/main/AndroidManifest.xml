@@ -3,8 +3,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Sauvegardes : réglages seulement, jamais les identifiants ni les données du compte
-         (backup_rules jusqu'à Android 11, data_extraction_rules ensuite). -->
+    <!-- Backups: settings only, never the credentials or the account data
+         (backup_rules up to Android 11, data_extraction_rules after that). -->
     <application
         android:name=".MediathequeApplication"
         android:allowBackup="true"

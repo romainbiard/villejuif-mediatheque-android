@@ -8,7 +8,7 @@ import java.time.Instant
 import java.time.LocalDate
 import kotlinx.serialization.Serializable
 
-/** Une animation de l'agenda. */
+/** An event in the calendar. */
 @Serializable
 data class Event(
     val id: Int,
@@ -20,14 +20,14 @@ data class Event(
     val start: Instant?,
     @Serializable(with = InstantSerializer::class)
     val end: Instant?,
-    /** Vrai pour un événement de plusieurs jours sans heure (exposition, prix…). */
+    /** True for a multi-day event with no time of day (exhibition, prize…). */
     val isAllDay: Boolean,
     val type: String?,
     val audience: String?,
-    /** Phrase du site, par exemple « Samedi 31 octobre 2026 de 10:30 à 11:00 ». */
+    /** Sentence from the site, for example "Samedi 31 octobre 2026 de 10:30 à 11:00". */
     val dateDescription: String?
 ) {
-    /** Vrai si l'événement a lieu, au moins en partie, le jour [day] (à Paris). */
+    /** True if the event takes place, at least in part, on [day] (in Paris). */
     fun occursOn(day: LocalDate): Boolean {
         val first = Paris.dayOf(start ?: return false)
         val last = Paris.dayOf(end ?: start)
@@ -35,5 +35,5 @@ data class Event(
     }
 }
 
-/** Détail lu dans l'iCal d'un événement. */
+/** Detail parsed from an event's iCal. */
 data class EventDetail(val description: String?, val latitude: Double?, val longitude: Double?)

@@ -4,5 +4,5 @@
 *.png binary
 *.webp binary
 
-# Captures du portail : gardées à l'octet près (fins de ligne CRLF comprises)
+# Portal captures: kept byte for byte (CRLF line endings included)
 core/bokeh/src/testFixtures/resources/fixtures/** -text

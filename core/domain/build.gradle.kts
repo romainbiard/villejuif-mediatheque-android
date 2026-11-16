@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.mediatheque.jvm.library)
 }
 
-// Règles métier sans Android : Code 39, rappels, centre de notifications, résumé des retours, vacances scolaires.
+// Business rules without Android: Code 39, reminders, notification center, returns summary, school holidays.
 dependencies {
     api(projects.core.model)
 }

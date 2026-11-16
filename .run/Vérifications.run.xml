@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <!-- Ce que fait la CI : format, lint et tests unitaires. -->
+  <!-- What CI does: format, lint and unit tests. -->
   <configuration default="false" name="Vérifications" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />

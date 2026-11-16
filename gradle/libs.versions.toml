@@ -1,11 +1,11 @@
-# Dernières versions stables au 16/11/2026. Montées de version : Renovate (.github/renovate.json).
+# Latest stable versions as of 11/16/2026. Version bumps: Renovate (.github/renovate.json).
 [versions]
 # SDK
 minSdk = "29"
 compileSdk = "37"
 targetSdk = "37"
 
-# Outillage
+# Tooling
 androidGradlePlugin = "9.5.1"
 kotlin = "2.4.21"
 ksp = "2.3.14"
@@ -30,7 +30,7 @@ credentials = "1.6.0"
 webkit = "1.18.0"
 androidxTestExtJunit = "1.3.0"
 
-# Bibliothèques
+# Libraries
 coroutines = "1.11.0"
 serialization = "1.13.0"
 okhttp = "5.5.1"
@@ -91,7 +91,7 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 
 compose-lint-checks = { group = "com.slack.lint.compose", name = "compose-lint-checks", version.ref = "composeLints" }
 
-# Plugins utilisés par build-logic (dépendances compileOnly des plugins de convention)
+# Plugins used by build-logic (compileOnly dependencies of the convention plugins)
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
@@ -107,7 +107,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
-# Plugins de convention (build-logic)
+# Convention plugins (build-logic)
 mediatheque-android-application = { id = "mediatheque.android.application" }
 mediatheque-android-library = { id = "mediatheque.android.library" }
 mediatheque-android-compose = { id = "mediatheque.android.compose" }

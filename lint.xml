@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Lint strict (avertissements = erreurs), sauf ce qui dépend du calendrier et non du code :
-     les nouvelles versions des dépendances arrivent par Renovate, pas par un build cassé. -->
+<!-- Strict lint (warnings = errors), except for what depends on the calendar rather than the code:
+     new dependency versions arrive through Renovate, not through a broken build. -->
 <lint>
     <issue id="GradleDependency" severity="ignore" />
     <issue id="NewerVersionAvailable" severity="ignore" />
     <issue id="AndroidGradlePluginVersion" severity="ignore" />
     <issue id="OldTargetApi" severity="ignore" />
-    <!-- Règles lint embarquées dans une bibliothèque (lifecycle-runtime 2.11) qui ne tournent pas
-         avec le lint de cet AGP : lint les ignore lui-même ; ce n'est pas un défaut de notre code. -->
+    <!-- Lint rules bundled in a library (lifecycle-runtime 2.11) that do not run
+         with this AGP's lint: lint ignores them itself; this is not a defect in our code. -->
     <issue id="ObsoleteLintCustomCheck" severity="informational" />
 </lint>

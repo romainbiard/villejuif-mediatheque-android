@@ -6,10 +6,10 @@ package fr.mediatheque.core.model
 
 import java.time.Instant
 
-// Espace abonné autre que les prêts et réservations. Les libellés affichés vivent dans les ressources
-// de l'interface (une langue par appareil), pas dans le modèle.
+// Patron space other than loans and holds. Displayed labels live in the UI resources
+// (one language per device), not in the model.
 
-/** Une liste d'envies de l'abonné (« panier » côté Bokeh). */
+/** A patron's wish list ("panier" on the Bokeh side). */
 data class Selection(
     val id: Int,
     val basketId: Int?,
@@ -19,14 +19,14 @@ data class Selection(
     val coverUrls: List<String>
 )
 
-/** Un document emprunté que l'abonné peut noter. */
+/** A borrowed document that the patron can rate. */
 data class RecordToRate(val recordId: Int, val recordKey: String, val title: String, val author: String?, val coverUrl: String?)
 
 data class Review(val id: String, val title: String, val text: String, val rating: Int?)
 
 data class Suggestion(val id: String, val title: String, val detail: String?)
 
-/** Suggestion d'achat à envoyer (formulaire `suggestion-achat-add`). */
+/** Purchase suggestion to send (form `suggestion-achat-add`). */
 data class SuggestionDraft(
     val kind: SuggestionKind = SuggestionKind.BOOK,
     val title: String = "",
@@ -34,11 +34,11 @@ data class SuggestionDraft(
     val isbn: String = "",
     val comment: String = ""
 ) {
-    /** Le site exige le titre et l'auteur. */
+    /** The site requires the title and the author. */
     val isValid: Boolean get() = title.isNotBlank() && author.isNotBlank()
 }
 
-/** Types proposés par le formulaire : codes `DocType` du site (les plus courants). */
+/** Types offered by the form: the site's `DocType` codes (the most common ones). */
 enum class SuggestionKind(val code: String) {
     BOOK("1"),
     LARGE_PRINT("19"),
@@ -51,14 +51,14 @@ enum class SuggestionKind(val code: String) {
     EBOOK("Numilog")
     ;
 
-    /** La BD n'a pas de type sur le site : on l'envoie comme un livre, précisé dans le commentaire. */
+    /** Comics have no type on the site: we send it as a book, specified in the comment. */
     val docTypeCode: String get() = if (this == COMIC) BOOK.code else code
 }
 
-/** Coordonnées modifiables en ligne (formulaire `modifier`). Le nom et l'adresse se changent à l'accueil. */
+/** Contact details editable online (form `modifier`). Name and address are changed at the front desk. */
 data class ContactDetails(val nickname: String, val email: String, val phone: String, val channel: SendingChannel)
 
-/** `favoriteSendingChannel` du site. */
+/** The site's `favoriteSendingChannel`. */
 enum class SendingChannel(val code: String) {
     ANY("0"),
     EMAIL("1"),
@@ -72,13 +72,13 @@ enum class SendingChannel(val code: String) {
 }
 
 /**
- * Les trois sélections que le site crée pour chaque abonné. Un document y entre et en sort d'un geste
- * (les liens bascule du site) ; les autres sélections de l'abonné sont des paniers.
+ * The three selections the site creates for each patron. A document goes in and out with one tap
+ * (the site's toggle links); the patron's other selections are baskets.
  */
 enum class DefaultSelection(
-    /** Nom sur le site, aussi celui que l'abonné voit dans « Mes sélections ». */
+    /** Name on the site, also the one the patron sees in "Mes sélections". */
     val siteName: String,
-    /** Icônes du site pour la bascule, qui font partie de ses liens. */
+    /** The site's icons for the toggle, which are part of its links. */
     val siteImage: String,
     val siteRevertImage: String
 ) {

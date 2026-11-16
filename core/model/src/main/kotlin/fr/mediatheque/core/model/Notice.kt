@@ -7,14 +7,14 @@ package fr.mediatheque.core.model
 import java.time.Instant
 import kotlinx.serialization.Serializable
 
-/** Type de document Bokeh (`type.code`), qui distingue le physique du numérique. */
+/** Bokeh document type (`type.code`), which distinguishes physical from digital. */
 @Serializable
 data class DocumentKind(val code: String, val label: String) {
     val isDigital: Boolean get() = code in DIGITAL_CODES
     val searchFacet: String get() = "T$code"
 
     companion object {
-        /** Codes des ressources consultables en ligne (moissonnées par Bokeh ou Eurêka). */
+        /** Codes of resources that can be consulted online (harvested by Bokeh or Eurêka). */
         val DIGITAL_CODES: Set<String> = setOf("ArteVod", "Cafeyn", "Numilog", "ToutApprendre", "23", "24", "26", "27")
 
         val BOOK = DocumentKind("1", "Livre")
@@ -24,7 +24,7 @@ data class DocumentKind(val code: String, val label: String) {
     }
 }
 
-/** Une notice du catalogue. */
+/** A catalog record. */
 @Serializable
 data class Notice(
     val id: Int,
@@ -38,12 +38,12 @@ data class Notice(
     val volume: String?,
     val permalink: String?,
     /**
-     * Exemplaires tels que moissonnés la nuit : utiles pour la cote et la médiathèque,
-     * pas pour la disponibilité (voir la disponibilité en temps réel).
+     * Copies as harvested overnight: useful for the call number and the library,
+     * not for availability (see the real-time availability).
      */
     val harvestedCopies: List<HarvestedCopy>
 ) {
-    /** Médiathèques qui possèdent un exemplaire, sans doublon, dans l'ordre du réseau. */
+    /** Libraries that own a copy, without duplicates, in network order. */
     val libraries: List<Library>
         get() {
             val owned = harvestedCopies.mapNotNull { it.library }.toSet()
@@ -72,7 +72,7 @@ data class SearchQuery(
     val facets: List<String> get() = kinds.map { it.searchFacet } + libraries.map { it.searchFacet }
 }
 
-/** Disponibilité d'un exemplaire en temps réel. */
+/** Real-time availability of a copy. */
 sealed interface CopyStatus {
     val isAvailable: Boolean
 
@@ -84,7 +84,7 @@ sealed interface CopyStatus {
         override val isAvailable = false
     }
 
-    /** « En réserve », « À demander à l'accueil ». */
+    /** "En réserve", "À demander à l'accueil". */
     data object OnRequest : CopyStatus {
         override val isAvailable = true
     }
@@ -94,7 +94,7 @@ sealed interface CopyStatus {
     }
 }
 
-/** Un exemplaire vu en temps réel (`noticeajax/exemplaires`). */
+/** A copy seen in real time (`noticeajax/exemplaires`). */
 data class LiveCopy(
     val library: Library?,
     val libraryName: String,
@@ -105,6 +105,6 @@ data class LiveCopy(
     val holdCount: Int
 )
 
-/** Badge de disponibilité d'une notice dans une liste de résultats. */
+/** Availability badge of a record in a results list. */
 @Serializable
 data class Availability(val label: String, val isAvailable: Boolean)

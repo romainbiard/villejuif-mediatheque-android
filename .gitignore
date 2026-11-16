@@ -1,4 +1,4 @@
-# Gradle et sorties de build
+# Gradle and build outputs
 .gradle/
 .kotlin/
 build/
@@ -10,7 +10,7 @@ captures/
 *.class
 *.hprof
 
-# Android Studio / IntelliJ (seuls les styles de code partagés sont versionnés)
+# Android Studio / IntelliJ (only the shared code styles are versioned)
 .idea/*
 !.idea/codeStyles/
 *.iml
@@ -18,19 +18,19 @@ captures/
 .externalNativeBuild/
 .cxx/
 
-# Fichiers locaux : chemin du SDK (contient le nom d'utilisateur), préfixe de l'applicationId
+# Local files: SDK path (contains the user name), applicationId prefix
 local.properties
 
-# Signature : jamais dans le dépôt (secrets de la CI)
+# Signing: never in the repo (CI secrets)
 keystore.properties
 *.jks
 *.keystore
 *.p12
 *.pepk
 
-# Services Google : aucun fichier de configuration dans le dépôt
+# Google services: no configuration file in the repo
 google-services.json
 
-# Divers
+# Misc
 .DS_Store
 *.log

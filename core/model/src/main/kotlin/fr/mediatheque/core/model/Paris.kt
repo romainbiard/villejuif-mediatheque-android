@@ -12,24 +12,24 @@ import java.time.ZoneId
 import java.util.Locale
 
 /**
- * Toutes les dates de l'app sont celles de Villejuif (horaires, échéances, animations),
- * quel que soit le fuseau du téléphone : on calcule toujours à l'heure de Paris.
+ * All dates in the app are Villejuif dates (hours, due dates, events),
+ * whatever the phone's time zone: we always compute in Paris time.
  */
 object Paris {
     val zone: ZoneId = ZoneId.of("Europe/Paris")
     val locale: Locale = Locale.FRANCE
 
-    /** Jour calendaire à Paris de [instant]. */
+    /** Calendar day in Paris of [instant]. */
     fun dayOf(instant: Instant): LocalDate = instant.atZone(zone).toLocalDate()
 
-    /** Début de [day] à Paris. */
+    /** Start of [day] in Paris. */
     fun startOf(day: LocalDate): Instant = day.atStartOfDay(zone).toInstant()
 
     fun instant(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0): Instant =
         LocalDateTime.of(year, month, day, hour, minute).atZone(zone).toInstant()
 }
 
-/** Texte replié pour comparer sans casse ni accents (« Médiathèque » → « mediatheque »). */
+/** Text folded for comparison without case or accents ("Médiathèque" → "mediatheque"). */
 fun String.folded(): String = Normalizer.normalize(this, Normalizer.Form.NFD)
     .replace(Regex("\\p{M}+"), "")
     .lowercase(Locale.ROOT)

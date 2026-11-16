@@ -18,7 +18,7 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    // Les dépôts sont déclarés ici seulement, jamais dans un module.
+    // Repositories are declared here only, never in a module.
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
         google {

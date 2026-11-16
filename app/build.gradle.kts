@@ -11,8 +11,8 @@ plugins {
 }
 
 /**
- * Identifiant de l'app : valeur neutre dans le dépôt, préfixe réel hors dépôt (comme Config/Local.xcconfig sur iOS).
- * Ordre : variable MEDIATHEQUE_APPLICATION_ID (CI), puis `mediatheque.applicationId` dans local.properties.
+ * App identifier: a neutral value in the repo, the real prefix kept outside the repo (like Config/Local.xcconfig on iOS).
+ * Order: the MEDIATHEQUE_APPLICATION_ID variable (CI), then `mediatheque.applicationId` in local.properties.
  */
 val applicationIdOverride: String? = providers.environmentVariable("MEDIATHEQUE_APPLICATION_ID").orNull
     ?: providers.fileContents(rootProject.layout.projectDirectory.file("local.properties")).asText.orNull
@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId = applicationIdOverride ?: "com.example.mediatheque"
-        // Numéro de build de la CI (GITHUB_RUN_NUMBER), 1 en local.
+        // CI build number (GITHUB_RUN_NUMBER), 1 locally.
         versionCode = providers.environmentVariable("VERSION_CODE").orNull?.toInt() ?: 1
         versionName = "0.1.0"
     }
@@ -40,7 +40,7 @@ android {
     }
 
     androidResources {
-        // Langue par app (Android 13+) : fr (source) et en, déduites des dossiers values-*.
+        // Per-app language (Android 13+): fr (source) and en, derived from the values-* folders.
         generateLocaleConfig = true
     }
 }

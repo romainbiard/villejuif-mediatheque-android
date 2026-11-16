@@ -1,4 +1,4 @@
-# Aucun journal en release : ni donnée personnelle, ni URL de connexion aux services numériques.
+# No logging in release: no personal data, no sign-in URLs for the digital services.
 -assumenosideeffects class android.util.Log {
     public static int v(...);
     public static int d(...);

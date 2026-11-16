@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <!-- Tests JVM et Robolectric de tous les modules. -->
+  <!-- JVM and Robolectric tests of all modules. -->
   <configuration default="false" name="Tests unitaires" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />

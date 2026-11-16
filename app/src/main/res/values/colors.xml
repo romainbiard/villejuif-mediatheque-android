@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Magenta de Villejuif : fond de l'icône et de l'écran de lancement (comme LaunchBackground sur iOS). -->
+    <!-- Villejuif magenta: background of the icon and the launch screen (like LaunchBackground on iOS). -->
     <color name="brand_magenta">#E0005A</color>
 </resources>

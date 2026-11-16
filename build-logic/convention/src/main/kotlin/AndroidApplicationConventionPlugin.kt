@@ -13,7 +13,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
-/** Module `:app` : SDK, Java 17, lint strict. Le Kotlin est intégré à AGP 9 (pas de plugin kotlin-android). */
+/** `:app` module: SDK, Java 17, strict lint. Kotlin is built into AGP 9 (no kotlin-android plugin). */
 class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {

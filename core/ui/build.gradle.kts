@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.mediatheque.android.compose)
 }
 
-// Composants construits depuis le domaine (≈ CoreUI) : écrans d'erreur, fiche document partagée.
+// Components built from the domain (≈ CoreUI): error screens, shared document sheet.
 dependencies {
     api(projects.core.designsystem)
     implementation(projects.core.model)

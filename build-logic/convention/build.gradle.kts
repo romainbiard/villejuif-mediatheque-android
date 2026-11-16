@@ -20,7 +20,7 @@ kotlin {
 }
 
 dependencies {
-    // compileOnly : les plugins eux-mêmes sont chargés par le build principal (plugins { … apply false }).
+    // compileOnly: the plugins themselves are loaded by the main build (plugins { … apply false }).
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin)

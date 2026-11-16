@@ -24,7 +24,7 @@ internal fun VersionCatalog.library(alias: String): Provider<MinimalExternalModu
 
 internal fun VersionCatalog.int(alias: String): Int = findVersion(alias).get().requiredVersion.toInt()
 
-/** Bytecode Java 17, la cible recommandée pour Android ; tout avertissement Kotlin est une erreur. */
+/** Java 17 bytecode, the recommended target for Android; every Kotlin warning is an error. */
 internal val javaVersion = JavaVersion.VERSION_17
 
 internal fun Project.configureKotlin() {
@@ -37,8 +37,8 @@ internal fun Project.configureKotlin() {
 }
 
 /**
- * Les tests vérifient des textes en français et des échéances à l'heure de Paris :
- * on fixe la langue et le fuseau, quelle que soit la machine (comme `-testLanguage fr` sur iOS).
+ * Tests check French text and deadlines in Paris time:
+ * we pin the language and time zone, whatever the machine (like `-testLanguage fr` on iOS).
  */
 internal fun Project.configureTests() {
     tasks.withType<Test>().configureEach {
@@ -48,14 +48,11 @@ internal fun Project.configureTests() {
     }
 }
 
-/** Lint strict partout : une alerte casse le build (réglages fins dans lint.xml). */
+/** Strict lint everywhere: any warning breaks the build (fine-grained settings in lint.xml). */
 internal fun Lint.configureLint(project: Project) {
     abortOnError = true
     warningsAsErrors = true
     checkReleaseBuilds = true
     checkDependencies = false
     lintConfig = project.rootProject.file("lint.xml")
-    htmlReport = true
-    sarifReport = true
-    xmlReport = false
 }

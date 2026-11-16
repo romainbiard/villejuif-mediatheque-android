@@ -42,7 +42,7 @@ class ParserTest {
     @Test
     fun explicitCredentialRefusal() {
         assertTrue(HtmlParsers.loginRejected(Fixture.string("login-rejected.html")))
-        // Un formulaire de connexion vierge ou une autre page n'est pas un refus.
+        // A blank login form or another page is not a rejection.
         assertFalse(HtmlParsers.loginRejected(Fixture.string("login.html")))
         assertFalse(HtmlParsers.loginRejected("<html><body><p>Service indisponible</p></body></html>"))
         assertFalse(
@@ -185,7 +185,7 @@ class PatronSpaceParserTest {
         val html = Fixture.string("notice-selections.html")
         assertTrue(HtmlParsers.isSignedIn(html))
         assertEquals(setOf("Mes préférés"), HtmlParsers.defaultSelectionsHolding(html))
-        // Page publique (session expirée) : mêmes liens, tous « ajouter », et pas de lien de déconnexion.
+        // Public page (expired session): same links, all "ajouter", and no logout link.
         assertFalse(HtmlParsers.isSignedIn("""<html><body><a href="/auth/login">Mon compte</a></body></html>"""))
     }
 }

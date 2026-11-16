@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-// Modèle du domaine (≈ MediathequeCore/Models) : abonné, prêts, réservations, médiathèques, horaires, agenda.
+// Domain model (≈ MediathequeCore/Models): subscriber, loans, reservations, libraries, opening hours, agenda.
 dependencies {
     implementation(libs.kotlinx.serialization.json)
 }
