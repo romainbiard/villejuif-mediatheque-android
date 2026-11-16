@@ -5,7 +5,6 @@
 package fr.mediatheque.core.data
 
 import android.content.Context
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,39 +14,20 @@ import fr.mediatheque.core.bokeh.PortalHttpClient
 import java.io.File
 import javax.inject.Singleton
 
+/**
+ * The portal's transport and cache. Which repositories the app uses, the portal's or the demo's, is decided by
+ * the app's build flavor (app/src/prod and app/src/demo).
+ */
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataModule {
-    @Binds
-    abstract fun sessionRepository(session: PortalSession): SessionRepository
+object DataModule {
+    /** A single shared transport: it carries the session cookie. */
+    @Provides
+    @Singleton
+    fun portalHttpClient(solver: WebViewChallengeSolver) = PortalHttpClient(challengeSolver = solver)
 
-    @Binds
-    abstract fun accountRepository(repository: PortalAccountRepository): AccountRepository
-
-    @Binds
-    abstract fun catalogRepository(repository: PortalCatalogRepository): CatalogRepository
-
-    @Binds
-    abstract fun agendaRepository(repository: PortalAgendaRepository): AgendaRepository
-
-    @Binds
-    abstract fun libraryRepository(repository: PortalLibraryRepository): LibraryRepository
-
-    @Binds
-    abstract fun profileRepository(repository: PortalProfileRepository): ProfileRepository
-
-    @Binds
-    abstract fun digitalRepository(repository: PortalDigitalRepository): DigitalRepository
-
-    companion object {
-        /** A single shared transport: it carries the session cookie. */
-        @Provides
-        @Singleton
-        fun portalHttpClient(solver: WebViewChallengeSolver) = PortalHttpClient(challengeSolver = solver)
-
-        /** Public data only, in the app's cache folder: Android may clear it at any time. */
-        @Provides
-        @Singleton
-        fun dataCache(@ApplicationContext context: Context) = DataCache(File(context.cacheDir, "portal"))
-    }
+    /** Public data only, in the app's cache folder: Android may clear it at any time. */
+    @Provides
+    @Singleton
+    fun dataCache(@ApplicationContext context: Context) = DataCache(File(context.cacheDir, "portal"))
 }

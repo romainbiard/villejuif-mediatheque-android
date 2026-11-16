@@ -2,5 +2,11 @@
 <!-- Source language: French (like the iOS String Catalog). English translation in values-en. -->
 <resources>
     <string name="app_name" translatable="false">Médiathèque</string>
-    <string name="tagline">Les médiathèques de Villejuif dans la poche.</string>
+    <string name="tab_account">Compte</string>
+    <string name="tab_search">Recherche</string>
+    <string name="tab_agenda">Agenda</string>
+    <string name="tab_digital">Numérique</string>
+    <string name="tab_info">Infos</string>
+    <string name="shortcuts_navigation">Navigation</string>
+    <string name="shortcut_search">Rechercher dans le catalogue</string>
 </resources>

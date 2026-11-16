@@ -17,19 +17,32 @@ Vos prêts, vos réservations, l'agenda, le catalogue et la médiathèque numér
 > **Projet personnel et non officiel.** Cette app n'est ni éditée, ni validée, ni soutenue par la Ville de Villejuif ou son réseau de médiathèques. Elle s'appuie sur le portail public [mediatheque.villejuif.fr](https://mediatheque.villejuif.fr/). Le nom, le blason et la charte graphique de Villejuif appartiennent à la Ville.
 
 > [!NOTE]
-> **En cours de développement.** C'est le portage de l'app iOS, lot par lot : voir le [plan de portage](docs/PLAN-PORTAGE.md). Le lot 0 (fondations du projet) est en place.
+> **En cours de développement.** C'est le portage de l'app iOS, lot par lot : voir le [plan de portage](docs/PLAN-PORTAGE.md). Les lots 0 à 3 sont en place : fondations, couche portail, données, et la coquille de l'app (thème, navigation, mode démo).
 
 ## Démarrer
 
 **Prérequis** : Android Studio (version récente, avec le SDK Android 37).
 
 1. Ouvrez le dossier du projet dans Android Studio (*File › Open*) et laissez Gradle se synchroniser.
-2. Choisissez la configuration **app** et un appareil virtuel ou un téléphone, puis ▶︎.
+2. Choisissez la configuration **Médiathèque** et un appareil virtuel ou un téléphone, puis ▶︎.
+
+L'app existe en deux variantes (*Build › Select Build Variant*) :
+
+| Variante | Données | Usage |
+|---|---|---|
+| `prodDebug` (par défaut) | le portail des médiathèques | l'app réelle, avec votre carte |
+| `demoDebug` | l'abonnée fictive Camille MARTIN, en mémoire | essayer l'app sans carte, captures d'écran, tests d'interface |
+
+La démo s'installe à côté de l'app réelle (« Médiathèque démo ») et n'est jamais publiée.
 
 En ligne de commande :
 
 ```bash
-./gradlew assembleDebug
+./gradlew installProdDebug
+```
+
+```bash
+./gradlew installDemoDebug
 ```
 
 L'identifiant de l'app versionné est neutre (`com.example.mediatheque`). Pour publier sous votre propre identifiant, ajoutez `mediatheque.applicationId=…` dans `local.properties` (ignoré par git) ou définissez la variable `MEDIATHEQUE_APPLICATION_ID`.
@@ -71,4 +84,4 @@ build-logic/         # plugins Gradle de convention
 
 ## Licence
 
-Code sous licence [MIT](LICENSE). Le nom, le blason et l'identité visuelle de la Ville de Villejuif, ainsi que les marques des services numériques cités, appartiennent à leurs propriétaires respectifs.
+Code sous licence [MIT](LICENSE). Icônes : [Material Symbols](https://github.com/google/material-design-icons) de Google, sous licence Apache 2.0 (ajoutées par `scripts/material_symbol.py`). Le nom, le blason et l'identité visuelle de la Ville de Villejuif, ainsi que les marques des services numériques cités, appartiennent à leurs propriétaires respectifs.

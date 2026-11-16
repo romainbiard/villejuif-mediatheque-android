@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Villejuif crest, white, for the splash screen: 150 dp wide in the 288 dp canvas, within the 192 dp circle.
+     Declared 192 dp, the vector size limit: the splash screen draws it at 288 dp anyway. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="192dp"
+    android:height="192dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <group
+        android:scaleX="1.6667"
+        android:scaleY="1.6667"
+        android:translateX="69.000"
+        android:translateY="88.444">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 39.613 15.691 L 51.976 7.765 L 39.691 0 C 36.917 1.824 35.332 4.597 35.332 7.925 C 35.332 11.257 37.074 14.187 39.535 15.691 Z M 39.613 15.691" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 44.605 61.503 C 40.246 58.808 33.035 50.007 28.437 40.976 L 15.121 40.976 C 22.808 52.941 37.234 64.035 44.605 66.335 C 52.054 64.035 66.402 52.941 74.089 40.976 L 60.773 40.976 C 56.179 50.007 48.964 58.808 44.605 61.503 Z M 44.605 61.503" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 53.480 20.210 L 35.730 20.210 L 35.730 38.519 L 53.480 20.609 Z M 53.480 20.210" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 44.605 51.992 C 48.093 49.375 51.582 45.015 53.480 40.816 L 53.480 26.949 L 37.074 43.429 C 39.058 46.757 41.832 49.929 44.605 51.992 Z M 44.605 51.992" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 83.281 15.218 C 83.042 7.292 79.875 3.171 74.328 0.394 C 74.007 0.238 73.609 0.394 73.535 0.871 C 73.058 8.640 71.234 16.011 68.781 22.984 C 68.781 20.128 66.402 17.910 63.625 17.910 C 60.855 17.910 59.187 19.578 58.636 21.792 L 62.679 24.492 C 62.519 25.203 62.437 25.917 62.437 26.550 C 62.437 31.625 66.558 35.742 71.632 35.742 C 76.703 35.742 77.101 34.398 78.765 32.335 L 87.402 32.335 L 88.910 24.332 L 80.269 28.769 C 81.695 25.597 83.359 20.609 83.203 15.292 Z M 83.281 15.218" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 26.773 26.468 C 26.773 25.835 26.691 25.125 26.535 24.410 L 30.574 21.714 C 30.023 19.496 27.964 17.832 25.585 17.832 C 23.207 17.832 20.433 20.128 20.433 22.906 C 17.976 15.933 16.152 8.558 15.675 0.792 C 15.675 0.394 15.281 0.160 14.882 0.320 C 9.335 3.171 6.089 7.292 5.851 15.218 C 5.691 20.609 7.437 25.519 8.781 28.687 L 0.222 24.253 L 1.726 32.257 L 10.367 32.257 C 12.031 34.316 14.648 35.667 17.5 35.667 C 22.574 35.667 26.691 31.542 26.691 26.468 Z M 26.773 26.468" />
+    </group>
+</vector>

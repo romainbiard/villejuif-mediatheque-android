@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tagline">The Villejuif libraries in your pocket.</string>
+    <string name="tab_account">Account</string>
+    <string name="tab_search">Search</string>
+    <string name="tab_agenda">Events</string>
+    <string name="tab_digital">Digital</string>
+    <string name="tab_info">Info</string>
+    <string name="shortcuts_navigation">Navigation</string>
+    <string name="shortcut_search">Search the catalog</string>
 </resources>

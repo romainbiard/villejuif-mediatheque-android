@@ -5,82 +5,54 @@
 package fr.mediatheque
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
+import android.view.Menu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
+import fr.mediatheque.core.designsystem.theme.MediathequeTheme
+import fr.mediatheque.navigation.MediathequeApp
+import fr.mediatheque.navigation.TopLevelDestination
+import kotlinx.coroutines.flow.MutableSharedFlow
 
-/** Single activity. Batch 0: a temporary home screen; navigation arrives in batch 3. */
+/** The only activity: edge to edge, the splash screen, then the app in Compose. */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    /** Keyboard shortcuts, forwarded to the navigation. */
+    private val shortcuts = MutableSharedFlow<TopLevelDestination>(extraBufferCapacity = 1)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // Temporary: the Villejuif-colored theme arrives with core:designsystem (batch 3).
-            val colors = if (isSystemInDarkTheme()) {
-                darkColorScheme(primary = Color(0xFFAE8BE6))
-            } else {
-                lightColorScheme(primary = Color(0xFF773DBD))
-            }
-            MaterialTheme(colorScheme = colors) {
-                PlaceholderScreen()
+            MediathequeTheme {
+                MediathequeApp(shortcuts)
             }
         }
     }
-}
 
-@Composable
-private fun PlaceholderScreen(modifier: Modifier = Modifier) {
-    Scaffold(modifier = modifier.fillMaxSize()) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.semantics { heading() }
-            )
-            Text(
-                text = stringResource(R.string.tagline),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-        }
+    /**
+     * Ctrl+1…5 opens a destination, Ctrl+F the search. The activity receives them whatever has the focus,
+     * which a Compose key handler would not.
+     */
+    override fun onKeyShortcut(keyCode: Int, event: KeyEvent): Boolean {
+        val destination = when (keyCode) {
+            KeyEvent.KEYCODE_F -> TopLevelDestination.SEARCH
+            else -> TopLevelDestination.entries.firstOrNull { it.shortcutKey == keyCode }
+        } ?: return super.onKeyShortcut(keyCode, event)
+        return shortcuts.tryEmit(destination)
     }
-}
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun PlaceholderScreenPreview() {
-    MaterialTheme { PlaceholderScreen() }
+    /** Lists the app's shortcuts in the system's keyboard shortcuts helper (Meta + /). */
+    override fun onProvideKeyboardShortcuts(data: MutableList<KeyboardShortcutGroup>, menu: Menu?, deviceId: Int) {
+        val shortcuts = TopLevelDestination.entries.map { destination ->
+            KeyboardShortcutInfo(getString(destination.label), destination.shortcutKey, KeyEvent.META_CTRL_ON)
+        } + KeyboardShortcutInfo(getString(R.string.shortcut_search), KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON)
+        data += KeyboardShortcutGroup(getString(R.string.shortcuts_navigation), shortcuts)
+    }
 }

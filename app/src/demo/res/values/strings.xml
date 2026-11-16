@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The demo app's name, so it cannot be mistaken for the real one on the home screen. -->
+<resources>
+    <string name="app_name" translatable="false">Médiathèque démo</string>
+</resources>

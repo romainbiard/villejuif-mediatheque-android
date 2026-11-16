@@ -1,0 +1,62 @@
+// Médiathèque
+// SPDX-License-Identifier: MIT
+// See LICENSE in the project root for the full license text and copyright notice.
+
+package fr.mediatheque.core.ui
+
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import fr.mediatheque.core.designsystem.component.EmptyState
+
+/**
+ * A top-level destination: a large title that collapses on scroll, over the content.
+ * The window insets of the navigation bar are left to the app's navigation suite.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DestinationScaffold(title: String, modifier: Modifier = Modifier, content: @Composable (PaddingValues) -> Unit) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { LargeTopAppBar(title = { Text(title) }, scrollBehavior = scrollBehavior) },
+        content = content
+    )
+}
+
+/** A destination whose screens come in a later version: its title, and a word about it. */
+@Composable
+fun ComingSoonDestination(title: String, @DrawableRes icon: Int, modifier: Modifier = Modifier) {
+    DestinationScaffold(title, modifier) { padding ->
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState()),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            EmptyState(
+                icon = icon,
+                title = stringResource(R.string.coming_soon_title),
+                message = stringResource(R.string.coming_soon_message),
+                modifier = Modifier.widthIn(max = 560.dp).padding(16.dp)
+            )
+        }
+    }
+}

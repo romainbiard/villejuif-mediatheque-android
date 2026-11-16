@@ -11,4 +11,5 @@ plugins {
 dependencies {
     api(projects.core.designsystem)
     implementation(projects.core.model)
+    implementation(projects.core.data)
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Error screens, built from LoadError. Source language: French. -->
+<resources>
+    <string name="error_offline_title">Pas de connexion</string>
+    <string name="error_offline_message">Vérifiez votre connexion, puis réessayez.</string>
+    <string name="error_not_logged_in_title">Session fermée</string>
+    <string name="error_not_logged_in_message">Reconnectez-vous pour continuer.</string>
+    <string name="error_site_unavailable_title">Le site de la médiathèque ne répond pas</string>
+    <string name="error_site_unavailable_message">Réessayez dans un instant.</string>
+    <string name="error_unreadable_title">Réponse inattendue du site</string>
+    <string name="error_unreadable_message">Le site a répondu, mais l’app ne sait pas encore lire sa réponse. Réessayez plus tard.</string>
+    <string name="error_retry">Réessayer</string>
+    <string name="stale_offline">Hors ligne · dernières données enregistrées</string>
+    <string name="stale_not_updated">Mise à jour impossible · dernières données enregistrées</string>
+    <string name="loading">Chargement</string>
+    <string name="coming_soon_title">Bientôt ici</string>
+    <string name="coming_soon_message">Cet écran arrive dans une prochaine version de l’app.</string>
+</resources>

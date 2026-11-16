@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.mediatheque.android.application)
     alias(libs.plugins.mediatheque.android.compose)
     alias(libs.plugins.mediatheque.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 /**
@@ -28,6 +29,20 @@ android {
         versionName = "0.1.0"
     }
 
+    // demo: fictitious data, no network (screenshots, UI tests, trying the app without a card). prod: the portal.
+    flavorDimensions += "data"
+    productFlavors {
+        create("prod") {
+            dimension = "data"
+            isDefault = true
+        }
+        create("demo") {
+            dimension = "data"
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo"
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
@@ -45,6 +60,11 @@ android {
     }
 }
 
+// The demo is never published.
+androidComponents {
+    beforeVariants(selector().withFlavor("data" to "demo").withBuildType("release")) { it.enable = false }
+}
+
 dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.data)
@@ -58,6 +78,10 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
+    implementation(projects.core.ui)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
 }

@@ -18,6 +18,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply("mediatheque.android.library")
             pluginManager.apply("mediatheque.android.compose")
             pluginManager.apply("mediatheque.hilt")
+            // Navigation 3 routes are serializable, so the back stack survives process death.
+            pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
             dependencies {
                 add("implementation", project(":core:designsystem"))
                 add("implementation", project(":core:ui"))

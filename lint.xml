@@ -9,4 +9,8 @@
     <!-- Lint rules bundled in a library (lifecycle-runtime 2.11) that do not run
          with this AGP's lint: lint ignores them itself; this is not a defect in our code. -->
     <issue id="ObsoleteLintCustomCheck" severity="informational" />
+    <!-- Compose rules: the theme's extended colors are the one CompositionLocal the app defines, as Material does. -->
+    <issue id="ComposeCompositionLocalUsage">
+        <option name="allowed-composition-locals" value="LocalExtendedColors" />
+    </issue>
 </lint>

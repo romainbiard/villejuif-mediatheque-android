@@ -6,7 +6,7 @@
     <!-- Launch screen: white icon on the city's magenta. -->
     <style name="Theme.Mediatheque.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/brand_magenta</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_crest</item>
         <item name="postSplashScreenTheme">@style/Theme.Mediatheque</item>
     </style>
 </resources>
