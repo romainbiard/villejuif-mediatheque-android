@@ -5,6 +5,8 @@
 plugins {
     alias(libs.plugins.mediatheque.jvm.library)
     alias(libs.plugins.kotlin.serialization)
+    // Captures anonymisées du portail, partagées avec les tests des autres modules (testFixtures(projects.core.bokeh)).
+    `java-test-fixtures`
 }
 
 // Transport et formats du portail Bokeh (≈ BokehAPI) : routes, OkHttp, DTO JSON, analyse HTML et iCal.
@@ -16,4 +18,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
