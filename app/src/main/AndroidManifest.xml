@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Return reminders and holds ready for pickup; asked after an explanation, never at launch. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Backups: settings only, never the credentials or the account data
          (backup_rules up to Android 11, data_extraction_rules after that). -->

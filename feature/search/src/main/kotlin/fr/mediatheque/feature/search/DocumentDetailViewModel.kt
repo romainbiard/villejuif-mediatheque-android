@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.mediatheque.core.data.CatalogRepository
 import fr.mediatheque.core.data.LoadError
 import fr.mediatheque.core.data.LoadState
+import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.model.LiveCopy
 import fr.mediatheque.core.model.Notice
 import kotlinx.coroutines.CancellationException
@@ -26,8 +27,14 @@ data class LibraryCopies(val name: String, val copies: List<LiveCopy>)
 
 /** A record's page: its real-time copies, read when the page opens. */
 @HiltViewModel(assistedFactory = DocumentDetailViewModel.Factory::class)
-class DocumentDetailViewModel @AssistedInject constructor(@Assisted val document: Notice, private val catalog: CatalogRepository) :
-    ViewModel() {
+class DocumentDetailViewModel @AssistedInject constructor(
+    @Assisted val document: Notice,
+    private val catalog: CatalogRepository,
+    sessionStore: SessionStore
+) : ViewModel() {
+    /** Signed in or not, for the hold button. */
+    val session: StateFlow<SessionStore.State> = sessionStore.state
+
     private val _copies = MutableStateFlow<LoadState<List<LibraryCopies>>>(LoadState.Loading)
     val copies: StateFlow<LoadState<List<LibraryCopies>>> = _copies.asStateFlow()
 

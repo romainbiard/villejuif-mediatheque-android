@@ -1,4 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="account_title">Mon compte</string>
+    <!-- Sign-in -->
+    <string name="login_city">Ville de Villejuif</string>
+    <string name="login_tagline">Vos prêts, vos réservations et la médiathèque numérique, dans votre poche.</string>
+    <string name="login_card_number">Numéro de carte</string>
+    <string name="login_card_hint">Au dos de votre carte</string>
+    <string name="login_password">Mot de passe</string>
+    <string name="login_show_password">Afficher le mot de passe</string>
+    <string name="login_hide_password">Masquer le mot de passe</string>
+    <string name="login_submit">Se connecter</string>
+    <string name="login_scan_card">Scanner ma carte</string>
+    <string name="login_forgot_password">Mot de passe oublié ?</string>
+    <string name="login_not_registered">Pas encore inscrit ? L’inscription est gratuite, à l’accueil de chaque médiathèque.</string>
+    <string name="login_invalid">Numéro de carte ou mot de passe incorrect.</string>
+    <string name="login_offline">Pas de connexion. Réessayez une fois en ligne.</string>
+    <string name="login_site_down">Le site de la médiathèque ne répond pas. Réessayez dans un instant.</string>
+    <string name="lost_password_title">Mot de passe oublié</string>
+    <string name="lost_password_message">Indiquez votre numéro de carte : la médiathèque vous envoie un e-mail pour choisir un nouveau mot de passe.</string>
+    <string name="lost_password_send">Recevoir l’e-mail</string>
+    <string name="lost_password_sent">E-mail envoyé. Pensez à vérifier vos indésirables.</string>
+    <string name="lost_password_failed">L’envoi n’a pas abouti. Réessayez, ou demandez à l’accueil d’une médiathèque.</string>
+    <string name="lost_password_no_email">Pas d’e-mail sur votre compte ? L’équipe peut réinitialiser votre mot de passe à l’accueil, sur présentation de votre carte.</string>
+    <string name="close">Fermer</string>
+    <!-- Lock -->
+    <string name="lock_title">Compte verrouillé</string>
+    <string name="lock_message">Déverrouillez pour voir vos prêts et votre carte.</string>
+    <string name="lock_unlock">Déverrouiller</string>
+    <string name="lock_prompt_title">Ouvrir votre compte lecteur</string>
+    <string name="lock_sign_out">Se déconnecter</string>
+    <!-- Home -->
+    <string name="home_notifications">Notifications</string>
+    <plurals name="home_notifications_unread">
+        <item quantity="one">Notifications, %d non lue</item>
+        <item quantity="other">Notifications, %d non lues</item>
+    </plurals>
+    <plurals name="home_late">
+        <item quantity="one">%d en retard</item>
+        <item quantity="other">%d en retard</item>
+    </plurals>
+    <plurals name="home_to_pick_up">
+        <item quantity="one">%d à retirer</item>
+        <item quantity="other">%d à retirer</item>
+    </plurals>
+    <string name="home_to_return">À rendre</string>
+    <string name="home_nothing_to_return">Rien à rendre pour l’instant</string>
+    <plurals name="home_see_all_loans">
+        <item quantity="one">Voir le prêt</item>
+        <item quantity="other">Voir les %d prêts</item>
+    </plurals>
+    <string name="home_renew_all">Tout prolonger</string>
+    <string name="home_my_loans">Mes prêts</string>
+    <string name="home_my_holds">Mes réservations</string>
+    <string name="home_library_message">Message de la médiathèque</string>
+    <string name="home_sign_out">Se déconnecter</string>
+    <string name="home_sign_out_title">Se déconnecter de votre compte ?</string>
+    <string name="home_sign_out_message">Votre carte, vos rappels et l’historique des notifications seront effacés de cet appareil.</string>
+    <string name="cancel">Annuler</string>
+    <string name="home_signed_in_as">Connecté en tant que %1$s</string>
+    <!-- Library card -->
+    <string name="card_title">Carte d’abonné</string>
+    <string name="card_libraries">Médiathèques de Villejuif</string>
+    <string name="card_number">N° de carte</string>
+    <string name="card_valid_until">Valable jusqu’au %1$s</string>
+    <string name="card_tap_to_enlarge">Toucher pour agrandir</string>
+    <string name="card_description">Carte d’abonné de %1$s, numéro %2$s</string>
+    <string name="card_barcode_description">Code-barres de la carte, numéro %1$s</string>
+    <string name="card_rotate">Pivoter le code-barres</string>
+    <string name="card_brightness">Luminosité au maximum pendant l’affichage</string>
+    <string name="card_expired">Votre carte a expiré. Renouvelez-la à l’accueil d’une médiathèque.</string>
+    <plurals name="card_expires_soon">
+        <item quantity="one">Votre carte expire dans %d jour. Renouvelez-la à l’accueil.</item>
+        <item quantity="other">Votre carte expire dans %d jours. Renouvelez-la à l’accueil.</item>
+    </plurals>
+    <!-- Loans -->
+    <string name="loans_late">En retard</string>
+    <string name="loans_this_week">Cette semaine</string>
+    <string name="loans_later">Plus tard</string>
+    <string name="loans_empty_title">Rien à rendre pour l’instant</string>
+    <string name="loans_empty_message">Vos emprunts apparaîtront ici avec leur date de retour.</string>
+    <plurals name="loans_late_by">
+        <item quantity="one">En retard de %d jour</item>
+        <item quantity="other">En retard de %d jours</item>
+    </plurals>
+    <string name="loans_due_today">À rendre aujourd’hui</string>
+    <string name="loans_due_on">À rendre le %1$s</string>
+    <string name="loans_renew">Prolonger</string>
+    <string name="loans_not_renewable">Non prolongeable</string>
+    <plurals name="loans_renewed">
+        <item quantity="one">Prêt prolongé</item>
+        <item quantity="other">%d prêts prolongés</item>
+    </plurals>
+    <plurals name="loans_refused">
+        <item quantity="one">Ce prêt ne peut pas être prolongé</item>
+        <item quantity="other">Ces prêts ne peuvent pas être prolongés</item>
+    </plurals>
+    <string name="loans_partly_renewed">Prolongés : %1$d · non prolongeables : %2$d</string>
+    <string name="loans_renew_offline">Prolongation impossible hors ligne</string>
+    <string name="loans_renew_failed">La prolongation n’a pas abouti</string>
+    <!-- Holds -->
+    <string name="holds_ready">Prêtes à retirer</string>
+    <string name="holds_waiting">En attente</string>
+    <string name="holds_empty_title">Aucune réservation</string>
+    <string name="holds_empty_message">Un document est emprunté ? Réservez-le depuis sa fiche et choisissez où le retirer.</string>
+    <string name="holds_pickup_at">Retrait à %1$s</string>
+    <string name="holds_rank">Rang %1$d</string>
+    <string name="holds_not_before">Pas avant le %1$s</string>
+    <string name="holds_ready_until">À retirer jusqu’au %1$s</string>
+    <string name="holds_ready_pill">À retirer</string>
+    <string name="holds_cancel">Annuler la réservation</string>
+    <string name="holds_cancel_title">Annuler la réservation de « %1$s » ?</string>
+    <string name="holds_keep">Garder</string>
+    <string name="holds_cancelled">Réservation annulée</string>
+    <string name="holds_cancel_failed">L’annulation n’a pas abouti</string>
+    <!-- Welcome setup -->
+    <string name="welcome_primer_title">Ne ratez plus un retour</string>
+    <string name="welcome_primer_message">Un rappel trois jours avant chaque date de retour, et une alerte dès qu’une réservation vous attend. Rien d’autre.</string>
+    <string name="welcome_enable_notifications">Activer les notifications</string>
+    <string name="welcome_not_now">Pas maintenant</string>
+    <string name="welcome_settings_title">Vos réglages</string>
+    <string name="welcome_settings_footer">Modifiables à tout moment dans Mes configurations.</string>
+    <string name="welcome_notifications">Notifications</string>
+    <string name="welcome_loan_reminders">Rappels de retour</string>
+    <string name="welcome_loan_reminders_detail">3 jours avant et le jour J</string>
+    <string name="welcome_hold_alerts">Réservations</string>
+    <string name="welcome_hold_alerts_detail">Dès qu’un document arrive</string>
+    <string name="welcome_agenda_digest">Agenda</string>
+    <string name="welcome_agenda_digest_detail">Les animations du lundi</string>
+    <string name="welcome_notifications_off">Notifications désactivées</string>
+    <string name="welcome_notifications_off_detail">Pour recevoir les rappels de retour, autorisez les notifications dans les paramètres.</string>
+    <string name="welcome_notifications_later">Vous pourrez les activer plus tard dans Mes configurations.</string>
+    <string name="welcome_open_settings">Ouvrir les paramètres</string>
+    <string name="welcome_security">Sécurité</string>
+    <string name="welcome_biometric_lock">Verrouiller avec l’empreinte ou le visage</string>
+    <string name="welcome_biometric_lock_detail">Au lancement et après 2 minutes en arrière-plan</string>
+    <string name="welcome_finish">Terminer</string>
+    <!-- Coming in the next versions -->
+    <string name="home_more">Mon espace</string>
 </resources>

@@ -43,4 +43,21 @@
         <item quantity="other">%d holds</item>
     </plurals>
     <string name="document_share">Share</string>
+    <string name="hold_action">Place a hold</string>
+    <string name="hold_sign_in_title">Sign in to place a hold</string>
+    <string name="hold_sign_in_message">Open the Account tab and sign in with your library card.</string>
+    <string name="hold_ok">OK</string>
+    <string name="hold_forbidden">Holds are suspended on your account. Ask at the front desk.</string>
+    <string name="hold_where">Where do you want to pick it up?</string>
+    <string name="hold_preparing">Finding pickup locations…</string>
+    <string name="hold_confirm">Confirm the hold</string>
+    <string name="hold_done">Hold placed</string>
+    <string name="hold_failed">Hold not possible</string>
+    <string name="hold_not_holdable">This item can’t be held right now.</string>
+    <string name="hold_offline">Can’t place a hold while offline.</string>
+    <string name="hold_signed_out">Sign in from the Account tab to place a hold.</string>
+    <string name="hold_error">The hold didn’t go through. Try again in a moment.</string>
+    <string name="hold_home_library">Your library</string>
+    <string name="hold_retry">Try again</string>
+    <string name="hold_close">Close</string>
 </resources>

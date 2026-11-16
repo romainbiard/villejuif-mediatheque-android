@@ -88,4 +88,6 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation3)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.fragment)
 }

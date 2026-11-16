@@ -9,25 +9,32 @@ import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
 import android.view.Menu
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import fr.mediatheque.core.designsystem.theme.MediathequeTheme
 import fr.mediatheque.navigation.MediathequeApp
 import fr.mediatheque.navigation.TopLevelDestination
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-/** The only activity: edge to edge, the splash screen, then the app in Compose. */
+/**
+ * The only activity: edge to edge, the splash screen, then the app in Compose. A FragmentActivity because the
+ * biometric prompt needs one.
+ */
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     /** Keyboard shortcuts, forwarded to the navigation. */
     private val shortcuts = MutableSharedFlow<TopLevelDestination>(extraBufferCapacity = 1)
+
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        mainViewModel.restoreSession()
         enableEdgeToEdge()
         setContent {
             MediathequeTheme {

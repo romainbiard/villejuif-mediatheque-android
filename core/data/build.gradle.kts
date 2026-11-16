@@ -12,7 +12,7 @@ plugins {
 // BunkerWeb challenge solver (off-screen WebView).
 dependencies {
     api(projects.core.model)
-    implementation(projects.core.domain)
+    api(projects.core.domain)
     api(projects.core.bokeh)
     api(projects.core.datastore)
     implementation(libs.kotlinx.coroutines.core)
@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.androidx.webkit)
 
     testImplementation(testFixtures(projects.core.bokeh))
+    testImplementation(libs.androidx.datastore.preferences)
 
     // The BunkerWeb solver runs in a real WebView, on a device.
     androidTestImplementation(libs.androidx.test.runner)

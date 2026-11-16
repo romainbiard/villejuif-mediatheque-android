@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -23,9 +25,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,8 +41,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fr.mediatheque.core.data.LoadState
+import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.SkeletonRow
@@ -54,7 +62,10 @@ import fr.mediatheque.core.ui.parisFormat
 internal fun DocumentDetailScreen(viewModel: DocumentDetailViewModel, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val document = viewModel.document
     val copies by viewModel.copies.collectAsStateWithLifecycle()
+    val session by viewModel.session.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showsHold by rememberSaveable { mutableStateOf(false) }
+    var asksToSignIn by rememberSaveable { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -96,6 +107,30 @@ internal fun DocumentDetailScreen(viewModel: DocumentDetailViewModel, onBack: ()
                             )
                         }
                         StatusPill(listOfNotNull(document.kind.label, document.year).joinToString(" · "), StatusStyle.ACCENT)
+                    }
+                }
+
+                if (!document.kind.isDigital) {
+                    val patron = (session as? SessionStore.State.LoggedIn)?.patron
+                    if (patron?.permissions?.holdForbidden == true) {
+                        Text(
+                            stringResource(R.string.hold_forbidden),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    } else {
+                        Button(onClick = {
+                            if (patron !=
+                                null
+                            ) {
+                                showsHold = true
+                            } else {
+                                asksToSignIn = true
+                            }
+                        }, modifier = Modifier.fillMaxWidth()) {
+                            Icon(painterResource(DesignR.drawable.ic_bookmark), contentDescription = null, modifier = Modifier.size(18.dp))
+                            Text(stringResource(R.string.hold_action), Modifier.padding(start = 8.dp))
+                        }
                     }
                 }
 
@@ -154,6 +189,23 @@ internal fun DocumentDetailScreen(viewModel: DocumentDetailViewModel, onBack: ()
                 }
             }
         }
+    }
+    if (showsHold) {
+        val homeLibrary = (session as? SessionStore.State.LoggedIn)?.patron?.homeLibrary
+        HoldSheet(
+            viewModel = hiltViewModel<HoldViewModel, HoldViewModel.Factory>(key = "hold-${document.id}") {
+                it.create(document, homeLibrary)
+            },
+            onDismiss = { showsHold = false }
+        )
+    }
+    if (asksToSignIn) {
+        AlertDialog(
+            onDismissRequest = { asksToSignIn = false },
+            title = { Text(stringResource(R.string.hold_sign_in_title)) },
+            text = { Text(stringResource(R.string.hold_sign_in_message)) },
+            confirmButton = { TextButton(onClick = { asksToSignIn = false }) { Text(stringResource(R.string.hold_ok)) } }
+        )
     }
 }
 

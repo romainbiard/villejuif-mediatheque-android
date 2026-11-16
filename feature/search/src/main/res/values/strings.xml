@@ -43,4 +43,21 @@
         <item quantity="other">%d réservations</item>
     </plurals>
     <string name="document_share">Partager</string>
+    <string name="hold_action">Réserver</string>
+    <string name="hold_sign_in_title">Connectez-vous pour réserver</string>
+    <string name="hold_sign_in_message">Ouvrez l’onglet Compte et connectez-vous avec votre carte d’abonné.</string>
+    <string name="hold_ok">OK</string>
+    <string name="hold_forbidden">Les réservations sont suspendues sur votre compte. Renseignez-vous à l’accueil.</string>
+    <string name="hold_where">Où voulez-vous le retirer ?</string>
+    <string name="hold_preparing">Recherche des lieux de retrait…</string>
+    <string name="hold_confirm">Confirmer la réservation</string>
+    <string name="hold_done">Réservation enregistrée</string>
+    <string name="hold_failed">Réservation impossible</string>
+    <string name="hold_not_holdable">Ce document ne peut pas être réservé pour le moment.</string>
+    <string name="hold_offline">Réservation impossible hors ligne.</string>
+    <string name="hold_signed_out">Connectez-vous dans l’onglet Compte pour réserver.</string>
+    <string name="hold_error">La réservation n’a pas abouti. Réessayez dans un instant.</string>
+    <string name="hold_home_library">Votre médiathèque</string>
+    <string name="hold_retry">Réessayer</string>
+    <string name="hold_close">Fermer</string>
 </resources>
