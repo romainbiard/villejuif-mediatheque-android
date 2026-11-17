@@ -14,6 +14,7 @@ import fr.mediatheque.core.data.LoadError
 import fr.mediatheque.core.data.LoadState
 import fr.mediatheque.core.datastore.SettingsStore
 import fr.mediatheque.core.designsystem.R as DesignR
+import fr.mediatheque.core.designsystem.component.TileTint
 import fr.mediatheque.core.model.Availability
 import fr.mediatheque.core.model.DocumentKind
 import fr.mediatheque.core.model.Library
@@ -43,13 +44,13 @@ enum class SearchScope(@param:StringRes val title: Int, val kinds: List<Document
 }
 
 /** A tile that browses part of the catalog, newest first, without typing. */
-enum class ExploreShortcut(@param:StringRes val title: Int, @param:DrawableRes val icon: Int, val scope: SearchScope) {
-    NEW(R.string.search_explore_new, DesignR.drawable.ic_auto_awesome, SearchScope.BOOKS),
-    FILMS(R.string.search_explore_films, DesignR.drawable.ic_movie, SearchScope.DVD),
-    MUSIC(R.string.search_explore_music, DesignR.drawable.ic_music_note, SearchScope.CD),
-    EBOOKS(R.string.search_scope_ebooks, DesignR.drawable.ic_tablet_android, SearchScope.EBOOKS),
-    AUDIOBOOKS(R.string.search_scope_audiobooks, DesignR.drawable.ic_headphones, SearchScope.AUDIOBOOKS),
-    ONLINE_FILMS(R.string.search_scope_online_films, DesignR.drawable.ic_live_tv, SearchScope.ONLINE_FILMS)
+enum class ExploreShortcut(@param:StringRes val title: Int, @param:DrawableRes val icon: Int, val tint: TileTint, val scope: SearchScope) {
+    NEW(R.string.search_explore_new, DesignR.drawable.ic_auto_awesome, TileTint.MAGENTA, SearchScope.BOOKS),
+    FILMS(R.string.search_explore_films, DesignR.drawable.ic_movie, TileTint.VIOLET, SearchScope.DVD),
+    MUSIC(R.string.search_explore_music, DesignR.drawable.ic_music_note, TileTint.SUCCESS, SearchScope.CD),
+    EBOOKS(R.string.search_scope_ebooks, DesignR.drawable.ic_tablet_android, TileTint.DEEP_VIOLET, SearchScope.EBOOKS),
+    AUDIOBOOKS(R.string.search_scope_audiobooks, DesignR.drawable.ic_headphones, TileTint.WARNING, SearchScope.AUDIOBOOKS),
+    ONLINE_FILMS(R.string.search_scope_online_films, DesignR.drawable.ic_live_tv, TileTint.INK, SearchScope.ONLINE_FILMS)
 }
 
 data class SearchUiState(

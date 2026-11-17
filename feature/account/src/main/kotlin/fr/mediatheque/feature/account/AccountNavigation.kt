@@ -18,6 +18,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.designsystem.R as DesignR
+import fr.mediatheque.core.designsystem.component.TileTint
 import fr.mediatheque.core.model.Notice
 import fr.mediatheque.core.model.Selection
 import fr.mediatheque.core.ui.DetailPlaceholder

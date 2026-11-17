@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +24,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,10 +36,11 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +49,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -59,12 +66,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fr.mediatheque.core.data.LoadState
 import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.designsystem.component.EmptyState
+import fr.mediatheque.core.designsystem.component.IconTile
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.SkeletonRow
 import fr.mediatheque.core.designsystem.component.StateAction
 import fr.mediatheque.core.designsystem.component.StatusPill
 import fr.mediatheque.core.designsystem.component.StatusStyle
 import fr.mediatheque.core.designsystem.component.isLargeText
+import fr.mediatheque.core.designsystem.component.segmentShape
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.model.Availability
 import fr.mediatheque.core.model.Library
@@ -92,7 +101,8 @@ internal fun SearchScreen(viewModel: SearchViewModel, onOpen: (Notice) -> Unit, 
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            // Result rows are a segmented list, 2 dp apart; the other items add their own space above.
+            verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -106,14 +116,17 @@ internal fun SearchScreen(viewModel: SearchViewModel, onOpen: (Notice) -> Unit, 
                     onClear = viewModel::reset
                 )
             }
+            item { Spacer(Modifier.height(10.dp)) }
             item { Filters(state, onSelectScope = viewModel::selectScope, onSelectLibrary = viewModel::selectLibrary) }
             val results = state.results
             when {
                 results == null -> landing(state, viewModel)
 
-                results == LoadState.Loading -> items(5) { SkeletonRow(Modifier.readable()) }
+                results == LoadState.Loading -> items(5) { SkeletonRow(Modifier.readable().padding(top = 10.dp)) }
 
-                results is LoadState.Failed -> item { LoadErrorState(results.error, viewModel::retry, Modifier.readable()) }
+                results is LoadState.Failed -> item {
+                    LoadErrorState(results.error, viewModel::retry, Modifier.readable().padding(top = 12.dp))
+                }
 
                 results is LoadState.Loaded && results.value.isEmpty() -> item {
                     EmptyState(
@@ -128,7 +141,7 @@ internal fun SearchScreen(viewModel: SearchViewModel, onOpen: (Notice) -> Unit, 
                         } else {
                             null
                         },
-                        modifier = Modifier.readable()
+                        modifier = Modifier.readable().padding(top = 12.dp)
                     )
                 }
 
@@ -138,12 +151,16 @@ internal fun SearchScreen(viewModel: SearchViewModel, onOpen: (Notice) -> Unit, 
                             pluralStringResource(R.plurals.search_results, state.total, state.total),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.readable().semantics { liveRegion = LiveRegionMode.Polite }
+                            modifier = Modifier
+                                .readable()
+                                .padding(top = 14.dp, bottom = 6.dp)
+                                .semantics { liveRegion = LiveRegionMode.Polite }
                         )
                     }
-                    items(results.value, key = { it.id }) { notice ->
+                    val documents = results.value
+                    itemsIndexed(documents, key = { _, notice -> notice.id }) { index, notice ->
                         LaunchedEffect(notice.id) { viewModel.onRowShown(notice) }
-                        DocumentRow(notice, state.availability[notice.id], onOpen)
+                        DocumentRow(notice, state.availability[notice.id], segmentShape(index, documents.size), onOpen)
                     }
                     if (state.isLoadingMore) {
                         item { CircularProgressIndicator(Modifier.padding(16.dp)) }
@@ -157,9 +174,13 @@ internal fun SearchScreen(viewModel: SearchViewModel, onOpen: (Notice) -> Unit, 
 /** Search results no wider than reads well on a tablet. */
 private fun Modifier.readable() = padding(horizontal = 16.dp).widthIn(max = 720.dp).fillMaxWidth()
 
+/**
+ * The search field with the look of Material 3's search bar (56 dp, surfaceContainerHigh): a filled pill, the search
+ * icon leading, clear trailing.
+ */
 @Composable
 private fun SearchField(text: String, onTextChange: (String) -> Unit, onSubmit: () -> Unit, onClear: () -> Unit) {
-    OutlinedTextField(
+    TextField(
         value = text,
         onValueChange = onTextChange,
         placeholder = { Text(stringResource(R.string.search_placeholder)) },
@@ -172,10 +193,16 @@ private fun SearchField(text: String, onTextChange: (String) -> Unit, onSubmit: 
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(28.dp),
+        shape = CircleShape,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
-        modifier = Modifier.readable()
+        modifier = Modifier.readable().heightIn(min = 56.dp)
     )
 }
 
@@ -223,7 +250,7 @@ private fun Filters(state: SearchUiState, onSelectScope: (SearchScope) -> Unit, 
 private fun LazyListScope.landing(state: SearchUiState, viewModel: SearchViewModel) {
     if (state.recentSearches.isNotEmpty()) {
         item {
-            SectionHeader(stringResource(R.string.search_recent), Modifier.readable()) {
+            SectionHeader(stringResource(R.string.search_recent), Modifier.readable().padding(top = 14.dp)) {
                 TextButton(onClick = viewModel::clearRecentSearches) { Text(stringResource(R.string.search_clear)) }
             }
         }
@@ -250,7 +277,7 @@ private fun LazyListScope.landing(state: SearchUiState, viewModel: SearchViewMod
             }
         }
     }
-    item { SectionHeader(stringResource(R.string.search_explore), Modifier.readable()) }
+    item { SectionHeader(stringResource(R.string.search_explore), Modifier.readable().padding(top = 14.dp, bottom = 8.dp)) }
     item {
         FlowRow(
             Modifier.readable(),
@@ -266,8 +293,8 @@ private fun LazyListScope.landing(state: SearchUiState, viewModel: SearchViewMod
                     color = MediathequeColors.extended.card,
                     modifier = Modifier.weight(1f).heightIn(min = 88.dp)
                 ) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(painterResource(shortcut.icon), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        IconTile(shortcut.icon, shortcut.tint, size = 40.dp)
                         Text(stringResource(shortcut.title), style = MaterialTheme.typography.titleMedium)
                     }
                 }
@@ -276,30 +303,44 @@ private fun LazyListScope.landing(state: SearchUiState, viewModel: SearchViewMod
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun DocumentRow(notice: Notice, availability: Availability?, onOpen: (Notice) -> Unit) {
+private fun DocumentRow(notice: Notice, availability: Availability?, shape: Shape, onOpen: (Notice) -> Unit) {
     Surface(
         onClick = { onOpen(notice) },
-        shape = RoundedCornerShape(22.dp),
+        shape = shape,
         color = MediathequeColors.extended.card,
         modifier = Modifier.readable()
     ) {
-        Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             CoverImage(notice.coverUrl, notice.title, notice.id, Modifier.size(width = 56.dp, height = 80.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(notice.title, style = MaterialTheme.typography.titleMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
-                val byline = listOfNotNull(notice.authors.firstOrNull(), notice.year).joinToString(" · ")
-                if (byline.isNotEmpty()) {
-                    Text(byline, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Text(notice.kind.label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                when {
-                    notice.kind.isDigital -> StatusPill(stringResource(R.string.search_online_included), StatusStyle.ACCENT)
+                val byline = listOfNotNull(notice.authors.firstOrNull(), notice.kind.label, notice.year).joinToString(" · ")
+                Text(
+                    byline,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                val libraries = notice.harvestedCopies.mapNotNull { it.library?.shortName }.distinct().joinToString(", ")
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically
+                ) {
+                    when {
+                        notice.kind.isDigital -> StatusPill(stringResource(R.string.search_online_included), StatusStyle.ACCENT)
 
-                    availability != null -> StatusPill(
-                        availability.label,
-                        if (availability.isAvailable) StatusStyle.SUCCESS else StatusStyle.NEUTRAL
-                    )
+                        availability != null -> StatusPill(
+                            availability.label,
+                            if (availability.isAvailable) StatusStyle.SUCCESS else StatusStyle.NEUTRAL
+                        )
+                    }
+                    if (libraries.isNotEmpty() && !notice.kind.isDigital) {
+                        Text(libraries, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
             }
         }

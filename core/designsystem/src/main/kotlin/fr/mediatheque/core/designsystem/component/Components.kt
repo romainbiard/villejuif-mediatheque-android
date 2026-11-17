@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import fr.mediatheque.core.designsystem.R
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
@@ -247,3 +248,57 @@ private const val SOFT_ALPHA = 0.14f
 
 /** Tint opacity of a button that cannot be used (disabled or busy). */
 private const val DISABLED_ALPHA = 0.5f
+
+/** The color of an [IconTile], resolved against the theme. */
+enum class TileTint {
+    VIOLET,
+    SUCCESS,
+    MAGENTA,
+    WARNING,
+    DEEP_VIOLET,
+    INK,
+    INK_SECONDARY;
+
+    val color: Color
+        @Composable get() = when (this) {
+            VIOLET -> MaterialTheme.colorScheme.primary
+            SUCCESS -> MediathequeColors.extended.success
+            MAGENTA -> MediathequeColors.extended.magenta
+            WARNING -> MediathequeColors.extended.warning
+            DEEP_VIOLET -> MaterialTheme.colorScheme.secondary
+            INK -> MaterialTheme.colorScheme.onSurface
+            INK_SECONDARY -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
+}
+
+/**
+ * An icon on a colored rounded square, to tell menu rows and shortcuts apart at a glance. The icon takes the card's
+ * color (white in light, ink in dark), which keeps 4.5:1 on every tint in both themes. Decorative: the row's text
+ * says what it is.
+ */
+@Composable
+fun IconTile(@DrawableRes icon: Int, tint: TileTint, modifier: Modifier = Modifier, size: Dp = 32.dp) {
+    Icon(
+        painterResource(icon),
+        contentDescription = null,
+        tint = MediathequeColors.extended.card,
+        modifier = modifier
+            .size(size)
+            .background(tint.color, RoundedCornerShape(size * TILE_CORNER))
+            .padding(size * TILE_PADDING)
+    )
+}
+
+private const val TILE_CORNER = 0.3f
+private const val TILE_PADDING = 0.19f
+
+/**
+ * The shape of one row of a segmented list, as in Android's settings: the group's outer corners large, the inner ones
+ * small, rows a hair apart.
+ */
+fun segmentShape(index: Int, count: Int, outer: Dp = 22.dp, inner: Dp = 6.dp): RoundedCornerShape = RoundedCornerShape(
+    topStart = if (index == 0) outer else inner,
+    topEnd = if (index == 0) outer else inner,
+    bottomStart = if (index == count - 1) outer else inner,
+    bottomEnd = if (index == count - 1) outer else inner
+)

@@ -5,7 +5,9 @@
 package fr.mediatheque.feature.account
 
 import fr.mediatheque.core.data.AccountSync
+import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.data.demo.DemoAccountRepository
+import fr.mediatheque.core.data.demo.DemoSessionRepository
 import fr.mediatheque.core.datastore.InMemoryValueStore
 import fr.mediatheque.core.model.AccountSnapshot
 import fr.mediatheque.core.model.Inbox
@@ -56,6 +58,21 @@ class AccountScreenshotTest : ScreenshotTest() {
             onOpenNotifications = {},
             linkGroups = accountLinkGroups {}
         )
+    }
+
+    @Test
+    fun login() {
+        val settings = settingsStore(storeScope, folder.root)
+        val account = DemoAccountRepository()
+        val sessionStore = SessionStore(
+            DemoSessionRepository(),
+            InMemoryValueStore(),
+            settings,
+            AccountSync(account, InMemoryValueStore(), InMemoryValueStore(), SilentSyncNotifier, settings, clock),
+            clock
+        )
+        val viewModel = LoginViewModel(DemoSessionRepository(), sessionStore)
+        capture("account_login") { LoginScreen(viewModel) }
     }
 
     @Test

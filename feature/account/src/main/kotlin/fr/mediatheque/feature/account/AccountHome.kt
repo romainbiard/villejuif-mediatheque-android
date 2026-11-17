@@ -5,7 +5,6 @@
 package fr.mediatheque.feature.account
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -56,10 +55,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.mediatheque.core.data.LoadError
 import fr.mediatheque.core.designsystem.R as DesignR
+import fr.mediatheque.core.designsystem.component.IconTile
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.StaleBanner
 import fr.mediatheque.core.designsystem.component.StatusPill
 import fr.mediatheque.core.designsystem.component.StatusStyle
+import fr.mediatheque.core.designsystem.component.TileTint
 import fr.mediatheque.core.designsystem.component.isLargeText
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.model.AccountSnapshot
@@ -72,28 +73,6 @@ import java.time.Instant
 
 /** A link in the account's menu: its title, and its icon on a colored tile. */
 internal data class AccountLink(val title: Int, @param:DrawableRes val icon: Int, val tint: TileTint, val onClick: () -> Unit)
-
-/** The color of a menu row's icon tile, resolved against the theme. */
-internal enum class TileTint {
-    VIOLET,
-    SUCCESS,
-    MAGENTA,
-    WARNING,
-    DEEP_VIOLET,
-    INK,
-    INK_SECONDARY;
-
-    val color: Color
-        @Composable get() = when (this) {
-            VIOLET -> MaterialTheme.colorScheme.primary
-            SUCCESS -> MediathequeColors.extended.success
-            MAGENTA -> MediathequeColors.extended.magenta
-            WARNING -> MediathequeColors.extended.warning
-            DEEP_VIOLET -> MaterialTheme.colorScheme.secondary
-            INK -> MaterialTheme.colorScheme.onSurface
-            INK_SECONDARY -> MaterialTheme.colorScheme.onSurfaceVariant
-        }
-}
 
 /**
  * Loans, late loans and holds to pick up. Counted from the loans and holds when they are read, so the counters always
@@ -376,15 +355,7 @@ private fun MenuRow(link: AccountLink, accessory: @Composable () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Icon(
-                painterResource(link.icon),
-                contentDescription = null,
-                tint = MediathequeColors.extended.card,
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(link.tint.color, RoundedCornerShape(10.dp))
-                    .padding(6.dp)
-            )
+            IconTile(link.icon, link.tint)
             val title = @Composable { titleModifier: Modifier ->
                 Text(stringResource(link.title), style = MaterialTheme.typography.titleMedium, modifier = titleModifier)
             }

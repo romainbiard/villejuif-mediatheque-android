@@ -8,7 +8,9 @@ import android.app.Activity
 import android.content.Context
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -41,7 +43,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +55,7 @@ import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -90,24 +96,42 @@ internal fun LoginScreen(viewModel: LoginViewModel, modifier: Modifier = Modifie
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val extended = MediathequeColors.extended
         Surface(
-            color = MediathequeColors.extended.brandSurface,
-            contentColor = MediathequeColors.extended.onBrandSurface,
+            color = extended.brandSurface,
+            contentColor = extended.onBrandSurface,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                Modifier.statusBarsPadding().padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Box(
+                Modifier.drawBehind {
+                    // The City's shapes, as on its posters and the iOS app: a magenta disc, a deep violet one, a yellow
+                    // dot and a cyan ring.
+                    drawCircle(extended.magenta, radius = 150.dp.toPx(), center = Offset(size.width - 20.dp.toPx(), 30.dp.toPx()))
+                    drawCircle(LoginDeepViolet, radius = 90.dp.toPx(), center = Offset(-10.dp.toPx(), size.height - 20.dp.toPx()))
+                    drawCircle(extended.yellow, radius = 12.dp.toPx(), center = Offset(size.width * 0.8f, size.height * 0.52f))
+                    drawCircle(
+                        extended.cyan,
+                        radius = 30.dp.toPx(),
+                        center = Offset(size.width * 0.85f, size.height - 10.dp.toPx()),
+                        style = Stroke(width = 8.dp.toPx())
+                    )
+                }
             ) {
-                VillejuifCrest(Modifier.size(width = 72.dp, height = 54.dp), tint = Color.White)
-                Text(stringResource(R.string.login_city), style = MaterialTheme.typography.labelLarge)
-                Text(
-                    stringResource(R.string.account_title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.semantics { heading() }
-                )
-                Text(stringResource(R.string.login_tagline), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+                Column(
+                    Modifier.statusBarsPadding().padding(horizontal = 24.dp, vertical = 32.dp).widthIn(max = 480.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        VillejuifCrest(Modifier.size(width = 64.dp, height = 48.dp), tint = Color.White)
+                        Text(stringResource(R.string.login_city), style = MaterialTheme.typography.titleMedium)
+                    }
+                    Text(
+                        stringResource(R.string.account_title),
+                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(top = 12.dp).semantics { heading() }
+                    )
+                    Text(stringResource(R.string.login_tagline), style = MaterialTheme.typography.bodyLarge)
+                }
             }
         }
         Column(
@@ -270,3 +294,6 @@ private fun LostPasswordSheet(initialCardNumber: String, onDismiss: () -> Unit, 
         }
     }
 }
+
+// The login header keeps the card's colors in both themes.
+private val LoginDeepViolet = Color(0xFF5714A4)
