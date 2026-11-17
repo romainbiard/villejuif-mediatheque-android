@@ -5,20 +5,26 @@
 package fr.mediatheque.feature.account
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -36,17 +42,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.mediatheque.core.data.LoadError
 import fr.mediatheque.core.designsystem.R as DesignR
-import fr.mediatheque.core.designsystem.component.PillRow
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.StaleBanner
 import fr.mediatheque.core.designsystem.component.StatusPill
@@ -61,8 +70,48 @@ import fr.mediatheque.core.ui.RefreshErrorBanner
 import fr.mediatheque.core.ui.parisFormat
 import java.time.Instant
 
-/** A link in the account's menu. */
-internal data class AccountLink(val title: Int, @param:DrawableRes val icon: Int, val onClick: () -> Unit)
+/** A link in the account's menu: its title, and its icon on a colored tile. */
+internal data class AccountLink(val title: Int, @param:DrawableRes val icon: Int, val tint: TileTint, val onClick: () -> Unit)
+
+/** The color of a menu row's icon tile, resolved against the theme. */
+internal enum class TileTint {
+    VIOLET,
+    SUCCESS,
+    MAGENTA,
+    WARNING,
+    DEEP_VIOLET,
+    INK,
+    INK_SECONDARY;
+
+    val color: Color
+        @Composable get() = when (this) {
+            VIOLET -> MaterialTheme.colorScheme.primary
+            SUCCESS -> MediathequeColors.extended.success
+            MAGENTA -> MediathequeColors.extended.magenta
+            WARNING -> MediathequeColors.extended.warning
+            DEEP_VIOLET -> MaterialTheme.colorScheme.secondary
+            INK -> MaterialTheme.colorScheme.onSurface
+            INK_SECONDARY -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
+}
+
+/**
+ * Loans, late loans and holds to pick up. Counted from the loans and holds when they are read, so the counters always
+ * agree with the pills of the lists below them; the portal's counters until then.
+ */
+internal data class AccountCounts(val loans: Int, val late: Int, val toPickUp: Int) {
+    companion object {
+        fun of(patron: Patron, snapshot: AccountSnapshot?, now: Instant): AccountCounts = if (snapshot != null) {
+            AccountCounts(
+                loans = snapshot.loans.size,
+                late = snapshot.loans.count { it.dueState(now) is Loan.DueState.Late },
+                toPickUp = snapshot.holds.count { it.isReadyForPickup }
+            )
+        } else {
+            with(patron.counters) { AccountCounts(loans, lateLoans, waitingToBePulled) }
+        }
+    }
+}
 
 /** A titled group of links under the loans and holds: the patron's lists, the profile. */
 internal data class AccountLinkGroup(val title: Int, val links: List<AccountLink>)
@@ -88,6 +137,8 @@ internal fun AccountHome(
     var confirmsSignOut by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) { onRefresh() }
     val warning = cardWarning(patron)
+    val counts = AccountCounts.of(patron, snapshot, now)
+    val isWide = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() } >= WIDE_WINDOW
 
     DestinationScaffold(
         title = stringResource(R.string.account_title),
@@ -129,35 +180,48 @@ internal fun AccountHome(
                         }
                     }
                 }
-                item {
-                    LoansSummary(
-                        patron = patron,
-                        loans = snapshot?.upcomingLoans,
-                        now = now,
-                        onOpenLoans = onOpenLoans,
-                        modifier = Modifier.readable()
-                    )
+                item { Counters(counts, onOpenLoans, onOpenHolds, Modifier.readable()) }
+                // On a wide window the home has room for the next returns, as the iPad's dashboard.
+                if (isWide) {
+                    item { LoansSummary(snapshot?.upcomingLoans, now, onOpenLoans, Modifier.readable()) }
                 }
                 item {
-                    Menu(
-                        listOf(
-                            AccountLink(R.string.home_my_loans, DesignR.drawable.ic_book_2, onOpenLoans),
-                            AccountLink(R.string.home_my_holds, DesignR.drawable.ic_bookmark, onOpenHolds)
-                        ),
-                        holdsBadge = patron.counters.waitingToBePulled,
-                        modifier = Modifier.readable()
-                    )
+                    Column(Modifier.readable(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        SectionHeader(stringResource(R.string.home_my_borrowings))
+                        Menu(
+                            listOf(
+                                AccountLink(R.string.home_my_loans, DesignR.drawable.ic_book_2, TileTint.VIOLET, onOpenLoans),
+                                AccountLink(R.string.home_my_holds, DesignR.drawable.ic_bookmark, TileTint.SUCCESS, onOpenHolds)
+                            ),
+                            accessory = { link ->
+                                when {
+                                    link.title == R.string.home_my_loans && counts.late > 0 -> StatusPill(
+                                        pluralStringResource(R.plurals.home_late, counts.late, counts.late),
+                                        StatusStyle.DANGER
+                                    )
+
+                                    link.title == R.string.home_my_holds && counts.toPickUp > 0 -> StatusPill(
+                                        pluralStringResource(R.plurals.home_to_pick_up, counts.toPickUp, counts.toPickUp),
+                                        StatusStyle.SUCCESS
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
                 linkGroups.forEach { group ->
                     item(key = group.title) {
                         Column(Modifier.readable(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             SectionHeader(stringResource(group.title))
-                            Menu(group.links, holdsBadge = 0)
+                            Menu(group.links)
                         }
                     }
                 }
                 item {
-                    TextButton(onClick = { confirmsSignOut = true }) {
+                    TextButton(
+                        onClick = { confirmsSignOut = true },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                    ) {
                         Icon(painterResource(DesignR.drawable.ic_logout), contentDescription = null)
                         Text(stringResource(R.string.home_sign_out), Modifier.padding(start = 8.dp))
                     }
@@ -192,29 +256,10 @@ private fun cardWarning(patron: Patron): String? = when {
 }
 
 @Composable
-private fun LoansSummary(patron: Patron, loans: List<Loan>?, now: Instant, onOpenLoans: () -> Unit, modifier: Modifier = Modifier) {
+private fun LoansSummary(loans: List<Loan>?, now: Instant, onOpenLoans: () -> Unit, modifier: Modifier = Modifier) {
     val largeText = isLargeText()
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        SectionHeader(stringResource(R.string.home_to_return)) {
-            PillRow {
-                if (patron.counters.lateLoans > 0) {
-                    StatusPill(
-                        pluralStringResource(R.plurals.home_late, patron.counters.lateLoans, patron.counters.lateLoans),
-                        StatusStyle.DANGER
-                    )
-                }
-                if (patron.counters.waitingToBePulled > 0) {
-                    StatusPill(
-                        pluralStringResource(
-                            R.plurals.home_to_pick_up,
-                            patron.counters.waitingToBePulled,
-                            patron.counters.waitingToBePulled
-                        ),
-                        StatusStyle.SUCCESS
-                    )
-                }
-            }
-        }
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(stringResource(R.string.home_to_return))
         Surface(onClick = onOpenLoans, shape = RoundedCornerShape(22.dp), color = MediathequeColors.extended.card) {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 when {
@@ -227,21 +272,19 @@ private fun LoansSummary(patron: Patron, loans: List<Loan>?, now: Instant, onOpe
                     )
 
                     else -> {
-                        loans.take(SUMMARY_LOANS).forEachIndexed { index, loan ->
-                            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        val shown = loans.take(SUMMARY_LOANS)
+                        shown.forEachIndexed { index, loan ->
+                            Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     loan.title,
+                                    style = MaterialTheme.typography.titleMedium,
                                     maxLines = if (largeText) 3 else 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                                 )
                                 DueStatePill(loan, now)
                             }
-                            if (index <
-                                minOf(loans.size, SUMMARY_LOANS) - 1
-                            ) {
-                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                            }
+                            if (index < shown.lastIndex) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         }
                         Text(
                             pluralStringResource(R.plurals.home_see_all_loans, loans.size, loans.size),
@@ -256,31 +299,111 @@ private fun LoansSummary(patron: Patron, loans: List<Loan>?, now: Instant, onOpe
     }
 }
 
+/** Loans, late and to pick up as three tiles, stacked at large text sizes so their labels are not cut. */
+@Composable
+private fun Counters(counts: AccountCounts, onOpenLoans: () -> Unit, onOpenHolds: () -> Unit, modifier: Modifier = Modifier) {
+    val tiles = @Composable { tileModifier: Modifier ->
+        CounterTile(
+            counts.loans,
+            pluralStringResource(R.plurals.home_counter_loans, counts.loans),
+            MaterialTheme.colorScheme.onSurface,
+            onOpenLoans,
+            tileModifier
+        )
+        CounterTile(
+            counts.late,
+            stringResource(R.string.home_counter_late),
+            MaterialTheme.colorScheme.error,
+            onOpenLoans,
+            tileModifier
+        )
+        CounterTile(
+            counts.toPickUp,
+            stringResource(R.string.home_counter_to_pick_up),
+            MediathequeColors.extended.success,
+            onOpenHolds,
+            tileModifier
+        )
+    }
+    if (isLargeText()) {
+        Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) { tiles(Modifier.fillMaxWidth()) }
+    } else {
+        Row(modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            tiles(Modifier.weight(1f).fillMaxHeight())
+        }
+    }
+}
+
+@Composable
+private fun CounterTile(value: Int, label: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(22.dp),
+        color = MediathequeColors.extended.card,
+        modifier = modifier.semantics(mergeDescendants = true) {}
+    ) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            Text("$value", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold), color = color)
+            Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+private val WIDE_WINDOW = 600.dp
+
 private const val SUMMARY_LOANS = 3
 
 @Composable
-private fun Menu(links: List<AccountLink>, holdsBadge: Int, modifier: Modifier = Modifier) {
+private fun Menu(links: List<AccountLink>, modifier: Modifier = Modifier, accessory: @Composable (AccountLink) -> Unit = {}) {
     Surface(shape = RoundedCornerShape(22.dp), color = MediathequeColors.extended.card, modifier = modifier) {
         Column {
             links.forEachIndexed { index, link ->
-                Surface(onClick = link.onClick, color = MediathequeColors.extended.card) {
-                    Row(
-                        Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Icon(painterResource(link.icon), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Text(stringResource(link.title), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                        if (link.title == R.string.home_my_holds && holdsBadge > 0) Badge { Text("$holdsBadge") }
-                        Icon(painterResource(DesignR.drawable.ic_chevron_right), contentDescription = null)
-                    }
-                }
-                if (index <
-                    links.lastIndex
-                ) {
-                    HorizontalDivider(Modifier.padding(start = 56.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                MenuRow(link, accessory = { accessory(link) })
+                if (index < links.lastIndex) {
+                    HorizontalDivider(Modifier.padding(start = 62.dp), color = MaterialTheme.colorScheme.outlineVariant)
                 }
             }
+        }
+    }
+}
+
+/** An icon on its colored tile, the title, a status pill (beside it, or under it at large text sizes), a chevron. */
+@Composable
+private fun MenuRow(link: AccountLink, accessory: @Composable () -> Unit) {
+    Surface(onClick = link.onClick, color = MediathequeColors.extended.card) {
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                painterResource(link.icon),
+                contentDescription = null,
+                tint = MediathequeColors.extended.card,
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(link.tint.color, RoundedCornerShape(10.dp))
+                    .padding(6.dp)
+            )
+            val title = @Composable { titleModifier: Modifier ->
+                Text(stringResource(link.title), style = MaterialTheme.typography.titleMedium, modifier = titleModifier)
+            }
+            if (isLargeText()) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    title(Modifier)
+                    accessory()
+                }
+            } else {
+                Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                    title(Modifier.weight(1f).padding(end = 8.dp))
+                    accessory()
+                }
+            }
+            Icon(
+                painterResource(DesignR.drawable.ic_chevron_right),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

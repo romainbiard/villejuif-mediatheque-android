@@ -47,6 +47,8 @@ fun DestinationScaffold(
                 title = { Text(title) },
                 navigationIcon = navigationIcon,
                 actions = actions,
+                // A notch lower than Material's 152 dp: the title stays close to the content, as a large title.
+                expandedHeight = 128.dp,
                 scrollBehavior = scrollBehavior
             )
         },

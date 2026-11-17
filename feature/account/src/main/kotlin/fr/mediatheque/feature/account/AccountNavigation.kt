@@ -140,16 +140,16 @@ internal fun accountLinkGroups(onOpen: (NavKey) -> Unit) = listOf(
     AccountLinkGroup(
         R.string.home_my_lists,
         listOf(
-            AccountLink(R.string.home_selections, DesignR.drawable.ic_favorite) { onOpen(SelectionsRoute) },
-            AccountLink(R.string.home_reviews, DesignR.drawable.ic_star) { onOpen(ReviewsRoute) },
-            AccountLink(R.string.home_suggestions, DesignR.drawable.ic_lightbulb) { onOpen(SuggestionsRoute) }
+            AccountLink(R.string.home_selections, DesignR.drawable.ic_favorite_filled, TileTint.MAGENTA) { onOpen(SelectionsRoute) },
+            AccountLink(R.string.home_reviews, DesignR.drawable.ic_star_filled, TileTint.WARNING) { onOpen(ReviewsRoute) },
+            AccountLink(R.string.home_suggestions, DesignR.drawable.ic_lightbulb, TileTint.DEEP_VIOLET) { onOpen(SuggestionsRoute) }
         )
     ),
     AccountLinkGroup(
         R.string.home_my_profile,
         listOf(
-            AccountLink(R.string.home_information, DesignR.drawable.ic_badge) { onOpen(InformationRoute) },
-            AccountLink(R.string.home_settings, DesignR.drawable.ic_settings) { onOpen(SettingsRoute) }
+            AccountLink(R.string.home_information, DesignR.drawable.ic_badge, TileTint.INK) { onOpen(InformationRoute) },
+            AccountLink(R.string.home_settings, DesignR.drawable.ic_settings, TileTint.INK_SECONDARY) { onOpen(SettingsRoute) }
         )
     )
 )

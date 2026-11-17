@@ -283,4 +283,13 @@
     </plurals>
     <string name="account_detail_placeholder_title">Your account</string>
     <string name="account_detail_placeholder_message">Your loans, holds, lists and settings open here.</string>
+    <string name="home_my_borrowings">My loans and holds</string>
+    <plurals name="home_counter_loans">
+        <item quantity="one">Loan</item>
+        <item quantity="other">Loans</item>
+    </plurals>
+    <string name="home_counter_late">Late</string>
+    <string name="home_counter_to_pick_up">To pick up</string>
+    <string name="card_free">Free</string>
+    <string name="card_valid_until_long">Card valid until %1$s</string>
 </resources>

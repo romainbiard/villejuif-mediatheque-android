@@ -297,4 +297,14 @@
     </plurals>
     <string name="account_detail_placeholder_title">Votre compte</string>
     <string name="account_detail_placeholder_message">Vos prêts, réservations, listes et réglages s’ouvrent ici.</string>
+    <string name="home_my_borrowings">Mes emprunts</string>
+    <plurals name="home_counter_loans">
+        <item quantity="one">Prêt</item>
+        <item quantity="many">Prêts</item>
+        <item quantity="other">Prêts</item>
+    </plurals>
+    <string name="home_counter_late">En retard</string>
+    <string name="home_counter_to_pick_up">À retirer</string>
+    <string name="card_free">Gratuit</string>
+    <string name="card_valid_until_long">Carte valable jusqu’au %1$s</string>
 </resources>

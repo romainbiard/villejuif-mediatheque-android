@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -44,11 +46,14 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.designsystem.component.VillejuifCrest
+import fr.mediatheque.core.designsystem.component.isLargeText
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.domain.Code39
 import fr.mediatheque.core.model.Patron
@@ -74,11 +79,17 @@ internal fun Barcode(value: String, modifier: Modifier = Modifier) {
 
 private const val WIDE_RATIO = 3.0
 
-/** The card on the account's home: tap it to show it full screen at the front desk. */
+/**
+ * The card on the account's home, as the plastic card: the City's crest, the patron's name and the card's validity on
+ * the brand violet, two discs of the City's colors in the corner, and the barcode on white. Tap it to show it full
+ * screen at the front desk.
+ */
 @Composable
 internal fun LibraryCardSummary(patron: Patron, onOpen: () -> Unit, modifier: Modifier = Modifier) {
     val description = stringResource(R.string.card_description, patron.displayName, patron.cardNumber)
     val action = stringResource(R.string.card_tap_to_enlarge)
+    val largeText = isLargeText()
+    val magenta = MediathequeColors.extended.magenta
     Surface(
         onClick = onOpen,
         shape = RoundedCornerShape(28.dp),
@@ -89,23 +100,72 @@ internal fun LibraryCardSummary(patron: Patron, onOpen: () -> Unit, modifier: Mo
             role = Role.Button
         }
     ) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                VillejuifCrest(Modifier.size(width = 40.dp, height = 30.dp), tint = Color.White)
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.card_title), style = MaterialTheme.typography.labelLarge)
-                    Text(patron.displayName, style = MaterialTheme.typography.titleLarge)
+        Column(
+            Modifier
+                .drawBehind {
+                    // The City's discs, cut by the card's corner as on the website's banners.
+                    drawCircle(magenta.copy(alpha = 0.55f), radius = 110.dp.toPx(), center = Offset(size.width - 30.dp.toPx(), 0f))
+                    drawCircle(DeepViolet.copy(alpha = 0.7f), radius = 60.dp.toPx(), center = Offset(size.width, 120.dp.toPx()))
                 }
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(verticalAlignment = Alignment.Top) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        VillejuifCrest(Modifier.size(width = 34.dp, height = 26.dp), tint = Color.White)
+                        Text(stringResource(R.string.card_title), style = MaterialTheme.typography.labelLarge)
+                    }
+                    Text(
+                        patron.displayName,
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    patron.cardExpiry?.let {
+                        Text(
+                            stringResource(R.string.card_valid_until_long, parisFormat().dayMonthYear(it)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = LocalContentColor.current.copy(alpha = 0.85f)
+                        )
+                    }
+                }
+                if (!largeText) FreePill()
             }
-            Surface(shape = RoundedCornerShape(12.dp), color = Color.White) {
-                Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Barcode(patron.cardNumber, Modifier.fillMaxWidth().height(56.dp).clearAndSetSemantics {})
-                    Text(patron.cardNumber, style = MaterialTheme.typography.labelLarge, color = Color.Black)
+            Surface(shape = RoundedCornerShape(18.dp), color = Color.White, contentColor = CardInk) {
+                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Barcode(patron.cardNumber, Modifier.fillMaxWidth().height(48.dp).clearAndSetSemantics {})
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            patron.cardNumber,
+                            style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp),
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (!largeText) {
+                            Text(action, style = MaterialTheme.typography.bodySmall, color = CardInkSecondary, maxLines = 1)
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+/** Library membership is free in Villejuif: said on the card, as on the City's website. */
+@Composable
+private fun FreePill() {
+    Text(
+        stringResource(R.string.card_free),
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier
+            .background(Color.White.copy(alpha = 0.22f), RoundedCornerShape(14.dp))
+            .padding(horizontal = 10.dp, vertical = 5.dp)
+    )
+}
+
+// The card keeps its colors in the dark theme, like the plastic card.
+private val DeepViolet = Color(0xFF5714A4)
+private val CardInk = Color(0xFF1C1B22)
+private val CardInkSecondary = Color(0xFF5E5B66)
 
 /**
  * The card full screen for the front desk's reader: brightness at maximum and the screen kept on while shown, both
