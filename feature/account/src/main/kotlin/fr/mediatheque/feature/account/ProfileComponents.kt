@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -58,7 +59,9 @@ internal fun ProfileScaffold(
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }, modifier = modifier) { outer ->
         DestinationScaffold(
             title = title,
-            modifier = Modifier.padding(outer),
+            // The outer scaffold only hosts the snackbar: its insets are consumed, or the top bar would add the
+            // status bar a second time.
+            modifier = Modifier.padding(outer).consumeWindowInsets(outer),
             navigationIcon = { BackButton(onBack) },
             actions = actions,
             content = content

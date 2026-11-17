@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -114,7 +115,9 @@ internal fun DigitalScreen(viewModel: DigitalViewModel, onOpenAccount: () -> Uni
             session = session,
             actions = actions,
             onOpenAccount = onOpenAccount,
-            modifier = Modifier.padding(outer)
+            // The outer scaffold only hosts the snackbar: its insets are consumed, or the top bar would add the
+            // status bar a second time.
+            modifier = Modifier.padding(outer).consumeWindowInsets(outer)
         )
     }
 

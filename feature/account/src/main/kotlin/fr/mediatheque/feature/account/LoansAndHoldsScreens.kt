@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -102,7 +103,9 @@ internal fun LoansScreen(viewModel: LoansViewModel, onBack: () -> Unit, modifier
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }, modifier = modifier) { outer ->
         DestinationScaffold(
             title = stringResource(R.string.home_my_loans),
-            modifier = Modifier.padding(outer),
+            // The outer scaffold only hosts the snackbar: its insets are consumed, or the top bar would add the
+            // status bar a second time.
+            modifier = Modifier.padding(outer).consumeWindowInsets(outer),
             navigationIcon = { BackButton(onBack) },
             actions = {
                 val loans = state.loans.valueOrNull.orEmpty()
@@ -227,7 +230,9 @@ internal fun HoldsScreen(viewModel: HoldsViewModel, onBack: () -> Unit, modifier
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }, modifier = modifier) { outer ->
         DestinationScaffold(
             title = stringResource(R.string.home_my_holds),
-            modifier = Modifier.padding(outer),
+            // The outer scaffold only hosts the snackbar: its insets are consumed, or the top bar would add the
+            // status bar a second time.
+            modifier = Modifier.padding(outer).consumeWindowInsets(outer),
             navigationIcon = { BackButton(onBack) }
         ) { padding ->
             LazyColumn(

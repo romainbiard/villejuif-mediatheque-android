@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -23,14 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.mediatheque.core.designsystem.component.EmptyState
 
 /**
- * A top-level destination: a large title that collapses on scroll, over the content.
+ * A top-level destination: the small top app bar, its title at the top from the start, over the content. The bar
+ * stays pinned and takes on its scrolled color once the content runs under it.
  * The window insets of the navigation bar are left to the app's navigation suite.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,40 +40,20 @@ fun DestinationScaffold(
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
-    // A short window (a phone in landscape) gets the small top app bar: the large one would take a third of the height.
-    val isShort = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() } < SHORT_WINDOW
-    val scrollBehavior = if (isShort) {
-        TopAppBarDefaults.pinnedScrollBehavior()
-    } else {
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            if (isShort) {
-                TopAppBar(
-                    title = { Text(title) },
-                    navigationIcon = navigationIcon,
-                    actions = actions,
-                    scrollBehavior = scrollBehavior
-                )
-            } else {
-                LargeTopAppBar(
-                    title = { Text(title) },
-                    navigationIcon = navigationIcon,
-                    actions = actions,
-                    // A notch lower than Material's 152 dp: the title stays close to the content, as a large title.
-                    expandedHeight = 128.dp,
-                    scrollBehavior = scrollBehavior
-                )
-            }
+            TopAppBar(
+                title = { Text(title) },
+                navigationIcon = navigationIcon,
+                actions = actions,
+                scrollBehavior = scrollBehavior
+            )
         },
         content = content
     )
 }
-
-/** Below Material's medium height class: a phone in landscape. */
-private val SHORT_WINDOW = 480.dp
 
 /** A destination whose screens come in a later version: its title, and a word about it. */
 @Composable
