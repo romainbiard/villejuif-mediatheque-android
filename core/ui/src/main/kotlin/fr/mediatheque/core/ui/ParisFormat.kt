@@ -36,6 +36,9 @@ class ParisFormat(private val locale: Locale) {
     /** "4 novembre". */
     fun dayMonth(instant: Instant): String = pattern(if (locale.language == "en") "MMMM d" else "d MMMM").format(instant)
 
+    /** "March 14, 2027" / "14 mars 2027". */
+    fun dayMonthYear(instant: Instant): String = pattern(if (locale.language == "en") "MMMM d, yyyy" else "d MMMM yyyy").format(instant)
+
     /** "mercredi 4 novembre". */
     fun weekdayDayMonth(instant: Instant): String = pattern(if (locale.language == "en") "EEEE, MMMM d" else "EEEE d MMMM").format(instant)
 

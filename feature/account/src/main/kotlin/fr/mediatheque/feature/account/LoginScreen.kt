@@ -208,7 +208,7 @@ private fun scanCard(context: Context, onScanned: (String) -> Unit) {
 }
 
 /** After a sign-in, offers to keep the card number and password in the patron's password manager. */
-private suspend fun offerToSave(activity: Activity, credentials: Credentials) {
+internal suspend fun offerToSave(activity: Activity, credentials: Credentials) {
     try {
         CredentialManager.create(activity).createCredential(activity, CreatePasswordRequest(credentials.cardNumber, credentials.password))
     } catch (_: CreateCredentialException) {

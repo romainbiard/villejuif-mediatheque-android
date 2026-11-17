@@ -60,4 +60,12 @@
     <string name="hold_home_library">Your library</string>
     <string name="hold_retry">Try again</string>
     <string name="hold_close">Close</string>
+    <string name="document_favorite">My favorites</string>
+    <string name="document_more">Other selections</string>
+    <string name="selection_favorites">My favorites</string>
+    <string name="selection_read">Already read</string>
+    <string name="selection_to_read">To read</string>
+    <string name="selection_added">Added to “%1$s”</string>
+    <string name="selection_removed">Removed from “%1$s”</string>
+    <string name="selection_failed">The selection could not be changed</string>
 </resources>

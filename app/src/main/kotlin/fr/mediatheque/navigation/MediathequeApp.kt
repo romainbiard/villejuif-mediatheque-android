@@ -32,6 +32,7 @@ import fr.mediatheque.feature.account.accountEntries
 import fr.mediatheque.feature.agenda.agendaEntries
 import fr.mediatheque.feature.digital.digitalEntries
 import fr.mediatheque.feature.info.infoEntries
+import fr.mediatheque.feature.search.DocumentRoute
 import fr.mediatheque.feature.search.searchEntries
 import kotlinx.coroutines.flow.Flow
 
@@ -105,7 +106,7 @@ fun MediathequeApp(shortcuts: Flow<TopLevelDestination>, modifier: Modifier = Mo
                 rememberViewModelStoreNavEntryDecorator<NavKey>()
             ),
             entryProvider = entryProvider {
-                accountEntries(navigator)
+                accountEntries(navigator, documentRoute = ::DocumentRoute)
                 searchEntries(navigator)
                 agendaEntries(navigator)
                 digitalEntries(navigator)

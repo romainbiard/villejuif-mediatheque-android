@@ -5,16 +5,19 @@
 package fr.mediatheque.core.model
 
 import java.time.Instant
+import kotlinx.serialization.Serializable
 
 // Patron space other than loans and holds. Displayed labels live in the UI resources
 // (one language per device), not in the model.
 
-/** A patron's wish list ("panier" on the Bokeh side). */
+/** A patron's wish list ("panier" on the Bokeh side). Serializable: a navigation route carries it. */
+@Serializable
 data class Selection(
     val id: Int,
     val basketId: Int?,
     val name: String,
     val count: Int,
+    @Serializable(with = InstantSerializer::class)
     val updatedAt: Instant?,
     val coverUrls: List<String>
 )

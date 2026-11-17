@@ -8,15 +8,16 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.designsystem.R as DesignR
-import fr.mediatheque.core.ui.ComingSoonDestination
+import fr.mediatheque.core.model.Notice
+import fr.mediatheque.core.model.Selection
 import fr.mediatheque.core.ui.LoadingState
 import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
@@ -34,15 +35,37 @@ data object HoldsRoute : NavKey
 @Serializable
 data object NotificationsRoute : NavKey
 
-/** The account's screens: the home and, on a wide window, the section beside it. */
+@Serializable
+data object SelectionsRoute : NavKey
+
+@Serializable
+data class SelectionRoute(val selection: Selection) : NavKey
+
+@Serializable
+data object ReviewsRoute : NavKey
+
+@Serializable
+data object SuggestionsRoute : NavKey
+
+@Serializable
+data object InformationRoute : NavKey
+
+@Serializable
+data object SettingsRoute : NavKey
+
+/**
+ * The account's screens: the home and, on a wide window, the section beside it. [documentRoute] opens a record from a
+ * selection: the record page belongs to the search feature.
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator) {
+fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator, documentRoute: (Notice) -> NavKey) {
     entry<AccountRoute>(metadata = ListDetailSceneStrategy.listPane(sceneKey = AccountRoute)) {
         AccountScreen(
             viewModel = hiltViewModel(),
             onOpenLoans = { navigator.navigate(LoansRoute) },
             onOpenHolds = { navigator.navigate(HoldsRoute) },
-            onOpenNotifications = { navigator.navigate(NotificationsRoute) }
+            onOpenNotifications = { navigator.navigate(NotificationsRoute) },
+            onOpen = navigator::navigate
         )
     }
     entry<LoansRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
@@ -52,9 +75,52 @@ fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator) {
         HoldsScreen(hiltViewModel(), onBack = navigator::back)
     }
     entry<NotificationsRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
-        ComingSoonDestination(stringResource(R.string.home_notifications), DesignR.drawable.ic_notifications)
+        NotificationsScreen(hiltViewModel(), onOpenSettings = { navigator.navigate(SettingsRoute) }, onBack = navigator::back)
+    }
+    entry<SelectionsRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
+        SelectionsScreen(hiltViewModel(), onOpen = { navigator.navigate(SelectionRoute(it)) }, onBack = navigator::back)
+    }
+    entry<SelectionRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) { route ->
+        SelectionDetailScreen(
+            viewModel = hiltViewModel<SelectionDetailViewModel, SelectionDetailViewModel.Factory>(key = "selection-${route.selection.id}") {
+                it.create(route.selection)
+            },
+            onOpen = { navigator.navigate(documentRoute(it)) },
+            onBack = navigator::back
+        )
+    }
+    entry<ReviewsRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
+        ReviewsScreen(hiltViewModel(), onBack = navigator::back)
+    }
+    entry<SuggestionsRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
+        SuggestionsScreen(hiltViewModel(), onBack = navigator::back)
+    }
+    entry<InformationRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
+        InformationScreen(hiltViewModel(), onBack = navigator::back)
+    }
+    entry<SettingsRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
+        ProfileSettingsScreen(hiltViewModel(), onBack = navigator::back)
     }
 }
+
+/** The patron's lists and profile, under loans and holds. */
+private fun accountLinkGroups(onOpen: (NavKey) -> Unit) = listOf(
+    AccountLinkGroup(
+        R.string.home_my_lists,
+        listOf(
+            AccountLink(R.string.home_selections, DesignR.drawable.ic_favorite) { onOpen(SelectionsRoute) },
+            AccountLink(R.string.home_reviews, DesignR.drawable.ic_star) { onOpen(ReviewsRoute) },
+            AccountLink(R.string.home_suggestions, DesignR.drawable.ic_lightbulb) { onOpen(SuggestionsRoute) }
+        )
+    ),
+    AccountLinkGroup(
+        R.string.home_my_profile,
+        listOf(
+            AccountLink(R.string.home_information, DesignR.drawable.ic_badge) { onOpen(InformationRoute) },
+            AccountLink(R.string.home_settings, DesignR.drawable.ic_settings) { onOpen(SettingsRoute) }
+        )
+    )
+)
 
 /** What the account shows, by sign-in state: loading, locked, the sign-in form, the welcome setup, or the account. */
 @Composable
@@ -63,6 +129,7 @@ internal fun AccountScreen(
     onOpenLoans: () -> Unit,
     onOpenHolds: () -> Unit,
     onOpenNotifications: () -> Unit,
+    onOpen: (NavKey) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val session by viewModel.session.collectAsStateWithLifecycle()
@@ -95,7 +162,7 @@ internal fun AccountScreen(
                 onOpenLoans = onOpenLoans,
                 onOpenHolds = onOpenHolds,
                 onOpenNotifications = onOpenNotifications,
-                links = emptyList(),
+                linkGroups = remember(onOpen) { accountLinkGroups(onOpen) },
                 modifier = modifier
             )
         }

@@ -62,6 +62,9 @@ import java.time.Instant
 /** A link in the account's menu. */
 internal data class AccountLink(val title: Int, @param:DrawableRes val icon: Int, val onClick: () -> Unit)
 
+/** A titled group of links under the loans and holds: the patron's lists, the profile. */
+internal data class AccountLinkGroup(val title: Int, val links: List<AccountLink>)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountHome(
@@ -76,7 +79,7 @@ internal fun AccountHome(
     onOpenLoans: () -> Unit,
     onOpenHolds: () -> Unit,
     onOpenNotifications: () -> Unit,
-    links: List<AccountLink>,
+    linkGroups: List<AccountLinkGroup>,
     modifier: Modifier = Modifier
 ) {
     var showsCard by rememberSaveable { mutableStateOf(false) }
@@ -138,10 +141,18 @@ internal fun AccountHome(
                         listOf(
                             AccountLink(R.string.home_my_loans, DesignR.drawable.ic_book_2, onOpenLoans),
                             AccountLink(R.string.home_my_holds, DesignR.drawable.ic_bookmark, onOpenHolds)
-                        ) + links,
+                        ),
                         holdsBadge = patron.counters.waitingToBePulled,
                         modifier = Modifier.readable()
                     )
+                }
+                linkGroups.forEach { group ->
+                    item(key = group.title) {
+                        Column(Modifier.readable(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            SectionHeader(stringResource(group.title))
+                            Menu(group.links, holdsBadge = 0)
+                        }
+                    }
                 }
                 item {
                     TextButton(onClick = { confirmsSignOut = true }) {

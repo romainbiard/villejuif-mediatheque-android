@@ -60,4 +60,12 @@
     <string name="hold_home_library">Votre médiathèque</string>
     <string name="hold_retry">Réessayer</string>
     <string name="hold_close">Fermer</string>
+    <string name="document_favorite">Mes préférés</string>
+    <string name="document_more">Autres sélections</string>
+    <string name="selection_favorites">Mes préférés</string>
+    <string name="selection_read">Déjà lu</string>
+    <string name="selection_to_read">À lire</string>
+    <string name="selection_added">Ajouté à « %1$s »</string>
+    <string name="selection_removed">Retiré de « %1$s »</string>
+    <string name="selection_failed">La sélection n’a pas pu être modifiée</string>
 </resources>
