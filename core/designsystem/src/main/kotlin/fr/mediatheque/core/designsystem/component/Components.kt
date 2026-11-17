@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import fr.mediatheque.core.designsystem.R
@@ -110,6 +111,9 @@ fun StatusPill(text: String, style: StatusStyle, modifier: Modifier = Modifier) 
         text = text,
         style = MaterialTheme.typography.labelMedium,
         color = foreground,
+        // One line at usual text sizes, as a chip; at large ones it may wrap rather than be cut.
+        maxLines = if (isLargeText()) Int.MAX_VALUE else 1,
+        overflow = TextOverflow.Ellipsis,
         modifier = modifier
             .background(background, RoundedCornerShape(8.dp))
             .padding(horizontal = 8.dp, vertical = 3.dp)

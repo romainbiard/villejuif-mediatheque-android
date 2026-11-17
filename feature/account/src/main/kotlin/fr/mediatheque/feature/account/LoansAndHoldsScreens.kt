@@ -7,9 +7,12 @@ package fr.mediatheque.feature.account
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -157,6 +160,7 @@ private val LoanSection.Kind.title: Int
         LoanSection.Kind.LATER -> R.string.loans_later
     }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LoanRow(loan: Loan, state: LoansUiState, onRenew: () -> Unit, modifier: Modifier = Modifier) {
     val largeText = isLargeText()
@@ -174,31 +178,36 @@ private fun LoanRow(loan: Loan, state: LoansUiState, onRenew: () -> Unit, modifi
         }
     }
     Surface(shape = RoundedCornerShape(22.dp), color = MediathequeColors.extended.card, modifier = modifier) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                CoverImage(loan.coverUrl, loan.title, loan.recordId ?: loan.id.hashCode(), Modifier.size(width = 52.dp, height = 76.dp))
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            CoverImage(loan.coverUrl, loan.title, loan.recordId ?: loan.id.hashCode(), Modifier.size(width = 52.dp, height = 76.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    loan.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = if (largeText) 4 else 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (loan.author.isNotBlank()) {
                     Text(
-                        loan.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = if (largeText) 4 else 2,
+                        loan.author,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = if (largeText) 2 else 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if (loan.author.isNotBlank()) {
-                        Text(
-                            loan.author,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = if (largeText) 2 else 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    DueStatePill(loan, state.now)
                 }
-                if (!largeText) action()
+                // The due date and the renew button share a line when they fit; otherwise the button goes under it,
+                // at the end. The pill never wraps: "À rendre le 20 novembre" reads at a glance.
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically
+                ) {
+                    DueStatePill(loan, state.now)
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) { action() }
+                }
             }
-            // At large text sizes the button goes under the text, which keeps the whole width.
-            if (largeText) Box(Modifier.align(Alignment.End)) { action() }
         }
     }
 }

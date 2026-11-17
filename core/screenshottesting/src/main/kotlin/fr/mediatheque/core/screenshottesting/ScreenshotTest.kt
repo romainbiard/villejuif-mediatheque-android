@@ -53,7 +53,8 @@ abstract class ScreenshotTest {
     /** Draws [content] in each variant and compares it with (or records) `src/test/screenshots/<name>_<variant>.png`. */
     protected fun capture(name: String, variants: List<ScreenshotVariant> = ScreenshotVariant.PHONE, content: @Composable () -> Unit) {
         variants.forEach { variant ->
-            RuntimeEnvironment.setQualifiers(variant.qualifiers)
+            // The locale with the device: setting the qualifiers alone would reset it to English.
+            RuntimeEnvironment.setQualifiers("fr-rFR-${variant.qualifiers}")
             captureRoboImage("src/test/screenshots/${name}_${variant.suffix}.png") {
                 ScreenshotFrame(variant, content)
             }
