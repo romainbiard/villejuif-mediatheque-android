@@ -81,6 +81,14 @@ fun MediathequeApp(
         shortcuts.collect { select(it) }
     }
 
+    // Locked again (after a stay in the background) or signed out: the account's screens close, whichever
+    // destination is shown. The digital tab closes its provider page itself.
+    LaunchedEffect(session) {
+        session.collect { state ->
+            if (SessionGuard.hidesAccountScreens(state)) SessionGuard.closeAccountScreens(backStacks.getValue(TopLevelDestination.ACCOUNT))
+        }
+    }
+
     // Notifications, the widget, app shortcuts and the Quick Settings tile open a destination at its root, then, for
     // the account's screens, the screen itself once the session is open (never past the biometric lock).
     LaunchedEffect(links) {

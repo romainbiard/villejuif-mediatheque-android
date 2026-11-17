@@ -104,6 +104,10 @@ class DigitalViewModel @Inject constructor(
 
     init {
         refreshInstalledApps()
+        // Signed out or locked again: the provider's page, opened with the patron's session, closes at once.
+        viewModelScope.launch {
+            session.collect { if (it !is SessionStore.State.LoggedIn) portalClosed() }
+        }
     }
 
     /** On resume (back from the Play Store or the settings): apps may have come or gone. */

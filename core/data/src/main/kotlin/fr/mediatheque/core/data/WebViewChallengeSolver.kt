@@ -11,6 +11,7 @@ import android.webkit.CookieManager
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.webkit.ProfileStore
@@ -124,6 +125,10 @@ class WebViewChallengeSolver @Inject constructor(@param:ApplicationContext priva
                     userAgentString = userAgent
                     allowFileAccess = false
                     allowContentAccess = false
+                    // The challenge page is the portal's, over HTTPS: nothing else may load or open.
+                    mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                    javaScriptCanOpenWindowsAutomatically = false
+                    safeBrowsingEnabled = true
                 }
                 return ChallengeSession(webView, cookieManager, profileName)
             }

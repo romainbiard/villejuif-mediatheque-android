@@ -8,11 +8,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import fr.mediatheque.core.model.DeviceSettings
 import fr.mediatheque.core.model.ReminderSettings
+import java.io.IOException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -24,9 +27,9 @@ import kotlinx.coroutines.flow.map
  * The file names match app/src/main/res/xml/data_extraction_rules.xml.
  */
 class SettingsStore(private val settings: DataStore<Preferences>, private val device: DataStore<Preferences>) {
-    val reminderSettings: Flow<ReminderSettings> = settings.data.map { it.reminderSettings() }
+    val reminderSettings: Flow<ReminderSettings> = settings.data.orEmptyOnFailure().map { it.reminderSettings() }
 
-    val deviceSettings: Flow<DeviceSettings> = device.data.map { preferences ->
+    val deviceSettings: Flow<DeviceSettings> = device.data.orEmptyOnFailure().map { preferences ->
         DeviceSettings(
             biometricLock = preferences[Keys.biometricLock] ?: false,
             onboardingDone = preferences[Keys.onboardingDone] ?: false
@@ -99,4 +102,12 @@ class SettingsStore(private val settings: DataStore<Preferences>, private val de
         /** Not backed up: `datastore/device.preferences_pb`. */
         const val DEVICE_FILE = "device"
     }
+}
+
+/**
+ * An unreadable file (I/O error, a file left by another install) reads as the defaults rather than failing every
+ * collector: the account screen would otherwise wait for its settings forever. Other errors are bugs and propagate.
+ */
+private fun Flow<Preferences>.orEmptyOnFailure(): Flow<Preferences> = catch { error ->
+    if (error is IOException) emit(emptyPreferences()) else throw error
 }

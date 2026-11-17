@@ -56,18 +56,23 @@ class SessionStore @Inject constructor(
     /** The account kept while locked after a stay in the background: the biometric check reopens it without signing in. */
     private var lockedPatron: Patron? = null
 
-    /** At launch, once: reopens the session if credentials are stored. The last known account shows at once. */
+    /**
+     * At launch, once: reopens the session if credentials are stored. The last known account shows at once.
+     *
+     * Only a restore that ran to the end counts: the caller's scope can be cancelled midway (the activity finished
+     * while the process lives on), and the next launch must try again rather than find [State.Restoring] for good.
+     */
     suspend fun restore() {
         mutex.withLock {
             if (restored) return
+            val hasCredentials = session.hasCredentials()
+            if (hasCredentials && settings.currentDeviceSettings().biometricLock) {
+                _state.value = State.Locked
+            } else {
+                reopen(hasCredentials)
+            }
             restored = true
         }
-        val hasCredentials = session.hasCredentials()
-        if (hasCredentials && settings.currentDeviceSettings().biometricLock) {
-            _state.value = State.Locked
-            return
-        }
-        reopen(hasCredentials)
     }
 
     /** The biometric check passed. */
@@ -79,7 +84,13 @@ class SessionStore @Inject constructor(
             return
         }
         _state.value = State.Restoring
-        reopen(hasCredentials = true)
+        try {
+            reopen(hasCredentials = true)
+        } catch (cancellation: CancellationException) {
+            // Interrupted: locked again, so the next check starts over instead of a spinner that never ends.
+            if (_state.value == State.Restoring) _state.value = State.Locked
+            throw cancellation
+        }
     }
 
     private suspend fun reopen(hasCredentials: Boolean) {

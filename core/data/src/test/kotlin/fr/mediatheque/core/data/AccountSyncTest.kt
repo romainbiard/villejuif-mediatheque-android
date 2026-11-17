@@ -21,7 +21,12 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -64,7 +69,12 @@ private class RecordingNotifier : SyncNotifier {
     }
 }
 
-private class FakeSession(var hasCredentials: Boolean = true, var restore: () -> Patron? = { SampleData.patron }) : SessionRepository {
+private class FakeSession(
+    var hasCredentials: Boolean = true,
+    var restore: suspend () -> Patron? = {
+        SampleData.patron
+    }
+) : SessionRepository {
     var loggedOut = false
 
     override suspend fun login(credentials: Credentials): Patron = SampleData.patron
@@ -134,6 +144,7 @@ class AccountSyncTest : StoreTest() {
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SessionStoreTest : StoreTest() {
     private val clock = MutableClock(Paris.instant(2026, 11, 17, 12))
     private val notifier = RecordingNotifier()
@@ -218,5 +229,38 @@ class SessionStoreTest : StoreTest() {
         assertEquals(1, notifier.cleared)
         assertFalse(settings.currentDeviceSettings().biometricLock)
         assertFalse(settings.currentDeviceSettings().onboardingDone)
+    }
+
+    @Test
+    fun aRestoreCancelledMidwayRunsAgainAtTheNextLaunch() = runTest {
+        val portal = CompletableDeferred<Patron?>()
+        val session = FakeSession(restore = { portal.await() })
+        val store = store(session)
+
+        // The first activity finishes while the portal has not answered: its scope is cancelled.
+        val first = launch { store.restore() }
+        runCurrent()
+        assertEquals(SessionStore.State.Restoring, store.state.value)
+        first.cancelAndJoin()
+
+        // The next launch reopens the session instead of keeping the spinner.
+        session.restore = { SampleData.patron }
+        store.restore()
+        assertEquals(SessionStore.State.LoggedIn(SampleData.patron), store.state.value)
+    }
+
+    @Test
+    fun anUnlockCancelledMidwayLocksAgain() = runTest {
+        val settings = settings()
+        settings.setBiometricLock(true)
+        val portal = CompletableDeferred<Patron?>()
+        val store = store(FakeSession(restore = { portal.await() }), settings)
+        store.restore()
+        assertEquals(SessionStore.State.Locked, store.state.value)
+
+        val unlock = launch { store.unlock() }
+        runCurrent()
+        unlock.cancelAndJoin()
+        assertEquals(SessionStore.State.Locked, store.state.value)
     }
 }

@@ -5,6 +5,7 @@
 package fr.mediatheque
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
@@ -15,6 +16,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import fr.mediatheque.core.designsystem.theme.MediathequeTheme
 import fr.mediatheque.core.model.AppLink
@@ -23,6 +27,7 @@ import fr.mediatheque.navigation.TopLevelDestination
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 /**
  * The only activity: edge to edge, the splash screen, then the app in Compose. A FragmentActivity because the
@@ -45,6 +50,14 @@ class MainActivity : FragmentActivity() {
         // After a configuration change or process death the link was already followed.
         if (savedInstanceState == null) handleLink(intent)
         enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // The lock would be pointless if the app switcher showed the last screen: no snapshot while it is on.
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    mainViewModel.biometricLock.collect { setRecentsScreenshotEnabled(!it) }
+                }
+            }
+        }
         setContent {
             MediathequeTheme {
                 MediathequeApp(shortcuts, links.receiveAsFlow(), mainViewModel.session)
