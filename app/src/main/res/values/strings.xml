@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Source language: French (like the iOS String Catalog). English translation in values-en. -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Médiathèque</string>
     <string name="tab_account">Compte</string>
     <string name="tab_search">Recherche</string>
@@ -9,4 +9,12 @@
     <string name="tab_info">Infos</string>
     <string name="shortcuts_navigation">Navigation</string>
     <string name="shortcut_search">Rechercher dans le catalogue</string>
+    <!-- App shortcuts: used by the generated res/xml/shortcuts.xml, which lint does not see. -->
+    <string name="shortcut_card_short" tools:ignore="UnusedResources">Ma carte</string>
+    <string name="shortcut_card_long" tools:ignore="UnusedResources">Afficher ma carte de bibliothèque</string>
+    <string name="shortcut_search_short" tools:ignore="UnusedResources">Rechercher</string>
+    <string name="shortcut_agenda_short" tools:ignore="UnusedResources">Agenda</string>
+    <string name="shortcut_agenda_long" tools:ignore="UnusedResources">Voir l’agenda des médiathèques</string>
+    <string name="shortcut_disabled" tools:ignore="UnusedResources">Ce raccourci n’est plus disponible</string>
+    <string name="tile_card">Ma carte</string>
 </resources>

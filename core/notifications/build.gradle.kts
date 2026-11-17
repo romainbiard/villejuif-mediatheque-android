@@ -7,11 +7,13 @@ plugins {
     alias(libs.plugins.mediatheque.hilt)
 }
 
-// Notification channels, content and scheduling (return reminders, reservations, agenda).
+// Notification channels, content and scheduling (return reminders, holds ready, agenda), and the background sync.
 dependencies {
     implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.work.runtime)
+    api(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 }

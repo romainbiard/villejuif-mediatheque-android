@@ -7,4 +7,11 @@
     <string name="tab_info">Info</string>
     <string name="shortcuts_navigation">Navigation</string>
     <string name="shortcut_search">Search the catalog</string>
+    <string name="shortcut_card_short">My card</string>
+    <string name="shortcut_card_long">Show my library card</string>
+    <string name="shortcut_search_short">Search</string>
+    <string name="shortcut_agenda_short">Events</string>
+    <string name="shortcut_agenda_long">See the libraries’ events</string>
+    <string name="shortcut_disabled">This shortcut is no longer available</string>
+    <string name="tile_card">My card</string>
 </resources>

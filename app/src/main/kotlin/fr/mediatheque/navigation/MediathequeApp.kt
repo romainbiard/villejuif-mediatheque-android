@@ -27,7 +27,13 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import fr.mediatheque.core.data.SessionStore
+import fr.mediatheque.core.model.AppLink
 import fr.mediatheque.core.ui.Navigator
+import fr.mediatheque.feature.account.CardRoute
+import fr.mediatheque.feature.account.HoldsRoute
+import fr.mediatheque.feature.account.LoansRoute
+import fr.mediatheque.feature.account.NotificationsRoute
 import fr.mediatheque.feature.account.accountEntries
 import fr.mediatheque.feature.agenda.agendaEntries
 import fr.mediatheque.feature.digital.digitalEntries
@@ -35,6 +41,8 @@ import fr.mediatheque.feature.info.infoEntries
 import fr.mediatheque.feature.search.DocumentRoute
 import fr.mediatheque.feature.search.searchEntries
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 
 /**
  * The app's frame: the navigation suite adapts to the window (bar on a phone, rail on a tablet, a foldable or a
@@ -42,7 +50,12 @@ import kotlinx.coroutines.flow.Flow
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class) // The list-detail scene strategy for Navigation 3.
 @Composable
-fun MediathequeApp(shortcuts: Flow<TopLevelDestination>, modifier: Modifier = Modifier) {
+fun MediathequeApp(
+    shortcuts: Flow<TopLevelDestination>,
+    links: Flow<AppLink>,
+    session: StateFlow<SessionStore.State>,
+    modifier: Modifier = Modifier
+) {
     var current by rememberSaveable { mutableStateOf(TopLevelDestination.START) }
     val backStacks: Map<TopLevelDestination, NavBackStack<NavKey>> =
         TopLevelDestination.entries.associateWith { rememberNavBackStack(it.route) }
@@ -66,6 +79,27 @@ fun MediathequeApp(shortcuts: Flow<TopLevelDestination>, modifier: Modifier = Mo
     // Ctrl+1…5 and Ctrl+F, received by MainActivity.onKeyShortcut.
     LaunchedEffect(shortcuts) {
         shortcuts.collect { select(it) }
+    }
+
+    // Notifications, the widget, app shortcuts and the Quick Settings tile open a destination at its root, then, for
+    // the account's screens, the screen itself once the session is open (never past the biometric lock).
+    LaunchedEffect(links) {
+        links.collect { link ->
+            val (destination, screen) = when (link) {
+                AppLink.SEARCH -> TopLevelDestination.SEARCH to null
+                AppLink.AGENDA -> TopLevelDestination.AGENDA to null
+                AppLink.CARD -> TopLevelDestination.ACCOUNT to CardRoute
+                AppLink.LOANS -> TopLevelDestination.ACCOUNT to LoansRoute
+                AppLink.HOLDS -> TopLevelDestination.ACCOUNT to HoldsRoute
+                AppLink.NOTIFICATIONS -> TopLevelDestination.ACCOUNT to NotificationsRoute
+            }
+            val stack = backStacks.getValue(destination)
+            stack.retainAll { it == destination.route }
+            current = destination
+            if (screen != null && session.first { it != SessionStore.State.Restoring } is SessionStore.State.LoggedIn) {
+                stack.add(screen)
+            }
+        }
     }
 
     NavigationSuiteScaffold(

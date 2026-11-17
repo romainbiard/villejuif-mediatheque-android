@@ -4,6 +4,7 @@
 
 package fr.mediatheque
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
@@ -16,9 +17,12 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import fr.mediatheque.core.designsystem.theme.MediathequeTheme
+import fr.mediatheque.core.model.AppLink
 import fr.mediatheque.navigation.MediathequeApp
 import fr.mediatheque.navigation.TopLevelDestination
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 /**
  * The only activity: edge to edge, the splash screen, then the app in Compose. A FragmentActivity because the
@@ -29,18 +33,34 @@ class MainActivity : FragmentActivity() {
     /** Keyboard shortcuts, forwarded to the navigation. */
     private val shortcuts = MutableSharedFlow<TopLevelDestination>(extraBufferCapacity = 1)
 
+    /** Screens opened from outside, kept until the navigation reads them (the first one arrives before it starts). */
+    private val links = Channel<AppLink>(Channel.CONFLATED)
+
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         mainViewModel.restoreSession()
+        // After a configuration change or process death the link was already followed.
+        if (savedInstanceState == null) handleLink(intent)
         enableEdgeToEdge()
         setContent {
             MediathequeTheme {
-                MediathequeApp(shortcuts)
+                MediathequeApp(shortcuts, links.receiveAsFlow(), mainViewModel.session)
             }
         }
+    }
+
+    /** A notification, the widget or a shortcut while the app is open (singleTop). */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleLink(intent)
+    }
+
+    private fun handleLink(intent: Intent) {
+        AppLink.fromKey(intent.getStringExtra(AppLink.EXTRA))?.let(links::trySend)
+        intent.removeExtra(AppLink.EXTRA)
     }
 
     /**

@@ -9,11 +9,15 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.mediatheque.core.data.SessionStore
 import javax.inject.Inject
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /** The app's launch: the session reopens once, whatever screen is shown first. */
 @HiltViewModel
 class MainViewModel @Inject constructor(private val sessionStore: SessionStore) : ViewModel() {
+    /** For links from outside (notifications, widget, shortcuts): account screens open only once signed in. */
+    val session: StateFlow<SessionStore.State> = sessionStore.state
+
     fun restoreSession() {
         viewModelScope.launch { sessionStore.restore() }
     }

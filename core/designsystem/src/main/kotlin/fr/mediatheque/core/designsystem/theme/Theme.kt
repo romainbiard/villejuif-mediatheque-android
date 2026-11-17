@@ -63,3 +63,9 @@ private fun rememberSystemHighContrast(): Boolean {
 }
 
 private const val MEDIUM_CONTRAST = 0.5f
+
+/** The brand color schemes, for surfaces outside the app's Compose tree (the home screen widget). */
+object MediathequeColorSchemes {
+    val light: androidx.compose.material3.ColorScheme get() = LightColors
+    val dark: androidx.compose.material3.ColorScheme get() = DarkColors
+}

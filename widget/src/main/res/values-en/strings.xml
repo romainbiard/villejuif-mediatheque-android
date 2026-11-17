@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_name">Upcoming returns</string>
+    <string name="widget_description">Your next items to return and the holds waiting for you.</string>
+    <string name="widget_header">To return</string>
+    <string name="widget_signed_out">Open the app and sign in to see your returns.</string>
+    <string name="widget_nothing">Nothing to return for now.</string>
+    <string name="widget_hold_ready">%s is waiting for you</string>
+    <plurals name="widget_holds_ready">
+        <item quantity="one">%d hold to pick up</item>
+        <item quantity="other">%d holds to pick up</item>
+    </plurals>
+    <plurals name="widget_late">
+        <item quantity="one">%d day late</item>
+        <item quantity="other">%d days late</item>
+    </plurals>
+    <string name="widget_today">Today</string>
+    <string name="widget_tomorrow">Tomorrow</string>
+    <plurals name="widget_in_days">
+        <item quantity="one">In %d day</item>
+        <item quantity="other">In %d days</item>
+    </plurals>
+    <string name="widget_preview_title_1">Chien pourri</string>
+    <string name="widget_preview_due_1">In 2 days</string>
+    <string name="widget_preview_title_2">Le Petit Prince</string>
+    <string name="widget_preview_due_2">In 12 days</string>
+</resources>

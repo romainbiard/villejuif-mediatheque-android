@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Return reminders and holds ready for pickup; asked after an explanation, never at launch. -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- POST_NOTIFICATIONS comes from core:notifications, which shows them. -->
 
     <!-- Backups: settings only, never the credentials or the account data
          (backup_rules up to Android 11, data_extraction_rules after that). -->
@@ -21,12 +21,44 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Generated per variant (app/build.gradle.kts): the shortcuts name the variant's package. -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
+
+        <!-- "Ma carte" in Quick Settings: the card full screen. -->
+        <service
+            android:name=".system.CardTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_badge"
+            android:label="@string/tile_card"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
+        </service>
+
+        <!-- WorkManager starts on demand with Hilt's worker factory (MediathequeApplication). -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 
 </manifest>

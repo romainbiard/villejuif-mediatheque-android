@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_loans_name">Return reminders</string>
+    <string name="channel_loans_description">A few days before the due date, then on the day itself.</string>
+    <string name="channel_holds_name">Holds ready</string>
+    <string name="channel_holds_description">When an item you placed on hold is waiting at the library.</string>
+    <string name="channel_agenda_name">This week’s events</string>
+    <string name="channel_agenda_description">On Monday mornings, the week’s events.</string>
+
+    <plurals name="loan_due_in_days_title">
+        <item quantity="one">Due in %d day</item>
+        <item quantity="other">Due in %d days</item>
+    </plurals>
+    <string name="loan_due_in_days_body">“%1$s” is due on %2$s. You can renew it from the app.</string>
+    <plurals name="loan_due_in_days_body_several">
+        <item quantity="one">%1$d item is due on %2$s. You can renew it from the app.</item>
+        <item quantity="other">%1$d items are due on %2$s. You can renew them from the app.</item>
+    </plurals>
+    <string name="loan_due_today_title">Due today</string>
+    <string name="loan_due_today_body">“%1$s” is due today. Renew it if you haven’t finished.</string>
+    <plurals name="loan_due_today_body_several">
+        <item quantity="one">%d item is due today. Renew it if you haven’t finished.</item>
+        <item quantity="other">%d items are due today. Renew them if you haven’t finished.</item>
+    </plurals>
+
+    <string name="hold_ready_title">A hold is waiting for you</string>
+    <string name="hold_ready_body">“%1$s” is ready to pick up at %2$s.</string>
+    <string name="hold_ready_body_until">“%1$s” is ready to pick up at %2$s until %3$s.</string>
+
+    <string name="agenda_title">This week at your libraries</string>
+    <string name="agenda_body">Readings, workshops, screenings: see what’s coming up in the agenda.</string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Source language: French. English translation in values-en. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="fr">
+    <string name="channel_loans_name">Rappels de retour</string>
+    <string name="channel_loans_description">Quelques jours avant la date de retour, puis le jour même.</string>
+    <string name="channel_holds_name">Réservations disponibles</string>
+    <string name="channel_holds_description">Quand un document réservé vous attend à la médiathèque.</string>
+    <string name="channel_agenda_name">Agenda de la semaine</string>
+    <string name="channel_agenda_description">Le lundi matin, les animations de la semaine.</string>
+
+    <plurals name="loan_due_in_days_title">
+        <item quantity="one">À rendre dans %d jour</item>
+        <item quantity="many">À rendre dans %d jours</item>
+        <item quantity="other">À rendre dans %d jours</item>
+    </plurals>
+    <string name="loan_due_in_days_body">« %1$s » à rendre le %2$s. Vous pouvez prolonger depuis l’app.</string>
+    <plurals name="loan_due_in_days_body_several">
+        <item quantity="one">%1$d document à rendre le %2$s. Vous pouvez prolonger depuis l’app.</item>
+        <item quantity="many">%1$d documents à rendre le %2$s. Vous pouvez prolonger depuis l’app.</item>
+        <item quantity="other">%1$d documents à rendre le %2$s. Vous pouvez prolonger depuis l’app.</item>
+    </plurals>
+    <string name="loan_due_today_title">À rendre aujourd’hui</string>
+    <string name="loan_due_today_body">« %1$s » à rendre aujourd’hui. Prolongez-le si vous n’avez pas fini.</string>
+    <plurals name="loan_due_today_body_several">
+        <item quantity="one">%d document à rendre aujourd’hui. Prolongez-le si vous n’avez pas fini.</item>
+        <item quantity="many">%d documents à rendre aujourd’hui. Prolongez-les si vous n’avez pas fini.</item>
+        <item quantity="other">%d documents à rendre aujourd’hui. Prolongez-les si vous n’avez pas fini.</item>
+    </plurals>
+
+    <string name="hold_ready_title">Une réservation vous attend</string>
+    <string name="hold_ready_body">« %1$s » est à retirer à %2$s.</string>
+    <string name="hold_ready_body_until">« %1$s » est à retirer à %2$s jusqu’au %3$s.</string>
+
+    <string name="agenda_title">Cette semaine dans vos médiathèques</string>
+    <string name="agenda_body">Lectures, ateliers, projections : découvrez les animations à venir dans l’agenda.</string>
+</resources>

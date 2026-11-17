@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The picker's preview before Android 12, which cannot show the preview layout. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/widget_preview_background" />
+    <item
+        android:width="48dp"
+        android:height="48dp"
+        android:drawable="@drawable/ic_book_2"
+        android:gravity="center" />
+</layer-list>

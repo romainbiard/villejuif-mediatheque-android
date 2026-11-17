@@ -3,6 +3,12 @@
 // See LICENSE in the project root for the full license text and copyright notice.
 
 import java.util.Properties
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
 plugins {
     alias(libs.plugins.mediatheque.android.application)
@@ -63,6 +69,60 @@ android {
 // The demo is never published.
 androidComponents {
     beforeVariants(selector().withFlavor("data" to "demo").withBuildType("release")) { it.enable = false }
+
+    // Static app shortcuts name their target package, which differs per variant (and per local applicationId):
+    // the file is generated for each variant rather than written once in res/xml.
+    onVariants { variant ->
+        val name = variant.name.replaceFirstChar { it.uppercase() }
+        val task = tasks.register("generate${name}Shortcuts", GenerateShortcutsTask::class.java) {
+            applicationId.set(variant.applicationId)
+        }
+        variant.sources.res?.addGeneratedSourceDirectory(task, GenerateShortcutsTask::outputDirectory)
+    }
+}
+
+/** Writes res/xml/shortcuts.xml: "Ma carte", "Rechercher", "Agenda", each opening MainActivity on its screen. */
+abstract class GenerateShortcutsTask : DefaultTask() {
+    @get:Input
+    abstract val applicationId: Property<String>
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        fun shortcut(id: String, link: String, icon: String, short: String, long: String) = """
+            |    <shortcut
+            |        android:enabled="true"
+            |        android:icon="@drawable/$icon"
+            |        android:shortcutDisabledMessage="@string/shortcut_disabled"
+            |        android:shortcutId="$id"
+            |        android:shortcutLongLabel="@string/$long"
+            |        android:shortcutShortLabel="@string/$short">
+            |        <intent
+            |            android:action="android.intent.action.VIEW"
+            |            android:targetClass="fr.mediatheque.MainActivity"
+            |            android:targetPackage="${applicationId.get()}">
+            |            <extra
+            |                android:name="fr.mediatheque.extra.LINK"
+            |                android:value="$link" />
+            |        </intent>
+            |    </shortcut>
+        """.trimMargin()
+        val xml = listOf(
+            shortcut("card", "card", "ic_shortcut_card", "shortcut_card_short", "shortcut_card_long"),
+            shortcut("search", "search", "ic_shortcut_search", "shortcut_search_short", "shortcut_search"),
+            shortcut("agenda", "agenda", "ic_shortcut_agenda", "shortcut_agenda_short", "shortcut_agenda_long")
+        ).joinToString(
+            separator = "\n",
+            prefix = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<shortcuts xmlns:android=\"http://schemas.android.com/apk/res/android\">\n",
+            postfix = "\n</shortcuts>\n"
+        )
+        val file = outputDirectory.get().dir("xml").file("shortcuts.xml").asFile
+        file.parentFile.mkdirs()
+        file.writeText(xml)
+    }
 }
 
 dependencies {
@@ -90,4 +150,6 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.fragment)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
 }

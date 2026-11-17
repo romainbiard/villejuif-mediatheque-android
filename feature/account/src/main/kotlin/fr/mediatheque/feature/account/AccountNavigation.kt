@@ -7,6 +7,7 @@ package fr.mediatheque.feature.account
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,6 +26,10 @@ import kotlinx.serialization.Serializable
 /** Root of the account destination. */
 @Serializable
 data object AccountRoute : NavKey
+
+/** The library card full screen, opened from the app shortcut or the Quick Settings tile. */
+@Serializable
+data object CardRoute : NavKey
 
 @Serializable
 data object LoansRoute : NavKey
@@ -68,6 +73,9 @@ fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator, documentRout
             onOpen = navigator::navigate
         )
     }
+    entry<CardRoute> {
+        CardScreen(hiltViewModel(), onDismiss = navigator::back)
+    }
     entry<LoansRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
         LoansScreen(hiltViewModel(), onBack = navigator::back)
     }
@@ -100,6 +108,17 @@ fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator, documentRout
     }
     entry<SettingsRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AccountRoute)) {
         ProfileSettingsScreen(hiltViewModel(), onBack = navigator::back)
+    }
+}
+
+/** The card alone, for the signed-in patron; otherwise straight back to the account. */
+@Composable
+internal fun CardScreen(viewModel: AccountViewModel, onDismiss: () -> Unit) {
+    val session by viewModel.session.collectAsStateWithLifecycle()
+    when (val state = session) {
+        is SessionStore.State.LoggedIn -> FullScreenCard(state.patron, onDismiss = onDismiss)
+        SessionStore.State.Restoring -> LoadingState()
+        SessionStore.State.Locked, SessionStore.State.LoggedOut -> LaunchedEffect(Unit) { onDismiss() }
     }
 }
 
