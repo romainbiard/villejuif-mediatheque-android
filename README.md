@@ -88,6 +88,12 @@ build-logic/         # plugins Gradle de convention
 - **Aucun serveur intermédiaire, aucun traceur, aucune statistique.** Les données vont seulement de votre téléphone au portail des médiathèques.
 - Les identifiants restent sur l'appareil, chiffrés avec une clé de l'Android Keystore, et ne partent jamais dans les sauvegardes.
 
+## Publication
+
+La préparation de la fiche Google Play (textes, déclarations, captures, signature, étapes restantes) est dans
+[docs/play](docs/play/CHECKLIST.md), et la politique de confidentialité dans [docs/confidentialite.md](docs/confidentialite.md).
+Rien n'est publié depuis ce dépôt.
+
 ## Licence
 
 Code sous licence [MIT](LICENSE). Icônes : [Material Symbols](https://github.com/google/material-design-icons) de Google, sous licence Apache 2.0 (ajoutées par `scripts/material_symbol.py`). Le nom, le blason et l'identité visuelle de la Ville de Villejuif, ainsi que les marques des services numériques cités, appartiennent à leurs propriétaires respectifs.

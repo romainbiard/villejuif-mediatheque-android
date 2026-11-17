@@ -119,7 +119,7 @@
     <string name="welcome_enable_notifications">Activer les notifications</string>
     <string name="welcome_not_now">Pas maintenant</string>
     <string name="welcome_settings_title">Vos réglages</string>
-    <string name="welcome_settings_footer">Modifiables à tout moment dans Mes configurations.</string>
+    <string name="welcome_settings_footer">Modifiables à tout moment dans Mes réglages.</string>
     <string name="welcome_notifications">Notifications</string>
     <string name="welcome_loan_reminders">Rappels de retour</string>
     <string name="welcome_loan_reminders_detail">3 jours avant et le jour J</string>
@@ -129,7 +129,7 @@
     <string name="welcome_agenda_digest_detail">Les animations du lundi</string>
     <string name="welcome_notifications_off">Notifications désactivées</string>
     <string name="welcome_notifications_off_detail">Pour recevoir les rappels de retour, autorisez les notifications dans les paramètres.</string>
-    <string name="welcome_notifications_later">Vous pourrez les activer plus tard dans Mes configurations.</string>
+    <string name="welcome_notifications_later">Vous pourrez les activer plus tard dans Mes réglages.</string>
     <string name="welcome_open_settings">Ouvrir les paramètres</string>
     <string name="welcome_security">Sécurité</string>
     <string name="welcome_biometric_lock">Verrouiller avec l’empreinte ou le visage</string>

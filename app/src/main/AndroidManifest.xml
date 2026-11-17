@@ -5,6 +5,15 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- POST_NOTIFICATIONS comes from core:notifications, which shows them. -->
 
+    <!-- MapLibre declares location for its user-location layer, which the libraries map never uses: no location
+         request, no Play location declaration. -->
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"
+        tools:node="remove" />
+
     <!-- Backups: settings only, never the credentials or the account data
          (backup_rules up to Android 11, data_extraction_rules after that). -->
     <application

@@ -26,14 +26,41 @@ val applicationIdOverride: String? = providers.environmentVariable("MEDIATHEQUE_
     ?: providers.fileContents(rootProject.layout.projectDirectory.file("local.properties")).asText.orNull
         ?.let { text -> Properties().apply { load(text.reader()) }.getProperty("mediatheque.applicationId") }
 
+/**
+ * Upload key for Play (Play App Signing keeps the app signing key): never in the repo. Read from Gradle properties
+ * (~/.gradle/gradle.properties) or environment variables (CI secrets). Without them, release builds stay unsigned,
+ * which is enough to check R8 locally; see docs/play/SIGNATURE.md.
+ */
+fun signingValue(property: String, variable: String): String? =
+    providers.gradleProperty(property).orNull ?: providers.environmentVariable(variable).orNull
+
+val uploadStoreFile = signingValue("mediatheque.upload.storeFile", "MEDIATHEQUE_UPLOAD_STORE_FILE")
+val uploadStorePassword = signingValue("mediatheque.upload.storePassword", "MEDIATHEQUE_UPLOAD_STORE_PASSWORD")
+val uploadKeyAlias = signingValue("mediatheque.upload.keyAlias", "MEDIATHEQUE_UPLOAD_KEY_ALIAS")
+val uploadKeyPassword = signingValue("mediatheque.upload.keyPassword", "MEDIATHEQUE_UPLOAD_KEY_PASSWORD")
+val hasUploadKey = listOf(uploadStoreFile, uploadStorePassword, uploadKeyAlias, uploadKeyPassword).all { !it.isNullOrBlank() }
+
 android {
     namespace = "fr.mediatheque"
 
     defaultConfig {
         applicationId = applicationIdOverride ?: "com.example.mediatheque"
-        // CI build number (GITHUB_RUN_NUMBER), 1 locally.
-        versionCode = providers.environmentVariable("VERSION_CODE").orNull?.toInt() ?: 1
-        versionName = "0.1.0"
+        // Each upload to Play needs a higher versionCode: the CI passes VERSION_CODE, a local release build sets
+        // mediatheque.versionCode. versionName is the version shown on the store (docs/play/SIGNATURE.md).
+        versionCode = (providers.environmentVariable("VERSION_CODE").orNull ?: providers.gradleProperty("mediatheque.versionCode").orNull)
+            ?.toInt() ?: 1
+        versionName = providers.gradleProperty("mediatheque.versionName").get()
+    }
+
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = file(uploadStoreFile!!)
+                storePassword = uploadStorePassword
+                keyAlias = uploadKeyAlias
+                keyPassword = uploadKeyPassword
+            }
+        }
     }
 
     // demo: fictitious data, no network (screenshots, UI tests, trying the app without a card). prod: the portal.
@@ -60,6 +87,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (hasUploadKey) signingConfig = signingConfigs.getByName("upload")
         }
     }
 
