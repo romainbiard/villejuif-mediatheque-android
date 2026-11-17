@@ -8,8 +8,13 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -29,6 +35,7 @@ import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.window.core.layout.WindowSizeClass
 import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.model.AppLink
 import fr.mediatheque.core.ui.Navigator
@@ -112,18 +119,23 @@ fun MediathequeApp(
         }
     }
 
+    // Material's current recommendation: a short bar on a phone (labels beside the icons in landscape, where height is
+    // scarce) and a rail on wider windows.
+    val navigationSuiteType = NavigationSuiteScaffoldDefaults.navigationSuiteType(currentWindowAdaptiveInfoV2())
     NavigationSuiteScaffold(
         modifier = modifier,
-        navigationSuiteItems = {
+        navigationSuiteType = navigationSuiteType,
+        navigationItems = {
             TopLevelDestination.entries.forEach { destination ->
                 val selected = destination == current
-                item(
+                NavigationSuiteItem(
                     selected = selected,
                     onClick = { select(destination) },
                     icon = {
                         Icon(painterResource(if (selected) destination.selectedIcon else destination.icon), contentDescription = null)
                     },
-                    label = { Text(stringResource(destination.label)) }
+                    label = { Text(stringResource(destination.label)) },
+                    navigationSuiteType = navigationSuiteType
                 )
             }
         }
@@ -131,7 +143,7 @@ fun MediathequeApp(
         // Each destination decorates its own stack, as Navigation 3 asks for several back stacks: switching
         // destinations then keeps the other one's screens, their ViewModels and saved state (scroll position, typed
         // text) instead of treating them as popped and rebuilding them on return.
-        val listDetail = rememberListDetailSceneStrategy<NavKey>()
+        val listDetail = rememberListDetailSceneStrategy<NavKey>(directive = paneDirective())
         val entriesByDestination = TopLevelDestination.entries.associateWith { destination ->
             key(destination) {
                 val stack = backStacks.getValue(destination)
@@ -171,4 +183,18 @@ private class StackNavigator(private val stack: NavBackStack<NavKey>) : Navigato
     override fun back() {
         if (stack.size > 1) stack.removeLastOrNull()
     }
+}
+
+/**
+ * Material's pane directive, with one change: a short window (a phone in landscape, under 480 dp high) keeps a single
+ * pane. Material only looks at the width, which gave a landscape phone the tablet's list and detail, with an empty
+ * detail half most of the time. Tablets, foldables and desktop windows keep two panes.
+ */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+private fun paneDirective(): PaneScaffoldDirective {
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
+    val directive = calculatePaneScaffoldDirective(adaptiveInfo)
+    val isShort = !adaptiveInfo.windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    return if (isShort) directive.copy(maxHorizontalPartitions = 1, horizontalPartitionSpacerSize = 0.dp) else directive
 }
