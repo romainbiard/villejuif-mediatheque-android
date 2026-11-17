@@ -13,6 +13,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -126,34 +128,47 @@ fun MediathequeApp(
             }
         }
     ) {
-        val navigator = remember(backStack) {
-            object : Navigator {
-                override fun navigate(key: NavKey) {
-                    backStack.add(key)
-                }
-
-                override fun back() {
-                    if (backStack.size > 1) backStack.removeLastOrNull()
-                }
+        // Each destination decorates its own stack, as Navigation 3 asks for several back stacks: switching
+        // destinations then keeps the other one's screens, their ViewModels and saved state (scroll position, typed
+        // text) instead of treating them as popped and rebuilding them on return.
+        val listDetail = rememberListDetailSceneStrategy<NavKey>()
+        val entriesByDestination = TopLevelDestination.entries.associateWith { destination ->
+            key(destination) {
+                val stack = backStacks.getValue(destination)
+                val navigator = remember(stack) { StackNavigator(stack) }
+                rememberDecoratedNavEntries(
+                    backStack = stack,
+                    entryDecorators = listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        // Each screen's ViewModel lives as long as the screen stays in its stack.
+                        rememberViewModelStoreNavEntryDecorator()
+                    ),
+                    entryProvider = entryProvider {
+                        accountEntries(navigator, documentRoute = ::DocumentRoute)
+                        searchEntries(navigator)
+                        agendaEntries(navigator)
+                        digitalEntries(navigator, onOpenAccount = { select(TopLevelDestination.ACCOUNT) })
+                        infoEntries(navigator)
+                    }
+                )
             }
         }
         NavDisplay(
-            backStack = backStack,
+            entries = entriesByDestination.getValue(current),
             onBack = { backStack.removeLastOrNull() },
             // List and detail side by side on a wide window (search, agenda), one after the other on a phone.
-            sceneStrategies = listOf(rememberListDetailSceneStrategy<NavKey>()),
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
-                // Each screen's ViewModel lives as long as the screen stays in the back stack.
-                rememberViewModelStoreNavEntryDecorator<NavKey>()
-            ),
-            entryProvider = entryProvider {
-                accountEntries(navigator, documentRoute = ::DocumentRoute)
-                searchEntries(navigator)
-                agendaEntries(navigator)
-                digitalEntries(navigator, onOpenAccount = { select(TopLevelDestination.ACCOUNT) })
-                infoEntries(navigator)
-            }
+            sceneStrategies = listOf(listDetail)
         )
+    }
+}
+
+/** Navigation inside one destination's stack; Back never leaves its root (the frame handles that). */
+private class StackNavigator(private val stack: NavBackStack<NavKey>) : Navigator {
+    override fun navigate(key: NavKey) {
+        stack.add(key)
+    }
+
+    override fun back() {
+        if (stack.size > 1) stack.removeLastOrNull()
     }
 }

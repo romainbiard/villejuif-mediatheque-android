@@ -190,6 +190,7 @@ internal fun AccountScreen(
                 isRefreshing = isRefreshing,
                 unread = unread,
                 now = viewModel.now,
+                onShown = viewModel::onShown,
                 onRefresh = viewModel::refresh,
                 onSignOut = viewModel::logout,
                 onOpenLoans = onOpenLoans,

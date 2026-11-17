@@ -25,6 +25,7 @@ import fr.mediatheque.core.model.Loan
 import fr.mediatheque.core.model.ReminderSettings
 import fr.mediatheque.core.model.RenewalResult
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -82,11 +83,32 @@ class AccountViewModel @Inject constructor(
 
     val now: Instant get() = clock.instant()
 
-    /** The account opened: read again, with the sync (snapshot, reminders, notification center) alongside. */
-    fun refresh() {
-        if (sessionStore.patron == null || _isRefreshing.value) return
+    private var lastRefresh: Instant? = null
+    private var isLoading = false
+
+    /**
+     * The account shown: reads it again in the background when the last read is older than [STALE_AFTER], without the
+     * pull-to-refresh indicator (the last account read is on screen meanwhile). Coming back from another destination or
+     * a sub-screen within that time reads nothing.
+     */
+    fun onShown() {
         viewModelScope.launch {
-            _isRefreshing.value = true
+            if (_snapshot.value == null) _snapshot.value = snapshots.load()
+            _unreadNotifications.value = inbox.load()?.unreadCount ?: 0
+        }
+        val last = lastRefresh
+        if (last == null || Duration.between(last, clock.instant()) >= STALE_AFTER) load(showsIndicator = false)
+    }
+
+    /** Pull to refresh: reads the account again now, with the indicator. */
+    fun refresh() = load(showsIndicator = true)
+
+    /** Reads the patron again, with the sync (snapshot, reminders, notification center) alongside. */
+    private fun load(showsIndicator: Boolean) {
+        if (sessionStore.patron == null || isLoading) return
+        isLoading = true
+        viewModelScope.launch {
+            _isRefreshing.value = showsIndicator
             if (_snapshot.value == null) _snapshot.value = snapshots.load()
             val sync = async { runCatching { accountSync.run() }.getOrNull() }
             try {
@@ -94,12 +116,15 @@ class AccountViewModel @Inject constructor(
                 sessionStore.update(patron)
                 accountSync.recordLibraryMessage(patron.message, patron.hasUnreadMessage)
                 _refreshError.value = null
+                lastRefresh = clock.instant()
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (error: Exception) {
                 val loadError = LoadError.from(error)
                 if (loadError == LoadError.NotLoggedIn) sessionStore.logout()
                 _refreshError.value = loadError
+            } finally {
+                isLoading = false
             }
             sync.await()?.let { _snapshot.value = it }
             _unreadNotifications.value = inbox.load()?.unreadCount ?: 0
@@ -113,6 +138,11 @@ class AccountViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch { sessionStore.logout() }
+    }
+
+    internal companion object {
+        /** The portal is read again when the account is shown after this long. */
+        val STALE_AFTER: Duration = Duration.ofMinutes(5)
     }
 }
 

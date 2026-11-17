@@ -9,8 +9,10 @@ import fr.mediatheque.core.data.AccountRepository
 import fr.mediatheque.core.data.AccountSync
 import fr.mediatheque.core.data.LoadError
 import fr.mediatheque.core.data.LoadState
+import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.data.SyncNotifier
 import fr.mediatheque.core.data.demo.DemoAccountRepository
+import fr.mediatheque.core.data.demo.DemoSessionRepository
 import fr.mediatheque.core.datastore.InMemoryValueStore
 import fr.mediatheque.core.datastore.SettingsStore
 import fr.mediatheque.core.domain.Reminder
@@ -18,6 +20,7 @@ import fr.mediatheque.core.model.AccountSnapshot
 import fr.mediatheque.core.model.Hold
 import fr.mediatheque.core.model.Loan
 import fr.mediatheque.core.model.Paris
+import fr.mediatheque.core.model.Patron
 import fr.mediatheque.core.model.RenewalResult
 import fr.mediatheque.core.model.SampleData
 import fr.mediatheque.core.testing.MainDispatcherRule
@@ -30,6 +33,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -139,5 +143,46 @@ class AccountViewModelsTest {
         advanceUntilIdle()
         assertTrue(viewModel.state.value.ready.isEmpty())
         assertEquals(AccountMessage.HoldCancelled, viewModel.state.value.message)
+    }
+
+    @Test
+    fun theAccountIsReadAgainOnlyWhenStale() = runTest {
+        var reads = 0
+        val account = object : AccountRepository by DemoAccountRepository() {
+            override suspend fun patron(): Patron {
+                reads++
+                return SampleData.patron
+            }
+        }
+        val settings = SettingsStore(
+            settings = PreferenceDataStoreFactory.create(scope = backgroundScope) { File(folder.root, "s.preferences_pb") },
+            device = PreferenceDataStoreFactory.create(scope = backgroundScope) { File(folder.root, "d.preferences_pb") }
+        )
+        val accountSync = AccountSync(account, snapshots, InMemoryValueStore(), SilentNotifier, settings, clock)
+        val sessionStore = SessionStore(DemoSessionRepository(), InMemoryValueStore(), settings, accountSync, clock)
+        sessionStore.restore()
+        val viewModel = AccountViewModel(sessionStore, account, accountSync, snapshots, InMemoryValueStore(), settings, clock)
+
+        viewModel.onShown()
+        advanceUntilIdle()
+        assertEquals(1, reads)
+        assertFalse("an automatic read shows no indicator", viewModel.isRefreshing.value)
+
+        // Back from another destination a minute later: nothing read.
+        clock.now = clock.now.plusSeconds(60)
+        viewModel.onShown()
+        advanceUntilIdle()
+        assertEquals(1, reads)
+
+        // Pull to refresh always reads.
+        viewModel.refresh()
+        advanceUntilIdle()
+        assertEquals(2, reads)
+
+        // Shown again after the stale delay: read again.
+        clock.now = clock.now.plus(AccountViewModel.STALE_AFTER)
+        viewModel.onShown()
+        advanceUntilIdle()
+        assertEquals(3, reads)
     }
 }

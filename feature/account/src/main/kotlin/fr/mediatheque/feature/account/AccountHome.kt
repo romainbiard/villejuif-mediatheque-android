@@ -104,6 +104,7 @@ internal fun AccountHome(
     isRefreshing: Boolean,
     unread: Int,
     now: Instant,
+    onShown: () -> Unit,
     onRefresh: () -> Unit,
     onSignOut: () -> Unit,
     onOpenLoans: () -> Unit,
@@ -114,7 +115,7 @@ internal fun AccountHome(
 ) {
     var showsCard by rememberSaveable { mutableStateOf(false) }
     var confirmsSignOut by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(Unit) { onRefresh() }
+    LaunchedEffect(Unit) { onShown() }
     val warning = cardWarning(patron)
     val counts = AccountCounts.of(patron, snapshot, now)
     val isWide = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() } >= WIDE_WINDOW

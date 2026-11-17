@@ -51,6 +51,7 @@ class AccountScreenshotTest : ScreenshotTest() {
             isRefreshing = false,
             unread = 2,
             now = clock.instant(),
+            onShown = {},
             onRefresh = {},
             onSignOut = {},
             onOpenLoans = {},
