@@ -33,7 +33,7 @@ L'app existe en deux variantes (*Build › Select Build Variant*) :
 | `prodDebug` (par défaut) | le portail des médiathèques | l'app réelle, avec votre carte |
 | `demoDebug` | l'abonnée fictive Camille MARTIN, en mémoire | essayer l'app sans carte, captures d'écran, tests d'interface |
 
-La démo s'installe à côté de l'app réelle (« Médiathèque démo ») et n'est jamais publiée.
+La démo s'installe à côté de l'app réelle (« Médiathèque démo ») et n'est jamais publiée : seule `prodRelease` part sur Google Play. Sa version release ne sert qu'au profil de référence et aux vérifications R8.
 
 En ligne de commande :
 
@@ -55,6 +55,10 @@ L'identifiant de l'app versionné est neutre (`com.example.mediatheque`). Pour p
 
 - **Format** : ktlint via Spotless (`./gradlew spotlessApply` corrige).
 - **Lint** Android strict, avec les règles Compose.
+- **Captures d'écran** (Roborazzi sur Robolectric) : chaque écran en clair, sombre, texte à 200 % et tablette, comparé aux images de référence de `feature/*/src/test/screenshots/`. Après un changement voulu : `./gradlew recordRoborazziDebug`, puis relire les images avant de les commiter. La CI lance `./gradlew verifyRoborazziDebug`.
+- **Parcours instrumentés** en démo (`app/src/androidTestDemo/`), avec les contrôles d'accessibilité (libellés, cibles tactiles, contrastes) à chaque écran : `./gradlew connectedDemoDebugAndroidTest` sur un émulateur, ou sur l'appareil géré par Gradle de la CI : `./gradlew pixel6Api35DemoDebugAndroidTest`.
+- **Profil de référence** (démarrage et parcours principaux, enregistrés sur la démo) : `./gradlew :app:generateDemoReleaseBaselineProfile` avec un émulateur lancé ; le profil est commité dans `app/src/demoRelease/generated/baselineProfiles/` et livré avec toutes les variantes.
+- **Build release** (R8 complet, ressources réduites, journaux supprimés) : `./gradlew :app:assembleProdRelease`.
 - **Avant chaque commit** (hook dans `.githooks/`, activé par `git config core.hooksPath .githooks`) : identité git locale obligatoire, recherche de secrets ([gitleaks](https://github.com/gitleaks/gitleaks)) et de données personnelles (`scripts/check-personal-data.sh`). La CI GitHub Actions refait les mêmes contrôles.
 
 ## Architecture
@@ -72,8 +76,10 @@ core/notifications/  # canaux et rappels
 core/designsystem/   # charte de Villejuif sur Material 3
 core/ui/             # composants construits depuis le domaine
 core/testing/        # fakes et fixtures partagés par les tests
+core/screenshottesting/ # thèmes, tailles de texte et fenêtres des captures d'écran
 feature/…            # un module par destination : compte, recherche, agenda, numérique, infos
 widget/              # widget « Prochains retours »
+baselineprofile/     # générateur du profil de référence
 build-logic/         # plugins Gradle de convention
 ```
 

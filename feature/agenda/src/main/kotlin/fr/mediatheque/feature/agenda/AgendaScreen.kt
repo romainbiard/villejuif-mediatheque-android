@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -213,16 +214,17 @@ private fun DayStrip(logic: AgendaLogic, selected: LocalDate, onSelect: (LocalDa
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .size(width = 56.dp, height = 76.dp)
+                    // A minimum, not a fixed size: the day grows with the text size instead of clipping it.
+                    .sizeIn(minWidth = 56.dp, minHeight = 76.dp)
                     .background(background, RoundedCornerShape(18.dp))
                     .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(day) })
                     .semantics {
                         contentDescription = format.weekdayDayMonth(day)
                         stateDescription = listOfNotNull(hasEvents.takeIf { dayHasEvents }, closed.takeIf { isClosed }).joinToString(", ")
                     }
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp, horizontal = 6.dp)
                     .alpha(if (isClosed && !isSelected) 0.55f else 1f),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(format.shortWeekday(day), style = MaterialTheme.typography.labelMedium, color = foreground)
                 Text("${day.dayOfMonth}", style = MaterialTheme.typography.titleMedium, color = foreground)

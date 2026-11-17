@@ -5,6 +5,7 @@
 package fr.mediatheque.feature.account
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -44,10 +45,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fr.mediatheque.core.data.LoadState
 import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.designsystem.component.EmptyState
+import fr.mediatheque.core.designsystem.component.PillRow
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.SkeletonRow
 import fr.mediatheque.core.designsystem.component.StatusPill
 import fr.mediatheque.core.designsystem.component.StatusStyle
+import fr.mediatheque.core.designsystem.component.isLargeText
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.model.Hold
 import fr.mediatheque.core.model.Loan
@@ -156,32 +159,46 @@ private val LoanSection.Kind.title: Int
 
 @Composable
 private fun LoanRow(loan: Loan, state: LoansUiState, onRenew: () -> Unit, modifier: Modifier = Modifier) {
+    val largeText = isLargeText()
+    val action = @Composable {
+        when {
+            loan.id in state.renewing -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
+
+            loan.id in state.refused -> Text(
+                stringResource(R.string.loans_not_renewable),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            else -> FilledTonalButton(onClick = onRenew) { Text(stringResource(R.string.loans_renew)) }
+        }
+    }
     Surface(shape = RoundedCornerShape(22.dp), color = MediathequeColors.extended.card, modifier = modifier) {
-        Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            CoverImage(loan.coverUrl, loan.title, loan.recordId ?: loan.id.hashCode(), Modifier.size(width = 52.dp, height = 76.dp))
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(loan.title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                if (loan.author.isNotBlank()) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                CoverImage(loan.coverUrl, loan.title, loan.recordId ?: loan.id.hashCode(), Modifier.size(width = 52.dp, height = 76.dp))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        loan.author,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
+                        loan.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = if (largeText) 4 else 2,
+                        overflow = TextOverflow.Ellipsis
                     )
+                    if (loan.author.isNotBlank()) {
+                        Text(
+                            loan.author,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = if (largeText) 2 else 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    DueStatePill(loan, state.now)
                 }
-                DueStatePill(loan, state.now)
+                if (!largeText) action()
             }
-            when {
-                loan.id in state.renewing -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
-
-                loan.id in state.refused -> Text(
-                    stringResource(R.string.loans_not_renewable),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                else -> FilledTonalButton(onClick = onRenew) { Text(stringResource(R.string.loans_renew)) }
-            }
+            // At large text sizes the button goes under the text, which keeps the whole width.
+            if (largeText) Box(Modifier.align(Alignment.End)) { action() }
         }
     }
 }
@@ -273,7 +290,7 @@ private fun HoldRow(hold: Hold, cancelling: Boolean, onCancel: () -> Unit, modif
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    PillRow {
                         when {
                             hold.isReadyForPickup -> StatusPill(
                                 hold.expectedDate?.let { stringResource(R.string.holds_ready_until, format.dayMonth(it)) }

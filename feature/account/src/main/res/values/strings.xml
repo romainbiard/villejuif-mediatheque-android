@@ -295,4 +295,6 @@
         <item quantity="many">%1$d j</item>
         <item quantity="other">%1$d j</item>
     </plurals>
+    <string name="account_detail_placeholder_title">Votre compte</string>
+    <string name="account_detail_placeholder_message">Vos prêts, réservations, listes et réglages s’ouvrent ici.</string>
 </resources>

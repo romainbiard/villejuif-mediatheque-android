@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.mediatheque.android.compose)
     alias(libs.plugins.mediatheque.hilt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.baselineprofile)
 }
 
 /**
@@ -42,6 +43,8 @@ android {
             dimension = "data"
             isDefault = true
         }
+        // Never published (only prodRelease goes to Play); its release build exists for the baseline profile and the
+        // release checks on demo data.
         create("demo") {
             dimension = "data"
             applicationIdSuffix = ".demo"
@@ -60,16 +63,39 @@ android {
         }
     }
 
+    // Instrumented tests (demo journeys and accessibility checks) on emulators Gradle starts itself, on the CI:
+    // ./gradlew pixel6Api35DemoDebugAndroidTest
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel6Api35") {
+                    device = "Pixel 6"
+                    apiLevel = 35
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
+    }
+
     androidResources {
         // Per-app language (Android 13+): fr (source) and en, derived from the values-* folders.
         generateLocaleConfig = true
     }
 }
 
-// The demo is never published.
-androidComponents {
-    beforeVariants(selector().withFlavor("data" to "demo").withBuildType("release")) { it.enable = false }
+// The baseline profile is recorded on the demo build (./gradlew :app:generateDemoReleaseBaselineProfile, see
+// :baselineprofile), saved in src/demoRelease/generated, and shipped with every build through the main source set:
+// the prod build runs the same code on the portal's data.
+baselineProfile {
+    saveInSrc = true
+    automaticGenerationDuringBuild = false
+    variants {
+        create("demoRelease") { from(project(":baselineprofile")) }
+    }
+}
+android.sourceSets.getByName("main").baselineProfiles.directories.add("src/demoRelease/generated/baselineProfiles")
 
+androidComponents {
     // Static app shortcuts name their target package, which differs per variant (and per local applicationId):
     // the file is generated for each variant rather than written once in res/xml.
     onVariants { variant ->
@@ -152,4 +178,17 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.profileinstaller)
+
+    testImplementation(libs.junit)
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4.accessibility)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    // Recent enough for Android 16 and later (InputManager changes).
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

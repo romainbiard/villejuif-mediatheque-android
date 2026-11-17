@@ -42,10 +42,24 @@ jobs:
           java-version: 21
       # Also verifies that gradle-wrapper.jar is authentic.
       - uses: gradle/actions/setup-gradle@v5
-      - name: Build
+      # Formatting on its own: run alongside KSP, Spotless can read sources being generated.
+      - name: Format
+        run: ./gradlew spotlessCheck
+      - name: Lint, tests and APKs
         env:
           VERSION_CODE: ${{ github.run_number }}
-        run: ./gradlew spotlessCheck lint testDebugUnitTest assembleDebug
+        run: >-
+          ./gradlew lint lintDemoDebug testDebugUnitTest
+          :core:model:test :core:bokeh:test :core:domain:test
+          assembleDebug
+      # Every screen against its reference image (light, dark, 200 % text, tablet).
+      - name: Screenshots
+        run: ./gradlew verifyRoborazziDebug
+      # R8 (full mode), resource shrinking and the release rules: the prod build as it goes to Play, unsigned.
+      - name: Release build
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew :app:assembleProdRelease
       - name: Lint and test reports
         if: always()
         uses: actions/upload-artifact@v5
@@ -54,10 +68,40 @@ jobs:
           path: |
             **/build/reports/
             **/build/test-results/
+            **/build/outputs/roborazzi/
           retention-days: 14
       - name: Debug APK
         uses: actions/upload-artifact@v5
         with:
           name: mediatheque-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/*/debug/*.apk
+          retention-days: 14
+
+  instrumented:
+    name: Demo journeys and accessibility (managed emulator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v5
+      # Hardware acceleration for the emulator on GitHub's Linux runners.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Journeys on a Pixel 6, API 35 (ATD image)
+        run: >-
+          ./gradlew :app:pixel6Api35DemoDebugAndroidTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: rapports-instrumentes
+          path: app/build/outputs/androidTest-results/
           retention-days: 14

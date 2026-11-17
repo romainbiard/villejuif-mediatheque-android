@@ -50,6 +50,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -206,7 +208,8 @@ private fun LazyListScope.publishedItems(state: LoadState<List<Review>>, onRetry
 @Composable
 private fun Stars(rating: Int) {
     val description = pluralStringResource(R.plurals.reviews_stars, rating, rating)
-    Row(Modifier.semantics(mergeDescendants = true) { stateDescription = description }) {
+    // A picture of the rating: read out as its description, not as five unnamed icons.
+    Row(Modifier.clearAndSetSemantics { contentDescription = description }) {
         repeat(ReviewsViewModel.MAX_RATING) { index ->
             Icon(
                 painterResource(if (index < rating) DesignR.drawable.ic_star_filled else DesignR.drawable.ic_star),

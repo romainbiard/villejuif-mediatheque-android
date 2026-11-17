@@ -230,12 +230,14 @@ private fun HoursTable(lines: List<String>, now: Instant) {
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .semantics(mergeDescendants = true) {},
-                horizontalArrangement = Arrangement.SpaceBetween
+                // The day wraps rather than running into the hours at large text sizes.
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
                     if (isToday) "$day ($todayLabel)" else day,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (isToday) FontWeight.Bold else null
+                    fontWeight = if (isToday) FontWeight.Bold else null,
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
                     hours,

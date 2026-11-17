@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
@@ -19,6 +20,7 @@ import fr.mediatheque.core.data.SessionStore
 import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.model.Notice
 import fr.mediatheque.core.model.Selection
+import fr.mediatheque.core.ui.DetailPlaceholder
 import fr.mediatheque.core.ui.LoadingState
 import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
@@ -64,7 +66,18 @@ data object SettingsRoute : NavKey
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun EntryProviderScope<NavKey>.accountEntries(navigator: Navigator, documentRoute: (Notice) -> NavKey) {
-    entry<AccountRoute>(metadata = ListDetailSceneStrategy.listPane(sceneKey = AccountRoute)) {
+    entry<AccountRoute>(
+        metadata = ListDetailSceneStrategy.listPane(
+            sceneKey = AccountRoute,
+            detailPlaceholder = {
+                DetailPlaceholder(
+                    DesignR.drawable.ic_account_circle,
+                    stringResource(R.string.account_detail_placeholder_title),
+                    stringResource(R.string.account_detail_placeholder_message)
+                )
+            }
+        )
+    ) {
         AccountScreen(
             viewModel = hiltViewModel(),
             onOpenLoans = { navigator.navigate(LoansRoute) },
@@ -123,7 +136,7 @@ internal fun CardScreen(viewModel: AccountViewModel, onDismiss: () -> Unit) {
 }
 
 /** The patron's lists and profile, under loans and holds. */
-private fun accountLinkGroups(onOpen: (NavKey) -> Unit) = listOf(
+internal fun accountLinkGroups(onOpen: (NavKey) -> Unit) = listOf(
     AccountLinkGroup(
         R.string.home_my_lists,
         listOf(

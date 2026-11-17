@@ -6,10 +6,13 @@ package fr.mediatheque.feature.search
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.model.Notice
+import fr.mediatheque.core.ui.DetailPlaceholder
 import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
 
@@ -24,7 +27,18 @@ data class DocumentRoute(val document: Notice) : NavKey
 /** The search's screens: the results, and a record beside them on a wide window. */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun EntryProviderScope<NavKey>.searchEntries(navigator: Navigator) {
-    entry<SearchRoute>(metadata = ListDetailSceneStrategy.listPane(sceneKey = SearchRoute)) {
+    entry<SearchRoute>(
+        metadata = ListDetailSceneStrategy.listPane(
+            sceneKey = SearchRoute,
+            detailPlaceholder = {
+                DetailPlaceholder(
+                    DesignR.drawable.ic_book_2,
+                    stringResource(R.string.search_detail_placeholder_title),
+                    stringResource(R.string.search_detail_placeholder_message)
+                )
+            }
+        )
+    ) {
         SearchScreen(hiltViewModel(), onOpen = { navigator.navigate(DocumentRoute(it)) })
     }
     entry<DocumentRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = SearchRoute)) { route ->

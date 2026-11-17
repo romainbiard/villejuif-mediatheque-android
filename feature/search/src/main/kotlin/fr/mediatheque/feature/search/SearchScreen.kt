@@ -64,6 +64,7 @@ import fr.mediatheque.core.designsystem.component.SkeletonRow
 import fr.mediatheque.core.designsystem.component.StateAction
 import fr.mediatheque.core.designsystem.component.StatusPill
 import fr.mediatheque.core.designsystem.component.StatusStyle
+import fr.mediatheque.core.designsystem.component.isLargeText
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.model.Availability
 import fr.mediatheque.core.model.Library
@@ -255,7 +256,8 @@ private fun LazyListScope.landing(state: SearchUiState, viewModel: SearchViewMod
             Modifier.readable(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            maxItemsInEachRow = 2
+            // One tile per row at large text sizes: "Livres audio" stays on one line.
+            maxItemsInEachRow = if (isLargeText()) 1 else 2
         ) {
             ExploreShortcut.entries.forEach { shortcut ->
                 Surface(

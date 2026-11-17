@@ -52,4 +52,6 @@
     <string name="event_map_description">Map: %1$s</string>
     <string name="event_no_app">No app can do this.</string>
     <string name="event_detail_unavailable">The description could not be loaded.</string>
+    <string name="agenda_detail_placeholder_title">No event selected</string>
+    <string name="agenda_detail_placeholder_message">Pick an event to see its description and place, and add it to your calendar.</string>
 </resources>

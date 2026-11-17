@@ -20,6 +20,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply("mediatheque.hilt")
             // Navigation 3 routes are serializable, so the back stack survives process death.
             pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
+            // Every screen is checked in light, dark and at the largest text size (src/test/screenshots).
+            pluginManager.apply("mediatheque.android.screenshots")
             dependencies {
                 add("implementation", project(":core:designsystem"))
                 add("implementation", project(":core:ui"))

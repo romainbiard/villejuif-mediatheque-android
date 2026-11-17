@@ -6,10 +6,13 @@ package fr.mediatheque.feature.agenda
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.model.Event
+import fr.mediatheque.core.ui.DetailPlaceholder
 import fr.mediatheque.core.ui.Navigator
 import kotlinx.serialization.Serializable
 
@@ -24,7 +27,18 @@ data class EventRoute(val event: Event) : NavKey
 /** The agenda's screens: the list, and an event beside it on a wide window. */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun EntryProviderScope<NavKey>.agendaEntries(navigator: Navigator) {
-    entry<AgendaRoute>(metadata = ListDetailSceneStrategy.listPane(sceneKey = AgendaRoute)) {
+    entry<AgendaRoute>(
+        metadata = ListDetailSceneStrategy.listPane(
+            sceneKey = AgendaRoute,
+            detailPlaceholder = {
+                DetailPlaceholder(
+                    DesignR.drawable.ic_calendar_month,
+                    stringResource(R.string.agenda_detail_placeholder_title),
+                    stringResource(R.string.agenda_detail_placeholder_message)
+                )
+            }
+        )
+    ) {
         AgendaScreen(hiltViewModel(), onOpenEvent = { navigator.navigate(EventRoute(it)) })
     }
     entry<EventRoute>(metadata = ListDetailSceneStrategy.detailPane(sceneKey = AgendaRoute)) { route ->

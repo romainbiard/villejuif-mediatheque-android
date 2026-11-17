@@ -281,4 +281,6 @@
         <item quantity="one">%1$d d</item>
         <item quantity="other">%1$d d</item>
     </plurals>
+    <string name="account_detail_placeholder_title">Your account</string>
+    <string name="account_detail_placeholder_message">Your loans, holds, lists and settings open here.</string>
 </resources>

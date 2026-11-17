@@ -68,4 +68,6 @@
     <string name="selection_added">Added to “%1$s”</string>
     <string name="selection_removed">Removed from “%1$s”</string>
     <string name="selection_failed">The selection could not be changed</string>
+    <string name="search_detail_placeholder_title">No item selected</string>
+    <string name="search_detail_placeholder_message">Pick an item in the list to see where to find it and place a hold.</string>
 </resources>

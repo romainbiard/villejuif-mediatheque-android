@@ -74,3 +74,14 @@ fun ComingSoonDestination(title: String, @DrawableRes icon: Int, modifier: Modif
         }
     }
 }
+
+/**
+ * The detail pane of a wide window before anything is chosen in the list beside it: a word on what goes there rather
+ * than an empty half of the screen.
+ */
+@Composable
+fun DetailPlaceholder(@DrawableRes icon: Int, title: String, message: String, modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+        EmptyState(icon = icon, title = title, message = message, modifier = Modifier.widthIn(max = 480.dp))
+    }
+}

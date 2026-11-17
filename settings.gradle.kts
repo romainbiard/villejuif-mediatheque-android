@@ -38,6 +38,7 @@ rootProject.name = "Mediatheque"
 
 include(":app")
 include(":widget")
+include(":baselineprofile")
 
 include(":core:bokeh")
 include(":core:model")
@@ -48,6 +49,7 @@ include(":core:notifications")
 include(":core:designsystem")
 include(":core:ui")
 include(":core:testing")
+include(":core:screenshottesting")
 
 include(":feature:account")
 include(":feature:search")

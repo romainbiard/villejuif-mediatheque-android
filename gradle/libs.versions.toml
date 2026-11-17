@@ -32,6 +32,12 @@ browser = "1.10.0"
 adaptiveNavigation3 = "1.3.0"
 androidxTestExtJunit = "1.3.0"
 androidxTestRunner = "1.7.0"
+androidxTestRules = "1.7.0"
+espresso = "3.7.0"
+baselineProfile = "1.5.0"
+benchmark = "1.5.0"
+uiautomator = "2.4.1"
+profileinstaller = "1.4.1"
 
 # Libraries
 coroutines = "1.11.0"
@@ -48,6 +54,7 @@ fragment = "1.9.1"
 junit = "4.13.2"
 turbine = "1.2.1"
 robolectric = "4.18"
+roborazzi = "1.79.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
@@ -101,8 +108,16 @@ maplibre-android = { group = "org.maplibre.gl", name = "android-sdk", version.re
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+androidx-compose-ui-test-junit4-accessibility = { group = "androidx.compose.ui", name = "ui-test-junit4-accessibility" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmark" }
+androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 
 compose-lint-checks = { group = "com.slack.lint.compose", name = "compose-lint-checks", version.ref = "composeLints" }
 
@@ -111,6 +126,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+roborazzi-gradlePlugin = { group = "io.github.takahirom.roborazzi", name = "roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -121,6 +137,9 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineProfile" }
 
 # Convention plugins (build-logic)
 mediatheque-android-application = { id = "mediatheque.android.application" }
@@ -129,3 +148,4 @@ mediatheque-android-compose = { id = "mediatheque.android.compose" }
 mediatheque-android-feature = { id = "mediatheque.android.feature" }
 mediatheque-hilt = { id = "mediatheque.hilt" }
 mediatheque-jvm-library = { id = "mediatheque.jvm.library" }
+mediatheque-android-screenshots = { id = "mediatheque.android.screenshots" }

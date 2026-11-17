@@ -52,4 +52,6 @@
     <string name="event_map_description">Carte : %1$s</string>
     <string name="event_no_app">Aucune app ne peut faire cela.</string>
     <string name="event_detail_unavailable">La description n’a pas pu être chargée.</string>
+    <string name="agenda_detail_placeholder_title">Aucun événement choisi</string>
+    <string name="agenda_detail_placeholder_message">Choisissez un événement pour voir sa description, le lieu et l’ajouter à votre agenda.</string>
 </resources>

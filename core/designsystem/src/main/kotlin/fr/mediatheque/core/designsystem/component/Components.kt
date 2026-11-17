@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -50,8 +52,8 @@ import fr.mediatheque.core.designsystem.theme.MediathequeColors
 /** Section title with the short violet bar above it, a pattern taken from the website. */
 @Composable
 fun SectionHeader(title: String, modifier: Modifier = Modifier, trailing: @Composable () -> Unit = {}) {
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-        Column(modifier = Modifier.weight(1f).semantics(mergeDescendants = true) { heading() }) {
+    val heading = @Composable { headingModifier: Modifier ->
+        Column(modifier = headingModifier.semantics(mergeDescendants = true) { heading() }) {
             Box(
                 Modifier
                     .size(width = 28.dp, height = 4.dp)
@@ -61,9 +63,37 @@ fun SectionHeader(title: String, modifier: Modifier = Modifier, trailing: @Compo
             Spacer(Modifier.height(6.dp))
             Text(title, style = MaterialTheme.typography.titleLarge)
         }
-        trailing()
+    }
+    if (isLargeText()) {
+        // The trailing pills go under the title rather than squeezing it.
+        Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            heading(Modifier)
+            trailing()
+        }
+    } else {
+        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+            heading(Modifier.weight(1f))
+            trailing()
+        }
     }
 }
+
+/** Status pills side by side, going to the next line when they no longer fit (large text, narrow window). */
+@Composable
+fun PillRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        content()
+    }
+}
+
+/**
+ * The patron chose a large text size (150 % and more): rows put their actions under the text instead of beside it,
+ * so a title keeps more than a word per line.
+ */
+@Composable
+fun isLargeText(): Boolean = LocalDensity.current.fontScale >= LARGE_TEXT_SCALE
+
+private const val LARGE_TEXT_SCALE = 1.5f
 
 /** A short status in a tinted pill: "En retard", "Disponible"… */
 @Composable

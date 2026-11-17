@@ -6,3 +6,5 @@
 
 # Portal captures: kept byte for byte (CRLF line endings included)
 core/bokeh/src/testFixtures/resources/fixtures/** -text
+# Generated baseline profiles (./gradlew :app:generateDemoReleaseBaselineProfile): folded in reviews.
+app/src/demoRelease/generated/** linguist-generated=true

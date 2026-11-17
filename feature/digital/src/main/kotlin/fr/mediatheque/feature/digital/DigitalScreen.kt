@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -161,7 +162,8 @@ private fun DigitalContent(
 ) {
     DestinationScaffold(title = stringResource(R.string.digital_title), modifier = modifier) { padding ->
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 168.dp),
+            // Cards widen with the text size, so a large text size gets fewer, wider columns.
+            columns = GridCells.Adaptive(minSize = 168.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)),
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),

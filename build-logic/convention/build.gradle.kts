@@ -25,6 +25,7 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
+    compileOnly(libs.roborazzi.gradlePlugin)
 }
 
 gradlePlugin {
@@ -48,6 +49,10 @@ gradlePlugin {
         register("hilt") {
             id = libs.plugins.mediatheque.hilt.get().pluginId
             implementationClass = "HiltConventionPlugin"
+        }
+        register("androidScreenshots") {
+            id = libs.plugins.mediatheque.android.screenshots.get().pluginId
+            implementationClass = "AndroidScreenshotsConventionPlugin"
         }
         register("jvmLibrary") {
             id = libs.plugins.mediatheque.jvm.library.get().pluginId

@@ -45,6 +45,7 @@ import fr.mediatheque.core.designsystem.R as DesignR
 import fr.mediatheque.core.designsystem.component.EmptyState
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.StateAction
+import fr.mediatheque.core.designsystem.component.isLargeText
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.model.BokehDates
 import fr.mediatheque.core.model.Inbox
@@ -176,14 +177,26 @@ private fun NotificationRow(item: InboxItem, now: Instant, canRenew: Boolean, re
             }
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            val titleText = @Composable { titleModifier: Modifier ->
                 Text(
                     title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = if (item.isRead) FontWeight.Medium else FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
+                    modifier = titleModifier
                 )
+            }
+            val dateText = @Composable {
                 Text(date, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            if (isLargeText()) {
+                // The date under the title, which keeps the whole width.
+                titleText(Modifier)
+                dateText()
+            } else {
+                Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    titleText(Modifier.weight(1f))
+                    dateText()
+                }
             }
             if (body.isNotBlank()) {
                 Text(body, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

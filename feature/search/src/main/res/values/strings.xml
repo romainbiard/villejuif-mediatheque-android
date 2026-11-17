@@ -68,4 +68,6 @@
     <string name="selection_added">Ajouté à « %1$s »</string>
     <string name="selection_removed">Retiré de « %1$s »</string>
     <string name="selection_failed">La sélection n’a pas pu être modifiée</string>
+    <string name="search_detail_placeholder_title">Aucun document choisi</string>
+    <string name="search_detail_placeholder_message">Choisissez un document dans la liste pour voir où le trouver et le réserver.</string>
 </resources>

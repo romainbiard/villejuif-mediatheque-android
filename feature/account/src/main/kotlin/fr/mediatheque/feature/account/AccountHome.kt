@@ -46,10 +46,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.mediatheque.core.data.LoadError
 import fr.mediatheque.core.designsystem.R as DesignR
+import fr.mediatheque.core.designsystem.component.PillRow
 import fr.mediatheque.core.designsystem.component.SectionHeader
 import fr.mediatheque.core.designsystem.component.StaleBanner
 import fr.mediatheque.core.designsystem.component.StatusPill
 import fr.mediatheque.core.designsystem.component.StatusStyle
+import fr.mediatheque.core.designsystem.component.isLargeText
 import fr.mediatheque.core.designsystem.theme.MediathequeColors
 import fr.mediatheque.core.model.AccountSnapshot
 import fr.mediatheque.core.model.Loan
@@ -191,9 +193,10 @@ private fun cardWarning(patron: Patron): String? = when {
 
 @Composable
 private fun LoansSummary(patron: Patron, loans: List<Loan>?, now: Instant, onOpenLoans: () -> Unit, modifier: Modifier = Modifier) {
+    val largeText = isLargeText()
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         SectionHeader(stringResource(R.string.home_to_return)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            PillRow {
                 if (patron.counters.lateLoans > 0) {
                     StatusPill(
                         pluralStringResource(R.plurals.home_late, patron.counters.lateLoans, patron.counters.lateLoans),
@@ -226,7 +229,12 @@ private fun LoansSummary(patron: Patron, loans: List<Loan>?, now: Instant, onOpe
                     else -> {
                         loans.take(SUMMARY_LOANS).forEachIndexed { index, loan ->
                             Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Text(loan.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                                Text(
+                                    loan.title,
+                                    maxLines = if (largeText) 3 else 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                                )
                                 DueStatePill(loan, now)
                             }
                             if (index <
