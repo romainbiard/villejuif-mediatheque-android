@@ -8,12 +8,16 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -160,42 +164,71 @@ private fun DigitalContent(
     onOpenAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Cards widen with the text size, so a large text size gets fewer, wider columns.
+    val minCardWidth = 168.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
     DestinationScaffold(title = stringResource(R.string.digital_title), modifier = modifier) { padding ->
-        LazyVerticalGrid(
-            // Cards widen with the text size, so a large text size gets fewer, wider columns.
-            columns = GridCells.Adaptive(minSize = 168.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)),
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    stringResource(R.string.digital_intro),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            val patron = (session as? SessionStore.State.LoggedIn)?.patron
-            when {
-                session is SessionStore.State.LoggedOut || session is SessionStore.State.Locked -> item(span = {
-                    GridItemSpan(maxLineSpan)
-                }) {
-                    SignInBanner(onOpenAccount)
-                }
+        BoxWithConstraints(Modifier.fillMaxSize().padding(padding)) {
+            // As many columns as fit, but no more than there are cards: no empty slot at the end of a wide row.
+            val columns = ((maxWidth - 32.dp + CARD_GAP) / (minCardWidth + CARD_GAP)).toInt()
+                .coerceAtMost(offers.size - 1)
+                .coerceAtLeast(1)
+            DigitalList(offers, columns, state, session, actions, onOpenAccount)
+        }
+    }
+}
 
-                patron?.permissions?.digitalResourcesForbidden == true -> item(span = { GridItemSpan(maxLineSpan) }) {
-                    SuspendedBanner()
-                }
+private val CARD_GAP = 12.dp
 
-                else -> Unit
+@Composable
+private fun DigitalList(
+    offers: List<DigitalOffer>,
+    columns: Int,
+    state: DigitalUiState,
+    session: SessionStore.State,
+    actions: OfferActions,
+    onOpenAccount: () -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(CARD_GAP),
+        verticalArrangement = Arrangement.spacedBy(CARD_GAP)
+    ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+                stringResource(R.string.digital_intro),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        val patron = (session as? SessionStore.State.LoggedIn)?.patron
+        when {
+            session is SessionStore.State.LoggedOut || session is SessionStore.State.Locked -> item(span = {
+                GridItemSpan(maxLineSpan)
+            }) {
+                SignInBanner(onOpenAccount)
             }
-            offers.firstOrNull()?.let { featured ->
-                item(key = featured.id, span = { GridItemSpan(maxLineSpan) }) {
-                    FeaturedOfferCard(featured, state, actions)
+
+            patron?.permissions?.digitalResourcesForbidden == true -> item(span = { GridItemSpan(maxLineSpan) }) {
+                SuspendedBanner()
+            }
+
+            else -> Unit
+        }
+        offers.firstOrNull()?.let { featured ->
+            item(key = featured.id, span = { GridItemSpan(maxLineSpan) }) {
+                FeaturedOfferCard(featured, state, actions)
+            }
+        }
+        // A row of cards at a time, all as tall as the tallest, their buttons aligned at the bottom.
+        offers.drop(1).chunked(columns).forEach { row ->
+            item(key = row.first().id, span = { GridItemSpan(maxLineSpan) }) {
+                Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(CARD_GAP)) {
+                    row.forEach { offer -> OfferTile(offer, state, actions, Modifier.weight(1f).fillMaxHeight()) }
+                    repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
-            items(offers.drop(1), key = { it.id }) { offer -> OfferTile(offer, state, actions) }
         }
     }
 }
@@ -422,6 +455,7 @@ private fun OfferTile(offer: DigitalOffer, state: DigitalUiState, actions: Offer
                 )
                 AccessLine(access, Modifier.padding(top = 2.dp))
             }
+            Spacer(Modifier.weight(1f))
             val colors = when {
                 access == ServiceAccess.AppInstalled -> ButtonDefaults.buttonColors()
 
