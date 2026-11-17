@@ -5,6 +5,8 @@
 package fr.mediatheque.core.ui
 
 import android.content.Context
+import android.view.MotionEvent
+import android.widget.FrameLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,45 +87,55 @@ fun LibraryMap(
     }
 
     AndroidView(
-        factory = {
-            mapView.apply {
-                getMapAsync { map ->
-                    map.uiSettings.isRotateGesturesEnabled = false
-                    map.uiSettings.isTiltGesturesEnabled = false
-                    map.cameraPosition = CameraPosition.Builder().target(LatLng(centerLatitude, centerLongitude)).zoom(zoom).build()
-                    map.setStyle(STYLE_URL) { style ->
-                        val features = pins.map { pin ->
-                            Feature.fromGeometry(Point.fromLngLat(pin.longitude, pin.latitude)).apply {
-                                addStringProperty("label", pin.label)
-                            }
+        factory = { context ->
+            mapView.getMapAsync { map ->
+                map.uiSettings.isRotateGesturesEnabled = false
+                map.uiSettings.isTiltGesturesEnabled = false
+                map.cameraPosition = CameraPosition.Builder().target(LatLng(centerLatitude, centerLongitude)).zoom(zoom).build()
+                map.setStyle(STYLE_URL) { style ->
+                    val features = pins.map { pin ->
+                        Feature.fromGeometry(Point.fromLngLat(pin.longitude, pin.latitude)).apply {
+                            addStringProperty("label", pin.label)
                         }
-                        style.addSource(GeoJsonSource(SOURCE_ID, FeatureCollection.fromFeatures(features)))
-                        style.addLayer(
-                            CircleLayer("$SOURCE_ID-pins", SOURCE_ID).withProperties(
-                                PropertyFactory.circleRadius(8f),
-                                PropertyFactory.circleColor(pinColor),
-                                PropertyFactory.circleStrokeWidth(2f),
-                                PropertyFactory.circleStrokeColor(haloColor)
-                            )
-                        )
-                        style.addLayer(
-                            SymbolLayer("$SOURCE_ID-labels", SOURCE_ID).withProperties(
-                                PropertyFactory.textField("{label}"),
-                                PropertyFactory.textFont(arrayOf("Noto Sans Bold")),
-                                PropertyFactory.textSize(13f),
-                                PropertyFactory.textOffset(arrayOf(0f, 1.3f)),
-                                PropertyFactory.textAnchor("top"),
-                                PropertyFactory.textColor(textColor),
-                                PropertyFactory.textHaloColor(haloColor),
-                                PropertyFactory.textHaloWidth(1.5f)
-                            )
-                        )
                     }
+                    style.addSource(GeoJsonSource(SOURCE_ID, FeatureCollection.fromFeatures(features)))
+                    style.addLayer(
+                        CircleLayer("$SOURCE_ID-pins", SOURCE_ID).withProperties(
+                            PropertyFactory.circleRadius(8f),
+                            PropertyFactory.circleColor(pinColor),
+                            PropertyFactory.circleStrokeWidth(2f),
+                            PropertyFactory.circleStrokeColor(haloColor)
+                        )
+                    )
+                    style.addLayer(
+                        SymbolLayer("$SOURCE_ID-labels", SOURCE_ID).withProperties(
+                            PropertyFactory.textField("{label}"),
+                            PropertyFactory.textFont(arrayOf("Noto Sans Bold")),
+                            PropertyFactory.textSize(13f),
+                            PropertyFactory.textOffset(arrayOf(0f, 1.3f)),
+                            PropertyFactory.textAnchor("top"),
+                            PropertyFactory.textColor(textColor),
+                            PropertyFactory.textHaloColor(haloColor),
+                            PropertyFactory.textHaloWidth(1.5f)
+                        )
+                    )
                 }
             }
+            MapGestureFrame(context).apply { addView(mapView) }
         },
         modifier = modifier.clip(shape).then(semantics)
     )
+}
+
+/**
+ * Holds the map and claims its gestures from the first touch: without it, the list around the map (and its pull to
+ * refresh) takes every vertical drag, and the map cannot be panned. Compose honors the request for its interop views.
+ */
+private class MapGestureFrame(context: Context) : FrameLayout(context) {
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) parent?.requestDisallowInterceptTouchEvent(true)
+        return super.dispatchTouchEvent(event)
+    }
 }
 
 private fun createMapView(context: Context): MapView {
