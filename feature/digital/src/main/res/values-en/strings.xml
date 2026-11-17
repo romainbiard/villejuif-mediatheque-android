@@ -1,4 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="digital_title">Digital</string>
+    <string name="digital_intro">Included in your membership, on all your devices.</string>
+    <string name="digital_sign_in_banner">Sign in from the Account tab to open these services.</string>
+    <string name="digital_sign_in">Sign in</string>
+    <string name="digital_suspended">Digital access is suspended on your account. Ask at a library’s front desk.</string>
+
+    <string name="digital_open">Open</string>
+    <string name="digital_borrow">Borrow</string>
+    <string name="digital_install">Install</string>
+    <string name="digital_install_app">Install the app</string>
+    <string name="digital_open_app">Open %1$s</string>
+
+    <string name="access_app_installed">App installed</string>
+    <string name="access_in_app">Used in the app</string>
+    <string name="access_reader">Read in %1$s</string>
+    <string name="access_web">On the web</string>
+
+    <string name="menu_more">More options for %1$s</string>
+    <string name="menu_connect">Connect the app with my card</string>
+    <string name="menu_web">Open on the web</string>
+    <string name="menu_how">How it works</string>
+    <string name="menu_tutorial">Full tutorial (PDF)</string>
+
+    <string name="how_free">%1$s · Free</string>
+    <string name="how_copy">Copy</string>
+    <string name="how_copied">Copied</string>
+    <string name="close">Close</string>
+
+    <string name="install_free">Free · Android phones and tablets</string>
+    <string name="install_title_films">Watch your films in the app</string>
+    <string name="install_title_press">Read the press in the app</string>
+    <string name="install_title_learning">Take your courses in the app</string>
+    <string name="install_title_default">Enjoy it in the app</string>
+    <string name="install_message">%1$s has its own app. Install it once: Médiathèque then signs you in every time.</string>
+    <string name="install_get">Get the app</string>
+    <string name="install_continue_web">Continue in the browser</string>
+    <string name="installed_message">%1$s is installed. Signing in with your card…</string>
+
+    <string name="error_title">Can’t open</string>
+    <string name="error_not_signed_in">Sign in from the Account tab to use the digital library.</string>
+    <string name="error_offline">No connection. Try again once you’re online.</string>
+    <string name="error_failed">%1$s couldn’t be opened. Try again in a moment.</string>
+    <string name="error_store">The Play Store couldn’t be opened.</string>
+    <string name="ok">OK</string>
+    <string name="go_to_account">Go to Account</string>
+
+    <string name="portal_handed_off">Opened in %1$s</string>
+    <string name="portal_the_app">the app</string>
+    <string name="portal_download_started">Download started: the file will be in your downloads.</string>
+
+    <string name="offer_highlight_card">Signed in with your card, no password</string>
+    <string name="offer_unlimited">Unlimited</string>
+
+    <string name="offer_films_category">Films and series</string>
+    <string name="offer_films_provider">Arte VOD and Univers Ciné</string>
+    <string name="offer_films_summary">Thousands of films, documentaries, series and shows, in several languages.</string>
+    <string name="offer_films_quota">6 credits a month, renewed on the 1st</string>
+    <string name="offer_films_highlight_catalog">Cinema, series and documentaries</string>
+    <string name="offer_films_highlight_credits">6 credits a month, no ads</string>
+    <string name="offer_films_step_1">Install the Médiathèque Numérique app.</string>
+    <string name="offer_films_step_2">Come back here and tap “Open”: the platform recognizes you.</string>
+    <string name="offer_films_step_3">The app then stays signed in; you won’t have to do it again.</string>
+
+    <string name="offer_press_category">Press</string>
+    <string name="offer_press_provider">Cafeyn</string>
+    <string name="offer_press_summary">Over 2,500 newspapers and magazines, back issues included.</string>
+    <string name="offer_press_highlight_catalog">Newspapers and magazines, back issues included</string>
+    <string name="offer_press_highlight_unlimited">Unlimited reading</string>
+    <string name="offer_press_step_1">Install the Cafeyn app.</string>
+    <string name="offer_press_step_2">Come back here and tap “Open”: Cafeyn opens already signed in.</string>
+
+    <string name="offer_learning_category">Learning</string>
+    <string name="offer_learning_provider">Mozaik by Toutapprendre</string>
+    <string name="offer_learning_summary">Languages, driving theory, homework help, office software, sport, music…</string>
+    <string name="offer_learning_highlight_catalog">Languages, driving theory, homework help…</string>
+    <string name="offer_learning_highlight_unlimited">Unlimited courses, at your own pace</string>
+    <string name="offer_learning_step_1">Install the Mozaik app.</string>
+    <string name="offer_learning_step_2">Tap “Open” here: if the app doesn’t open signed in, go to “Mon compte” in Mozaik.</string>
+    <string name="offer_learning_step_3">The QR code in “Mon compte” can be scanned from the Mozaik app on another device.</string>
+
+    <string name="offer_ebooks_category">E-books and audiobooks</string>
+    <string name="offer_ebooks_provider">BiblioAccess</string>
+    <string name="offer_ebooks_summary">Borrow e-books and audiobooks, to read online or download.</string>
+    <string name="offer_ebooks_quota">5 e-books and 5 audiobooks, 3 weeks</string>
+    <string name="offer_ebooks_step_1">Borrow a book on BiblioAccess (the “Emprunter” button).</string>
+    <string name="offer_ebooks_step_2">Choose the “LCP” download and open it in Louise Reader.</string>
+    <string name="offer_ebooks_step_3">With the first book, Louise asks for the passphrase below.</string>
+    <string name="offer_ebooks_passphrase">LCP passphrase</string>
+
+    <string name="offer_comics_category">Comics and manga</string>
+    <string name="offer_comics_provider">Izneo</string>
+    <string name="offer_comics_summary">Bandes dessinées, comics, manga and webtoons. A comic you start stays readable for a year.</string>
+    <string name="offer_comics_quota">10 comics a month</string>
+    <string name="offer_comics_step_1">Tap “Open”: Izneo opens here, already signed in.</string>
+
+    <string name="offer_eureka_category">Eurêka and musicMe</string>
+    <string name="offer_eureka_provider">Val-de-Marne department</string>
+    <string name="offer_eureka_summary">Films, courses, dyslexia-friendly books, and music streaming with musicMe.</string>
+    <string name="offer_eureka_quota">2 films a month, unlimited music</string>
+    <string name="offer_eureka_step_1">Tap “Open”: Eurêka opens already signed in.</string>
+    <string name="offer_eureka_step_2">For the musicMe app: on the musicMe site, open “Appli mobile”, then follow the activation email.</string>
 </resources>

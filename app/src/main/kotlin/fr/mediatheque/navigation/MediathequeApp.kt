@@ -109,7 +109,7 @@ fun MediathequeApp(shortcuts: Flow<TopLevelDestination>, modifier: Modifier = Mo
                 accountEntries(navigator, documentRoute = ::DocumentRoute)
                 searchEntries(navigator)
                 agendaEntries(navigator)
-                digitalEntries(navigator)
+                digitalEntries(navigator, onOpenAccount = { select(TopLevelDestination.ACCOUNT) })
                 infoEntries(navigator)
             }
         )

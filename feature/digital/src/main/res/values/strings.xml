@@ -1,4 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="digital_title">Numérique</string>
+    <string name="digital_intro">Inclus dans votre abonnement, sur tous vos appareils.</string>
+    <string name="digital_sign_in_banner">Connectez-vous dans l’onglet Compte pour ouvrir ces services.</string>
+    <string name="digital_sign_in">Se connecter</string>
+    <string name="digital_suspended">L’accès au numérique est suspendu sur votre compte. Renseignez-vous à l’accueil d’une médiathèque.</string>
+
+    <string name="digital_open">Ouvrir</string>
+    <string name="digital_borrow">Emprunter</string>
+    <string name="digital_install">Installer</string>
+    <string name="digital_install_app">Installer l’app</string>
+    <string name="digital_open_app">Ouvrir %1$s</string>
+
+    <string name="access_app_installed">App installée</string>
+    <string name="access_in_app">Se consulte dans l’app</string>
+    <string name="access_reader">À lire dans %1$s</string>
+    <string name="access_web">Sur le web</string>
+
+    <string name="menu_more">Plus d’options pour %1$s</string>
+    <string name="menu_connect">Connecter l’app avec ma carte</string>
+    <string name="menu_web">Ouvrir sur le web</string>
+    <string name="menu_how">Comment ça marche</string>
+    <string name="menu_tutorial">Tutoriel complet (PDF)</string>
+
+    <string name="how_free">%1$s · Gratuite</string>
+    <string name="how_copy">Copier</string>
+    <string name="how_copied">Copié</string>
+    <string name="close">Fermer</string>
+
+    <string name="install_free">Gratuite · téléphones et tablettes Android</string>
+    <string name="install_title_films">Regardez vos films dans l’app</string>
+    <string name="install_title_press">Lisez la presse dans l’app</string>
+    <string name="install_title_learning">Suivez vos cours dans l’app</string>
+    <string name="install_title_default">Profitez-en dans l’app</string>
+    <string name="install_message">%1$s a sa propre app. Installez-la une fois : Médiathèque vous y connecte ensuite à chaque fois.</string>
+    <string name="install_get">Obtenir l’app</string>
+    <string name="install_continue_web">Continuer dans le navigateur</string>
+    <string name="installed_message">%1$s est installée. Connexion avec votre carte…</string>
+
+    <string name="error_title">Ouverture impossible</string>
+    <string name="error_not_signed_in">Connectez-vous dans l’onglet Compte pour accéder au numérique.</string>
+    <string name="error_offline">Pas de connexion. Réessayez une fois en ligne.</string>
+    <string name="error_failed">%1$s n’a pas pu être ouvert. Réessayez dans un instant.</string>
+    <string name="error_store">Le Play Store n’a pas pu être ouvert.</string>
+    <string name="ok">OK</string>
+    <string name="go_to_account">Aller au compte</string>
+
+    <string name="portal_handed_off">Ouvert dans %1$s</string>
+    <string name="portal_the_app">l’app</string>
+    <string name="portal_download_started">Téléchargement lancé : le fichier sera dans vos téléchargements.</string>
+
+    <string name="offer_highlight_card">Connecté avec votre carte, sans mot de passe</string>
+    <string name="offer_unlimited">Illimité</string>
+
+    <string name="offer_films_category">Films et séries</string>
+    <string name="offer_films_provider">Arte VOD et Univers Ciné</string>
+    <string name="offer_films_summary">Des milliers de films, documentaires, séries et spectacles, en plusieurs langues.</string>
+    <string name="offer_films_quota">6 crédits par mois, renouvelés le 1er</string>
+    <string name="offer_films_highlight_catalog">Cinéma, séries et documentaires</string>
+    <string name="offer_films_highlight_credits">6 crédits par mois, sans publicité</string>
+    <string name="offer_films_step_1">Installez l’app Médiathèque Numérique.</string>
+    <string name="offer_films_step_2">Revenez ici et touchez « Ouvrir » : la plateforme vous reconnaît.</string>
+    <string name="offer_films_step_3">L’app reste connectée ensuite, vous n’aurez plus à le refaire.</string>
+
+    <string name="offer_press_category">Presse</string>
+    <string name="offer_press_provider">Cafeyn</string>
+    <string name="offer_press_summary">Plus de 2 500 journaux et magazines, avec les numéros archivés.</string>
+    <string name="offer_press_highlight_catalog">Journaux et magazines, numéros archivés compris</string>
+    <string name="offer_press_highlight_unlimited">Lecture illimitée</string>
+    <string name="offer_press_step_1">Installez l’app Cafeyn.</string>
+    <string name="offer_press_step_2">Revenez ici et touchez « Ouvrir » : Cafeyn s’ouvre déjà connecté.</string>
+
+    <string name="offer_learning_category">Formation</string>
+    <string name="offer_learning_provider">Mozaik par Toutapprendre</string>
+    <string name="offer_learning_summary">Langues, code de la route, soutien scolaire, bureautique, sport, musique…</string>
+    <string name="offer_learning_highlight_catalog">Langues, code de la route, soutien scolaire…</string>
+    <string name="offer_learning_highlight_unlimited">Cours illimités, à votre rythme</string>
+    <string name="offer_learning_step_1">Installez l’app Mozaik.</string>
+    <string name="offer_learning_step_2">Touchez « Ouvrir » ici : si l’app ne s’ouvre pas connectée, allez dans « Mon compte » sur Mozaik.</string>
+    <string name="offer_learning_step_3">Le QR code de « Mon compte » se scanne depuis l’app Mozaik d’un autre appareil.</string>
+
+    <string name="offer_ebooks_category">Livres numériques et audio</string>
+    <string name="offer_ebooks_provider">BiblioAccess</string>
+    <string name="offer_ebooks_summary">Empruntez des e-books et des livres audio, à lire en ligne ou à télécharger.</string>
+    <string name="offer_ebooks_quota">5 e-books et 5 livres audio, 3 semaines</string>
+    <string name="offer_ebooks_step_1">Empruntez un livre sur BiblioAccess (bouton « Emprunter »).</string>
+    <string name="offer_ebooks_step_2">Choisissez le téléchargement « LCP » et ouvrez-le dans Louise Reader.</string>
+    <string name="offer_ebooks_step_3">Au premier livre, Louise demande la phrase de déverrouillage ci-dessous.</string>
+    <string name="offer_ebooks_passphrase">Phrase de déverrouillage LCP</string>
+
+    <string name="offer_comics_category">BD et mangas</string>
+    <string name="offer_comics_provider">Izneo</string>
+    <string name="offer_comics_summary">Franco-belge, comics, mangas et webtoons. Une BD commencée reste lisible un an.</string>
+    <string name="offer_comics_quota">10 BD par mois</string>
+    <string name="offer_comics_step_1">Touchez « Ouvrir » : Izneo s’ouvre ici, déjà connecté.</string>
+
+    <string name="offer_eureka_category">Eurêka et musicMe</string>
+    <string name="offer_eureka_provider">Département du Val-de-Marne</string>
+    <string name="offer_eureka_summary">Cinéma, cours, livres DYS et la musique en streaming avec musicMe.</string>
+    <string name="offer_eureka_quota">2 films par mois, musique illimitée</string>
+    <string name="offer_eureka_step_1">Touchez « Ouvrir » : Eurêka s’ouvre déjà connecté.</string>
+    <string name="offer_eureka_step_2">Pour l’app musicMe : sur le site musicMe, menu « Appli mobile », puis suivez l’e-mail d’activation.</string>
 </resources>

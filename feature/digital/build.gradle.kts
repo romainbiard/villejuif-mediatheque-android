@@ -5,3 +5,11 @@
 plugins {
     alias(libs.plugins.mediatheque.android.feature)
 }
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.webkit)
+    implementation(libs.okhttp)
+
+    testImplementation(libs.androidx.datastore.preferences)
+}
